@@ -1,0 +1,1918 @@
+<html>
+
+<head>
+<title>KICKS User's Guide - Installation</title>
+<base target="_self">
+
+<script language="javascript">
+if(self.location==top.location)self.location="index.html?Installation.shtml";
+</script>
+
+</head>
+
+<BODY>
+
+<!--This is a comment. Comments are not displayed in the browser-->
+
+<table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" height="72">
+	<tr>
+		<td width="141" valign="top"><i><b><font size="7">KICKS</font></b></i></td>
+		<td valign="bottom">
+		<p align="right"><font size="6"><span style="font-weight: 400">A
+		transaction processing system for </span></font>
+		<font size="7" color="#FF0000"><span style="font-weight: 700">CMS</span></font><font size="6"><span style="font-weight: 400"> &amp; </span></font><font color="#FF0000" size="7">
+		<span style="font-weight: 700">TSO</span></font></td>
+	</tr>
+</table>
+
+<h2><a name="Notes"></a>Install Notes</h2>
+<p>Every install environment is different, and there is no way to describe
+exactly what needs to be done to install any product in every environments. The
+following <a href="#zos">TSO install</a> and <a href="#zvm">CMS install</a>
+sections are thus necessarily generic. However, since some environments are well
+known the following pre-install suggestions are
+provided. They apply to unmodified versions only (fresh standard installs of the
+subject operating system distribution).</p>
+<ul>
+	<li>TSO - <a href="platform-distributions.htm#zos">Z/OS ADCD</a> </li>
+	<li>TSO -
+	<a href="platform-distributions.htm#tk4-">Tur(n)key &quot;TK4-&quot; (update 5 - or newer)</a> </li>
+	<li>TSO - <a href="platform-distributions.htm#MVS380">Tur(n)key &quot;MVS380&quot; (2012 version) (also applies to &quot;TK3UPD&quot;)</a> </li>
+	<li>TSO - <a href="platform-distributions.htm#TK3">older Tur(n)key MVS distributions</a> </li>
+</ul>
+
+<ul>
+	<li>CMS - <a href="platform-distributions.htm#zvm">Z/VM ADCD</a></li>
+	<li>CMS -
+	<a href="platform-distributions.htm#nicof">VM/370 &quot;sixpack&quot; (nicof-0.6.0-playground - or newer)</a> </li>
+	<li>CMS - <a href="platform-distributions.htm#6pk">older VM/370 distributions</a> </li>
+</ul>
+
+<h3><a name="zos"></a>z/OS</h3>
+<p>These instructions are for use by a normal TSO user to perform an unassisted 
+install of <b><i>KICKS</i></b> into his or her own TSO account.&nbsp; Instructions 
+for systems programmers to install <b><i>KICKS</i></b> for general use are
+<a href="#System">elsewhere</a>.</p>
+<p><i><b>KICKS</b></i> has been successfully installed on&nbsp; Z/OS 1.4, 1.6, 
+1.10, and 1.12. I am not aware of any Z/OS system where it does not install and 
+run. </p>
+1. <i><b>KICKS</b></i> is available from a number of 
+sites, including the
+<a target="_blank" href="http://tech.groups.yahoo.com/group/KICKSforTSO/files">
+<i><b>KICKS</b></i> forum on Yahoo</a>, so download a copy and review and accept 
+the license...<br><br>
+2. Unzip kicks-tso-v1r5m0.zip resulting in a single folder named 
+kicks-tso-v1r5m0. The following files and folders will be within.<br>
+<blockquote>
+	<p>kicks-tso-v1r5m0.xmi - an XMIT file you will upload to your system</p>
+	<blockquote>
+		<p>If you aren't familiar with XMI files I recommend the NASPA reprint 
+		on the subject at
+		<a target="_blank" href="http://www.lbdsoftware.com/Packaging_zOS_Open_Source_Software_For_Distribution.pdf">
+		http://www.lbdsoftware.com/Packaging_z/OS_Open_Source_Software_For_Distribution.pdf</a>.
+		</p>
+	</blockquote>
+	<p>User's Guide - a folder containing this User's Guide.</p>
+	<blockquote>
+		<p><b>Note - </b><u>Although a copy of the User's Guide is included in 
+		the distribution package you should always use the online version (at
+		<a target="_blank" href="http://www.kicksfortso.com/User's%20Guide">
+		www.kicksfortso.com/User's Guide</a>) if possible as it is the most 
+	current. In particular, many installation problems can be resolved by 
+	reinstalling using the instructions in the online version!</u></p>
+	</blockquote>
+	<p>kicks-license.txt - a text file of the license you agreed to when you
+	downloaded the <i><b>KICKS</b></i> package.</p>
+	<p>readme.txt - a text file with this information, and telling you to go to
+	the User's Guide Installation section to continue the install.</p>
+</blockquote>
+3. Prepare for install: <br>
+<ol type="a">
+	<li>
+	<p style="margin-bottom: 5px;">Review the environment specific instructions
+	<a href="file:///C:/Users/mike/Desktop/stallation.html#Notes">above</a> for 
+	your TSO environment. It may also be useful to look at the instructions for 
+	'similar' TSO environments.</li>
+	<li>
+	<p style="margin-bottom: 5px;"><i><b>KICKS</b></i> requires a TSO region of 
+	at least 4 megs. It may start in smaller regions, but abends are likely as 
+	it opens more VSAM files and/or runs complicated applications.</li>
+	<li>
+	<p style="margin-bottom: 5px;"><i><b>KICKS</b></i> can be installed using 
+	your TSO id, or your TSO prefix, or some fixed literal as a high level 
+	qualifier. The default is your TSO id. Regardless of your choice, the 
+	remainder of these install instructions will refer to that choice as USERID.</li>
+</ol>
+<blockquote>
+	<p style="margin-top: 0px; margin-bottom: 5px;">There are two kinds of <i>
+	<b>KICKS</b></i> files: 'system' and 'user'. The 'system' files are 
+	installed as USERID.KICKSSYS... and the 'user' files are installed as 
+	USERID.KICKS.&nbsp; So if your TSO id (or prefix, or literal) is &quot;JACKSON&quot; the 
+	'system' files will be JACKSON.KICKSSYS and the 'user' files will be 
+	JACKSON.KICKS. </p>
+</blockquote>
+<ol type="a" start="4">
+	<li>
+	<p style="margin-top: 4px; margin-bottom: 5px;"><i><b>KICKS</b></i> dataset 
+	names include a lower level qualifier of V1R5M0 so they will not conflict 
+	with dataset names for earlier <i><b>KICKS</b></i> installations. </li>
+	<li>
+	<p style="margin-bottom: 5px;">Unless you change it, <b><i>KICKS</i></b> 
+	non-VSAM files will be allocated on non-specific storage volumes. If you 
+	want those files installed on specific volumes you will need to modify the 
+	installation code to specify those volumes (see step 7). This preparation 
+	step is to decide if non-specific is OK, and if not what volume(s) you want 
+	them on.</li>
+	<li>
+	<p style="margin-bottom: 5px;">Unless you change it, <b><i>KICKS</i></b> 
+	VSAM files will be allocated on volume PUB002. Most shops won't have such a 
+	volume, or if they do you probably shouldn't allocate on it. You should 
+	change the idcams DEFINE's for these files to specify volumes appropriate to 
+	your shop, possibly non-specific, ie, VOLUME(*). See steps 10-14. This 
+	preparation step is to decide if you want to use non-specific allocation, or 
+	if not what volume(s) you want the files on.</li>
+	<li>
+	<p style="margin-bottom: 5px;">You should have at least 2000 tracks of disk 
+	space available.</li>
+</ol>
+<p>4. Upload the xmi file.</p>
+<blockquote>
+	<p>Use a <b><u>binary</u></b> file transfer (ftp? ind$file?) to upload 
+	kicks-TSO-v1r5m0.xmi to the system as USERID.KICKS.V1R5M0.XMI (or some other 
+	name you like, but these instructions will call it USERID.KICKS.V1R5M0.XMI). 
+	You should select recfm=fb, lrecl=80 for the uploaded file. Since 
+	kicks-TSO-V1R5M0.xmi is about 10 megs it may take several minutes to upload.
+	</p>
+	<p style="margin-bottom: 0px;">Some systems will require you to pre-allocate 
+	the upload file (or override the default space allocation for the upload). 
+	The clue is a B37 (etal) during the upload. If that happens pre-allocate 
+	USERID.KICKS.V1R5M0.XMI like this</p>
+	<blockquote>
+		<p style="margin-top: 0px; margin-bottom: 0px;">
+		<font face="Courier New" size="2">dsn=userid.kicks.v1r5m0.xmi,unit=sysda,disp=(,catlg),</font></p>
+		<p style="margin-top: 0px; margin-bottom: 0px;">
+		<font face="Courier New" size="2">space=(trk,(225,15)),dcb=(recfm=fb,lrecl=80,blksize=3200)</font></p>
+	</blockquote>
+	<p style="margin-bottom: 0px;">Alternately, you could specify appropriate 
+	options to the file transfer program. For example, for ind$file you could 
+	add</p>
+	<blockquote>
+		<p style="margin-top: 0px; margin-bottom: 0px;">
+		<font face="Courier New" size="2">space(225,15) tracks</font></p>
+	</blockquote>
+</blockquote>
+<p>5. 'Receive' the uploaded file.</p>
+<blockquote>
+	<p style="margin-top: 0px; margin-bottom: 0px;">Get to a TSO READY prompt.</p>
+	<p style="margin-top: 0px; margin-bottom: 0px;">Enter
+	<font face="Courier New">&nbsp;RECEIVE INDS(KICKS.V1R5M0.XMI)</font></p>
+	<p style="margin-top: 0px; margin-bottom: 0px;">&nbsp; You might need to press 
+	enter a few more times at TSO *** prompts...</p>
+</blockquote>
+<p>6. Delete USERID.KICKS.V1R5M0.XMIT, it's no longer needed.</p>
+<p>7. You will find you have a new pds USERID.KICKS.V1R5M0.BIGPDS, most of whose 
+members also need to be received.</p>
+<blockquote>
+	<p><u>First</u> member in the pds is <font face="Courier New">$$V1R5M0</font> 
+	which is a REXX to do all the receives.</p>
+	<p>Run without any optional arguments it will restore the <i><b>KICKS</b></i> 
+	non-VSAM datasets to non specific volumes with a high level qualifier (HLQ) 
+	of your userid, ie</p>
+	<p><font face="Courier New">EXEC 'USERID.KICKS.V1R5M0.BIGPDS($$V1R5M0)'</font></p>
+	<p>The first optional argument is an HLQ to use instead of your userid, ie</p>
+	<p><font face="Courier New">EXEC 'USERID.KICKS.V1R5M0.BIGPDS($$V1R5M0)' 'otherHLQ'</font></p>
+	<p>The second optional argument is the volser to use for specific volume 
+	allocation.</p>
+	<p><font face="Courier New">EXEC 'USERID.KICKS.V1R5M0.BIGPDS($$V1R5M0)' '* 
+	volid'</font></p>
+	<p>Note the '*' in front of the volid above. That's a placeholder for a 
+	missing first optional argument. Of course both could be specified if 
+	desired, ie</p>
+	<p><font face="Courier New">EXEC 'USERID.KICKS.V1R5M0.BIGPDS($$V1R5M0)' 'otherHLQ 
+	volid'</font></p>
+	<p>Decide what you want to do, then</p>
+	<blockquote>
+		<p style="margin-top: 0px; margin-bottom: 0px;">Get to a TSO READY 
+		prompt</p>
+		<p style="margin-top: 0px; margin-bottom: 0px;">Enter one of the above 
+		commands as you choose</p>
+		<p style="margin-top: 0px; margin-bottom: 0px;">&nbsp; You will need to press 
+		enter a few <u>dozen</u> times at TSO *** prompts...</p>
+	</blockquote>
+</blockquote>
+<p>8. Delete USERID.KICKS.V1R5M0.BIGPDS, it's no longer needed.</p>
+<p>9. Customize KICKS for your USERID.</p>
+<blockquote>
+	<p style="margin-bottom: 0px;">Get to a TSO READY prompt</p>
+	<p style="margin-top: 0px; margin-bottom: 0px;">&nbsp;</p>
+	<p style="margin-top: 0px;">Enter <font face="Courier New">&nbsp;EXEC 
+	KICKSSYS.V1R5M0.CLIST(KFIX) </font></p>
+	<p style="margin-top: 0px;"><font face="Times New Roman">Responding as 
+	appropriate to the query regarding the userid/prefix/literal to be used for 
+	customization. If necessary edit the clist (ZFIX as called by KFIX) to 
+	obtain the desired customization and restart this step.</font></p>
+	<p style="margin-top: 0px;"><font face="Times New Roman">When the clist 
+	finishes successfully you should see a &quot;Done&quot; message above the next </font>
+	READY<font face="Times New Roman"> prompt.</font></p>
+</blockquote>
+<p>10. Edit USERID.KICKS.V1R5M0.INSTLIB(LOADMUR), which is batch jcl</p>
+<blockquote>
+	<p>Change the jobcard as appropriate to conform to your shop standards and 
+	your own needs (do you want output be printed or held?). </p>
+	<p>If you want specific volumes global change PUB002 to whatever volume you 
+	want the VSAM files allocated on; if you want non-specific volumes, global 
+	change PUB002 to '*'. </p>
+	<p>Submit the job and make sure it runs ok. All condition codes in the JES 
+	log should be zero.</p>
+</blockquote>
+<p>11. Edit USERID.KICKS.V1R5M0.INSTLIB(LOADTAC), which is batch jcl</p>
+<blockquote>
+	<p>Change the jobcard as appropriate/</p>
+	<p>If you want specific volumes global change PUB002 to whatever volume you 
+	want the VSAM files allocated on; if you want non-specific volumes, global 
+	change PUB002 to *</p>
+	<p>Submit the job and make sure it runs ok. All condition codes in the JES 
+	log should be zero.</p>
+</blockquote>
+<p>12. Edit USERID.KICKSSYS.V1R5M0.INSTLIB(LOADSDB), which is batch jcl</p>
+<blockquote>
+	<p>Change the jobcard as appropriate</p>
+	<p>If you want specific volumes global change PUB002 to whatever volume you 
+	want the VSAM files allocated on; if you want non-specific volumes, global 
+	change PUB002 to *</p>
+	<p>Submit the job and make sure it runs ok. All condition codes in the JES 
+	log should be zero.</p>
+</blockquote>
+<p>13. Edit USERID.KICKSSYS.V1R5M0.INSTLIB(LODINTRA), which is batch jcl</p>
+<blockquote>
+	<p>Change the jobcard as appropriate</p>
+	<p>If you want specific volumes global change PUB002 to whatever volume you 
+	want the VSAM files allocated on; if you want non-specific volumes, global 
+	change PUB002 to *</p>
+	<p>Submit the job and make sure it runs ok. All condition codes in the JES 
+	log should be zero.</p>
+</blockquote>
+<p>14. Edit USERID.KICKSSYS.V1R5M0.INSTLIB(LODTEMP), which is batch jcl</p>
+<blockquote>
+	<p>Change the jobcard as appropriate</p>
+	<p>If you want specific volumes global change PUB002 to whatever volume you 
+	want the VSAM files allocated on; if you want non-specific volumes, global 
+	change PUB002 to *</p>
+	<p>Submit the job and make sure it runs ok. All condition codes in the JES 
+	log should be zero.</p>
+</blockquote>
+<p>15. Start <i><b>KICKS</b></i></p>
+<blockquote>
+	<p>Get to a TSO READY prompt</p>
+	<p>Enter <font face="Courier New">&nbsp;EXEC KICKSSYS.V1R5M0.CLIST(KICKS)</font></p>
+	  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:red;background:black;font-weight:bold;font-style:normal"> READY </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+kicks
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> KICKS version 1.5.0(0) startup using SIT=1$,</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal">       which with command line and stdin overrides results in...</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKSIT1$ - 80 bytes at CB130, ep CB130</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKPCP1$ - 59600 bytes at 14B730, ep 14B7B8</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKKCP1$ - 22216 bytes at 15A938, ep 15B168</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKFCP1$ - 40280 bytes at 1602A8, ep 16057C</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKDCP1$ - 35616 bytes at 16A4E0, ep 16A654</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKBMS1$ - 17072 bytes at 173D50, ep 174278</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKTCP1$ - 27960 bytes at 1782C8, ep 1783B4</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKSCP1$ - 3456 bytes at C6280, ep C6290</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKTSP1$ - 15072 bytes at 17F520, ep 17F538</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKPPT1$ - 4080 bytes at C7010, ep C7010</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKPCT1$ - 1464 bytes at 14B178, ep 14B178</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKFCT1$ - 9512 bytes at 183AD8, ep 183AD8</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKDCT1$ - 256 bytes at CB030, ep CB030</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal">  </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> OPID=999,  DMPCLASS=A,  ICVR=5000,  ENQSCOP=SYSTEMS,  CWAL=100</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> TRCFLAGS=1,  TCTUAL=100,  TRCNUM=100,  PLTPI=KSGM,  PLTSD=K999</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> NATLANG=E,  MAXDELY=180,  FFREEKB=NO</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal">   - INTERNAL TRACE ENABLED</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> ***</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> </span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+
+</span></pre></td></tr>
+  </table>
+	 
+	<p>You will need to press enter at the TSO *** prompt, then you'll see</p>
+	  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> KSGM for TSO user HERC01   at terminal U0C0      BSP1     10:12:40  07/30/14
+
+
+
+
+           </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK        KK  </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII   </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCC  </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK        KK  </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSS
+          </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK       KK   </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII  </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCCCC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK       KK  </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSSSS
+         </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK      KK        </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC        CC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK      KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS        SS
+        </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK     KK         </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK     KK    </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS
+       </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK    KK          </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK    KK     </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSS
+      </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KKKKKKK           </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC  </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">         </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KKKKKKK       </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSS
+     </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KKKKKKK           </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KKKKKKK        </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSS
+    </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK    KK          </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK    KK              </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSS
+   </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK     KK         </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK     KK              </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS
+  </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK      KK        </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC        CC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK      KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS        SS
+ </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK       KK   </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII  </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCCCC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK       KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSSSS
+</span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK        KK  </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII   </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCCC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK        KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSS
+                                                                     </span><span style="color:red;background:black;font-weight:normal;font-style:normal"> TM
+
+                                                           </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> For TSO
+
+                                                           </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> V1R5M0
+                                                            September 2014
+ Press PF1 for help, CLEAR to continue... </span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">                 © Mike Noel
+</span></pre></td></tr>
+  </table>
+ 
+	<p>Your colors may vary – they are randomly selected each time the program 
+	runs - press enter to change them. Press clear to begin normal use. BTW, if 
+	you want to see this screen later just clear the screen and type KSGM (the
+	<i><b>KICKS</b></i> good morning message transaction) and press enter. Do 
+	that now then press clear again. </p>
+	<p>On the resulting blank screen type KSSF (the <i><b>KICKS</b></i> signoff 
+	transaction) and press enter to logoff <i><b>KICKS</b></i>. You should see
+	</p>
+	  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> </span><span style="color:red;background:black;font-weight:normal;font-style:normal">K</span><span style="color:yellow;background:black;font-weight:normal;font-style:normal">I</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">C</span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal">K</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">S</span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> is shutting down...</span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal">
+
+
+</span></pre></td></tr>
+  </table>
+	 
+	<p>then TSO ready prompt.</p>
+</blockquote>
+<p>16. (Optional) Make it easier to start <i><b>KICKS</b></i></p>
+<p>It would be nice if it were easier to start <i><b>KICKS </b></i>than typing 
+EXEC KICKSSYS.V1R5M0.CLIST(KICKS) every time. </p>
+<p>If, as is common, you have a user modifiable ISPF panel library available you 
+can add the command as a menu selection, thus allowing you to run <i><b>KICKS</b></i> 
+by simply selecting that menu item.</p>
+<p>Alternately there are a couple of ways to make the command you have to type 
+shorter (ie, just 'KICKS'):</p>
+<ul>
+	<li>Add USERID.KICKSSYS.V1R5M0.CLIST into your SYSPROC concatenation, or</li>
+	<li>Use ALTLIB to make USERID.KICKS.V1R5M0.CLIST part of the SYSPROC 
+	concatenation, or</li>
+	<li>Use SPROC (google &quot;sproc clist&quot;) to make USERID.KICKS.V1R5M0.CLIST part 
+	of the SYSPROC concatenation, or</li>
+	<li>Copy the KICKS clist from USERID.KICKSSYS.V1R5M0.CLIST into some library 
+	that is already in your SYSPROC concatenation. Often a TSO logon proc takes 
+	care of this, adding one of your standard datasets to this concatenation so 
+	you can easily use clists of your own. To find out if one of your datasets 
+	is in this concatenation type LISTALC STATUS (or use ISRDDN) and look for 
+	datasets that are in SYSPROC. If you find one of your datasets there just 
+	copy the KICKS clist from USERID.KICKS.V1R5M0.CLIST into that dataset.</li>
+</ul>
+<p><b>This completes basic KICKS installation.</b></p>
+<p>17. Optional post-installation steps:</p>
+<blockquote>
+	<p>In addition to COBOL programming,<i><b> KICKS</b></i> supports 
+	application development using the free GCCMVS C compiler and libraries. You 
+	may want to download and install those next if you haven't already done so. 
+	Find them at <a href="http://gccmvs.sourceforge.net/">
+	http://gccMVS.sourceforge.net/</a>. <i><b>KICKS</b></i> is tested with the &quot;GCC 
+	3.2.3 MVS 8.5&quot; version. </p>
+	<p>The above install enables the KSGM dynamic color logon screen. As a 
+	result the TSO user will not be TI swapped when that screen is up, which may 
+	be undesirable on a very busy system. To revert to the static version of the 
+	screen modify the 4th line of USERID.KICKSSYS.V1R5M0.CLIST(KICKS) from this<br>
+	<br>
+	<font face="Courier New">&nbsp;&nbsp;&nbsp;NATLANG() PLTPI() PLTSD() PCT() PPT() FCT() DCT() 
+	+<br>
+	</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to this<br>
+	<font face="Courier New">&nbsp;&nbsp;&nbsp;NATLANG() <b>PLTPI(CSGM)</b> PLTSD() PCT() PPT() 
+	FCT() DCT() +</font></p>
+	<p>Further testing of the procs, preprocessors, and compilers is 
+	recommended, and the easiest way to do this is to run the API 
+	test/demonstration jobs in USERID.KICKSSYS.V1R5M0.TESTCOB (for COBOL) and 
+	USERID.KICKSSYS.V1R5M0.TESTGCC (for GCCMVS C).<br>
+	After that (and after trying the precompiled versions!) , recompile the 
+	online example maps by submitting USERID.KICKS.V1R5M0.MAPSRC($TACMAPS) and 
+	USERID.KICKS.V1R5M0.MAPSRC($MURMAPS), then recompile the online example 
+	programs by submitting USERID.KICKS.V1R5M0.CB2($TACPGMS) and 
+	USERID.KICKS.V1R5M0.CB2($MURPGMS). Finally verify that the online examples 
+	work like the precompiled ones.</p>
+</blockquote>
+
+
+<h3><a name="mvs-legacy"></a>Turnkey MVS</h3>
+<p>These instructions are for use by a normal TSO user to perform an unassisted 
+install of <b><i>KICKS</i></b> into his or her own TSO account.&nbsp; Instructions 
+for systems programmers to install <b><i>KICKS</i></b> for general use are
+<a href="#System">elsewhere</a>.</p>
+<p><i><b>KICKS</b></i> has been successfully installed on every MVS38J 
+distribution I know of. I am not aware of any where it does not install and run. I use the MVS38J &quot;MVS380&quot; distribution to 
+build and test <i><b>KICKS</b></i> , and that plus &quot;TK3UPD&quot; and &quot;TK4-&quot; are the 
+supported MVS38J distributions. <i><b>KICKS</b></i> can probably be installed on 
+other (older) MVS38J distributions but doing so may require deviation from these 
+instructions. </p>
+1. <i><b>KICKS</b></i> is available from a number of 
+sites, including the
+<a target="_blank" href="http://tech.groups.yahoo.com/group/KICKSforTSO/files">
+<i><b>KICKS</b></i> forum on Yahoo</a>, so download a copy and review and accept 
+the license...<br><br>
+2. Unzip kicks-tso-v1r5m0.zip resulting in a single folder named 
+kicks-tso-v1r5m0. The following files and folders will be within.<br>
+<blockquote>
+	<p>kicks-tso-v1r5m0.xmi - an XMIT file you will upload to your system</p>
+	<blockquote>
+		<p>If you aren't familiar with XMI files I recommend the NASPA reprint 
+		on the subject at
+		<a target="_blank" href="http://www.lbdsoftware.com/Packaging_zOS_Open_Source_Software_For_Distribution.pdf">
+		http://www.lbdsoftware.com/Packaging_z/OS_Open_Source_Software_For_Distribution.pdf</a>.
+		</p>
+	</blockquote>
+	<p>User's Guide - a folder containing this User's Guide.</p>
+	<blockquote>
+		<p><b>Note - </b><u>Although a copy of the User's Guide is included in 
+		the distribution package you should always use the online version (at
+		<a target="_blank" href="http://www.kicksfortso.com/User's%20Guide">
+		www.kicksfortso.com/User's Guide</a>) if possible as it is the most 
+	current. In particular, many installation problems can be resolved by 
+	reinstalling using the instructions in the online version!</u></p>
+	</blockquote>
+	<p>kicks-license.txt - a text file of the license you agreed to when you
+	downloaded the <i><b>KICKS</b></i> package.</p>
+	<p>readme.txt - a text file with this information, and telling you to go to
+	the User's Guide Installation section to continue the install.</p>
+</blockquote>
+3. Prepare for install: <br>
+<ol type="a">
+	<li>
+	<p style="margin-bottom: 5px;">Review the environment specific instructions
+	<a href="file:///C:/Users/mike/Desktop/stallation.html#Notes">above</a> for 
+	your TSO environment. It may also be useful to look at the instructions for 
+	'similar' TSO environments.</li>
+	<li>
+	<p style="margin-bottom: 5px;"><i><b>KICKS</b></i> requires a TSO region of 
+	at least 4 megs. It may start in smaller regions, but abends are likely as 
+	it opens more VSAM files and/or runs complicated applications.</li>
+	<li>
+	<p style="margin-bottom: 5px;"><i><b>KICKS</b></i> can be installed using 
+	your TSO id, or your TSO prefix, or some fixed literal as a high level 
+	qualifier. The default is your TSO id. Regardless of your choice, the 
+	remainder of these install instructions will refer to that choice as USERID.</li>
+</ol>
+<blockquote>
+	<p style="margin-top: 0px; margin-bottom: 5px;">There are two kinds of <i>
+	<b>KICKS</b></i> files: 'system' and 'user'. The 'system' files are 
+	installed as USERID.KICKSSYS... and the 'user' files are installed as 
+	USERID.KICKS.&nbsp; So if your TSO id (or prefix, or literal) is &quot;JACKSON&quot; the 
+	'system' files will be JACKSON.KICKSSYS and the 'user' files will be 
+	JACKSON.KICKS. </p>
+</blockquote>
+<ol type="a" start="4">
+	<li>
+	<p style="margin-top: 4px; margin-bottom: 5px;"><i><b>KICKS</b></i> dataset 
+	names include a lower level qualifier of V1R5M0 so they will not conflict 
+	with dataset names for earlier <i><b>KICKS</b></i> installations. </li>
+	<li>
+	<p style="margin-bottom: 5px;">Unless you change it, <b><i>KICKS</i></b> 
+	non-VSAM files will be allocated on non-specific storage volumes. If you 
+	want those files installed on specific volumes you will need to modify the 
+	installation code to specify those volumes (see step 7). This preparation 
+	step is to decide if non-specific is OK, and if not what volume(s) you want 
+	them on.</li>
+	<li>
+	<p style="margin-bottom: 5px;"><i><b>KICKS</b></i> vsam files will be allocated on volume PUB002, which should be
+	available (and ‘owned’ by the TSO user catalog) on any TK3 based system. If
+	you want those files installed on some other volumes you will need to modify
+	the delete/define/load jcl (see steps 6d and 6e).</li>
+	<li>
+	<p style="margin-bottom: 5px;">You should have at least 2000 tracks of disk 
+	space available.</li>
+</ol>
+<p>4. Upload the xmi file.</p>
+<blockquote>
+	<p style="margin-top: 0px; margin-bottom: 0px;"><font color="#ff0000"><b><u>
+	ind$file binary uploads are unreliable on Tur(n)key MVS systems.</u></b></font></p>
+	<p style="margin-top: 0px; margin-bottom: 0px;">Since Tur(n)key systems are 
+	running under Hercules you can simply input the xmi file through a defined 
+	card reader. For example on the &quot;TK4-&quot; distribution you can copy the xmi 
+	file to the JCL folder, then issue a </p>
+	<p style="margin-top: 0px; margin-bottom: 0px;">
+	<font size="2" face="Courier New">devinit <b><font color="#ff0000">10C</font></b> 
+	jcl/kicks-TSO-v1r5m0.xmi ebcdic</font><font size="2"> </font></p>
+	<p style="margin-top: 0px; margin-bottom: 0px;">hercules command, then edit 
+	and submit the following &quot;GETXMI&quot; job to load the file</p>
+	<p style="margin-top: 0px; margin-bottom: 0px;">&nbsp;</p>
+	<table style="border-collapse: collapse;" border="0">
+		<tr>
+			<td width="700" nowrap bgcolor="#ccffcc">
+			<p style="margin-top: 0px; margin-bottom: 0px;">
+			<font face="Courier New">//GETXMI JOB CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)<br>
+			//SCRATCH EXEC PGM=IEFBR14<br>
+			//* UPDATE THE HLQ IN THE FOLLOWING CARD BEFORE RUNNING &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+			<br>
+			//SYSUT2 DD DSN=userid.KICKS.V1R5M0.XMI,DISP=(MOD,DELETE),<br>
+			// UNIT=SYSDA,SPACE=(TRK,(0))<br>
+			//LOAD EXEC PGM=IEBGENER<br>
+			//SYSPRINT DD SYSOUT=*<br>
+			//SYSIN DD DUMMY,DCB=BLKSIZE=80<br>
+			//SYSUT1 DD UNIT=<b><font color="#ff0000">10C</font></b>,DISP=OLD,DCB=(RECFM=FB,LRECL=80,BLKSIZE=3200)<br>
+			//* UPDATE THE HLQ IN THE FOLLOWING CARD BEFORE RUNNING &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+			<br>
+			//SYSUT2 DD DSN=userid.KICKS.V1R5M0.XMI,DISP=(,CATLG),<br>
+			// DCB=(DSORG=PS,RECFM=FB,LRECL=80,BLKSIZE=3200),<br>
+			// UNIT=SYSDA,VOL=SER=PUB002,SPACE=(TRK,(225,15),RLSE)<span style="font-weight: 700;">&nbsp;
+			</span></font></td>
+		</tr>
+	</table>
+	<p style="margin-top: 0px; margin-bottom: 0px;">Note this job takes longer 
+	than you might think - 15-20 seconds is normal...</p>
+	<p style="margin-top: 0px; margin-bottom: 0px;">Check that all condition 
+	codes in the JES log are zero.</p>
+</blockquote>
+<p>5. 'Receive' the uploaded file.</p>
+<blockquote>
+	<p style="margin-top: 0px; margin-bottom: 0px;">Tur(n)key MVS systems do not 
+	have a RECEIVE command in TSO, so you will need to edit and submit the 
+	following &quot;RCVKICKS&quot; batch job.</p>
+	<table style="border-collapse: collapse;" border="0">
+		<tr>
+			<td width="700" nowrap bgcolor="#ccffcc">
+			<p style="margin-top: 0px; margin-bottom: 0px;">
+			<font face="Courier New">//RCVKICKS JOB CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),REGION=4096K<br>
+			//RECV370 EXEC PGM=RECV370<br>
+			//RECVLOG DD SYSOUT=*<br>
+			//* UPDATE THE HLQ IN THE FOLLOWING CARD BEFORE RUNNING &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+			<br>
+			//XMITIN DD DSN=userid.KICKS.V1R5M0.XMI,DISP=SHR<br>
+			//SYSPRINT DD SYSOUT=*<br>
+			//SYSUT1 DD DSN=&amp;&amp;SYSUT1,<br>
+			// UNIT=SYSALLDA,<br>
+			// SPACE=(TRK,(300,60)),<br>
+			// DISP=(NEW,DELETE,DELETE)<br>
+			//* UPDATE THE HLQ IN THE FOLLOWING CARD BEFORE RUNNING &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+			<br>
+			//SYSUT2 DD DSN=userid.KICKS.V1R5M0.BIGPDS,<br>
+			// UNIT=(SYSALLDA,SEP=SYSUT1),<br>
+			// SPACE=(TRK,(300,60,20)),<br>
+			// DISP=(NEW,CATLG,DELETE)<br>
+			//SYSIN DD DUMMY </font></td>
+		</tr>
+	</table>
+	<p style="margin-top: 5px; margin-bottom: 0px;">Be sure to cut/paste a fresh 
+	copy from here, and make indicated updates before submitting.</p>
+	<p style="margin-top: 0px; margin-bottom: 0px;">Check that all condition 
+	codes in the JES log are zero.</p>
+</blockquote>
+<p>6. Delete USERID.KICKS.V1R5M0.XMIT, it's no longer needed.</p>
+<p>7. You will find you have a new pds USERID.KICKS.V1R5M0.BIGPDS, most of whose 
+members also need to be received.</p>
+<blockquote>
+	<p><u>Last</u> member in the pds is <font face="Courier New">V1R5M0</font> 
+	which is batch jcl to do all the receives.</p>
+	<p>Make userid changes as indicated, and, if desired, specify the volume for 
+	the received files.</p>
+	<p>When you've finished any changes to the JCL, submit it.<br>
+	Check that all condition codes in the JES log are zero.</p>
+</blockquote>
+<p>8. Delete USERID.KICKS.V1R5M0.BIGPDS, it's no longer needed.</p>
+<p>9. Customize KICKS for your USERID.</p>
+<blockquote>
+	<p style="margin-bottom: 0px;">Get to a TSO READY prompt</p>
+	<p style="margin-top: 0px; margin-bottom: 0px;">&nbsp;</p>
+	<p style="margin-top: 0px;">Enter <font face="Courier New">&nbsp;EXEC 
+	KICKSSYS.V1R5M0.CLIST(KFIX) </font></p>
+	<p style="margin-top: 0px;"><font face="Times New Roman">Responding as 
+	appropriate to the query regarding the userid/prefix/literal to be used for 
+	customization. If necessary edit the clist (TFIX as called by KFIX) 
+	to obtain the desired customization and restart this step.</font></p>
+	<p style="margin-top: 0px;"><font face="Times New Roman">When the clist 
+	finishes successfully you should see a &quot;Done&quot; message above the next </font>
+	READY<font face="Times New Roman"> prompt.</font></p>
+	<p style="margin-top: 0px;"><font face="Times New Roman">On some systems 
+	this step fails with a message</font></p>
+	<blockquote>
+		<p style="margin-top: 0px;"><font face="Times New Roman">&quot;DATA SET XXXXX 
+		NOT ALLOCATED, TOO MANY DATA SETS+&quot;</font></p>
+		<p style="margin-top: 0px;"><font face="Times New Roman">This occurs 
+		because TSO has not set aside enough control block space to dynamically 
+		allocated all the datasets that the clist needs. To fix this you must 
+		update your TSO logon proc, SYS1.PROCLIB(xxxxx) where xxxxx can be 
+		determined by looking for &quot;TSO-proc&quot; in the upper right corner of the 
+		RPF main menu. Edit the proc and observe the 2nd line, which should look 
+		like</font></p>
+		<p style="margin-top: 0px;"><font face="Courier New">//IKJACCNT EXEC PGM=IKJEFT01, 
+		...</font></p>
+		<p style="margin-top: 0px;"><font face="Times New Roman">add DYNAMNBR=64 
+		to the end of that line (or if DYNAMNBR is already present with a value 
+		less than 64 increase the number to 64), then save the change.</font></p>
+		<p style="margin-top: 0px;"><font face="Times New Roman">Then logoff 
+		your TSO session, and log back on again. This is necessary to pick up 
+		the logon proc change you just made.</font></p>
+		<p style="margin-top: 0px;"><font face="Times New Roman">Finally, resume 
+		the KICKS install at step 9 above.</font></p>
+	</blockquote>
+</blockquote>
+<p>10. Edit USERID.KICKS.V1R5M0.INSTLIB(LOADMUR), which is batch jcl</p>
+<blockquote>
+	<p>Change the jobcard as appropriate to conform to your shop standards and 
+	your own needs (do you want output be printed or held?). </p>
+	<p>If necessary global change PUB002 to whatever volume you want the VSAM 
+	files allocated upon.</p>
+	<p>Submit the job and make sure it runs ok. All condition codes in the JES 
+	log should be zero.</p>
+</blockquote>
+<p>11. Edit USERID.KICKS.V1R5M0.INSTLIB(LOADTAC), which is batch jcl</p>
+<blockquote>
+	<p>Change the jobcard as appropriate/</p>
+	<p>If necessary global change PUB002 to whatever volume you want the VSAM 
+	files allocated upon.</p>
+	<p>Submit the job and make sure it runs ok. All condition codes in the JES 
+	log should be zero.</p>
+</blockquote>
+<p>12. Edit USERID.KICKSSYS.V1R5M0.INSTLIB(LOADSDB), which is batch jcl</p>
+<blockquote>
+	<p>Change the jobcard as appropriate</p>
+	<p>If necessary global change PUB002 to whatever volume you want the VSAM 
+	files allocated upon.</p>
+	<p>Submit the job and make sure it runs ok. All condition codes in the JES 
+	log should be zero.</p>
+</blockquote>
+<p>13. Edit USERID.KICKSSYS.V1R5M0.INSTLIB(LODINTRA), which is batch jcl</p>
+<blockquote>
+	<p>Change the jobcard as appropriate</p>
+	<p>If necessary global change PUB002 to whatever volume you want the VSAM 
+	files allocated upon.</p>
+	<p>Submit the job and make sure it runs ok. All condition codes in the JES 
+	log should be zero.</p>
+</blockquote>
+<p>14. Edit USERID.KICKSSYS.V1R5M0.INSTLIB(LODTEMP), which is batch jcl</p>
+<blockquote>
+	<p>Change the jobcard as appropriate</p>
+	<p>If necessary global change PUB002 to whatever volume you want the VSAM 
+	files allocated upon.</p>
+	<p>Submit the job and make sure it runs ok. All condition codes in the JES 
+	log should be zero.</p>
+</blockquote>
+<p>15. Start <i><b>KICKS</b></i></p>
+<blockquote>
+	<p>Get to a TSO READY prompt</p>
+	<p>Enter <font face="Courier New">&nbsp;EXEC KICKSSYS.V1R5M0.CLIST(KICKS)</font></p>
+	  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:red;background:black;font-weight:bold;font-style:normal"> READY </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+kicks
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> KICKS version 1.5.0(0) startup using SIT=1$,</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal">       which with command line and stdin overrides results in...</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKSIT1$ - 80 bytes at CB130, ep CB130</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKPCP1$ - 59600 bytes at 14B730, ep 14B7B8</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKKCP1$ - 22216 bytes at 15A938, ep 15B168</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKFCP1$ - 40280 bytes at 1602A8, ep 16057C</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKDCP1$ - 35616 bytes at 16A4E0, ep 16A654</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKBMS1$ - 17072 bytes at 173D50, ep 174278</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKTCP1$ - 27960 bytes at 1782C8, ep 1783B4</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKSCP1$ - 3456 bytes at C6280, ep C6290</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKTSP1$ - 15072 bytes at 17F520, ep 17F538</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKPPT1$ - 4080 bytes at C7010, ep C7010</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKPCT1$ - 1464 bytes at 14B178, ep 14B178</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKFCT1$ - 9512 bytes at 183AD8, ep 183AD8</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> loading KIKDCT1$ - 256 bytes at CB030, ep CB030</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal">  </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> OPID=999,  DMPCLASS=A,  ICVR=5000,  ENQSCOP=SYSTEMS,  CWAL=100</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> TRCFLAGS=1,  TCTUAL=100,  TRCNUM=100,  PLTPI=KSGM,  PLTSD=K999</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> NATLANG=E,  MAXDELY=180,  FFREEKB=NO</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal">   - INTERNAL TRACE ENABLED</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:red;background:black;font-weight:bold;font-style:normal"> ***</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> </span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+
+</span></pre></td></tr>
+  </table>
+	 
+	<p>You will need to press enter at the TSO *** prompt, then you'll see</p>
+	  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> KSGM for TSO user HERC01   at terminal U0C0      BSP1     10:12:40  07/30/14
+
+
+
+
+           </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK        KK  </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII   </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCC  </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK        KK  </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSS
+          </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK       KK   </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII  </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCCCC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK       KK  </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSSSS
+         </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK      KK        </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC        CC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK      KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS        SS
+        </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK     KK         </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK     KK    </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS
+       </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK    KK          </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK    KK     </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSS
+      </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KKKKKKK           </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC  </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">         </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KKKKKKK       </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSS
+     </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KKKKKKK           </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KKKKKKK        </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSS
+    </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK    KK          </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK    KK              </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSS
+   </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK     KK         </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK     KK              </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS
+  </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK      KK        </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC        CC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK      KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS        SS
+ </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK       KK   </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII  </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCCCC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK       KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSSSS
+</span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK        KK  </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII   </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCCC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK        KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSS
+                                                                     </span><span style="color:red;background:black;font-weight:normal;font-style:normal"> TM
+
+                                                           </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> For TSO
+
+                                                           </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> V1R5M0
+                                                            September 2014
+ Press PF1 for help, CLEAR to continue... </span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">                 © Mike Noel
+</span></pre></td></tr>
+  </table>
+ 
+	<p>Your colors may vary – they are randomly selected each time the program 
+	runs - press enter to change them. Press clear to begin normal use. BTW, if 
+	you want to see this screen later just clear the screen and type KSGM (the
+	<i><b>KICKS</b></i> good morning message transaction) and press enter. Do 
+	that now then press clear again. </p>
+	<p>On the resulting blank screen type KSSF (the <i><b>KICKS</b></i> signoff 
+	transaction) and press enter to logoff <i><b>KICKS</b></i>. You should see
+	</p>
+	  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> </span><span style="color:red;background:black;font-weight:normal;font-style:normal">K</span><span style="color:yellow;background:black;font-weight:normal;font-style:normal">I</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">C</span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal">K</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">S</span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> is shutting down...</span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal">
+
+
+</span></pre></td></tr>
+  </table>
+	 
+	<p>then TSO ready prompt.</p>
+</blockquote>
+<p>16. (Optional) Make it easier to start <i><b>KICKS</b></i></p>
+<p>It would be nice if it were easier to start <i><b>KICKS </b></i>than typing 
+EXEC KICKSSYS.V1R5M0.CLIST(KICKS) every time. </p>
+<p>There are a couple of ways to make the command you have to type shorter (ie, 
+just 'KICKS'):</p>
+<ul>
+	<li>Add USERID.KICKSSYS.V1R5M0.CLIST into your SYSPROC concatenation, or</li>
+	<li>Copy the KICKS clist from USERID.KICKSSYS.V1R5M0.CLIST into some library 
+	that is already in your SYSPROC concatenation. Many Tur(n)key distributions 
+	(including &quot;TK4-&quot;) automatically concatenate USERID.CMDPROC onto your 
+	SYSPROC concatenation if it exists.</li>
+</ul>
+<p><b>This completes basic KICKS installation.</b></p>
+<p>17. Optional post-installation steps:</p>
+<blockquote>
+	<p>In addition to COBOL programming,<i><b> KICKS</b></i> supports 
+	application development using the free GCCMVS C compiler and libraries. You 
+	may want to download and install those next if you haven't already done so. 
+	Find them at <a href="http://gccmvs.sourceforge.net/">
+	http://gccMVS.sourceforge.net/</a>. <i><b>KICKS</b></i> is tested with the &quot;GCC 
+	3.2.3 MVS 8.5&quot; version. Note this is preinstalled on many Tur(n)key systems 
+	including &quot;TK4-&quot;. </p>
+	<blockquote>
+		<p>However, on a &quot;TK4-&quot; system the install does not correspond to the 
+		GCC compile procs I include with <i><b>KICKS</b></i>. You will need to 
+		modify the procs (KIKGCCCL &amp; KIKGCCCS) to comment out the GCCPREF proc 
+		argument, the COMP.STEPLIB, and to change the PDPPREF proc argument to 
+		remove the &quot;.V85&quot;.</p>
+	</blockquote>
+	<p>The above install enables the KSGM dynamic color logon screen. As a 
+	result the TSO user will not be TI swapped when that screen is up, which may 
+	be undesirable on a very busy system. To revert to the static version of the 
+	screen modify the 4th line of USERID.KICKSSYS.V1R5M0.CLIST(KICKS) from this<br>
+	<br>
+	<font face="Courier New">&nbsp;&nbsp;&nbsp;NATLANG() PLTPI() PLTSD() PCT() PPT() FCT() DCT() 
+	+<br>
+	</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to this<br>
+	<font face="Courier New">&nbsp;&nbsp;&nbsp;NATLANG() <b>PLTPI(CSGM)</b> PLTSD() PCT() PPT() 
+	FCT() DCT() +</font><br>
+&nbsp;</p>
+	<p>Further testing of the procs, preprocessors, and compilers is 
+	recommended, and the easiest way to do this is to run the API 
+	test/demonstration jobs in USERID.KICKSSYS.V1R5M0.TESTCOB (for COBOL) and 
+	USERID.KICKSSYS.V1R5M0.TESTGCC (for GCCMVS C).<br>
+	After that (and after trying the precompiled versions!) , recompile the 
+	online example maps by submitting USERID.KICKS.V1R5M0.MAPSRC($TACMAPS) and 
+	USERID.KICKS.V1R5M0.MAPSRC($MURMAPS), then recompile the online example 
+	programs by submitting USERID.KICKS.V1R5M0.COB($TACPGMS) and 
+	USERID.KICKS.V1R5M0.COB($MURPGMS). Finally verify that the online examples 
+	work like the precompiled ones.</p>
+	<p><i><b>KICKS</b></i> is installed with a terminal driver (2$) that should 
+	work with any version of Tur(n)key MVS. It also includes the higher function 
+	Z/OS terminal driver (1$) that will work if you have a 'recent' Tur(n)key 
+	version (such as &quot;TK4-&quot;). You can try this driver by starting KICKS with 
+	&quot;KICKS TCP(1$)&quot;. If this works you could change the KICKS clist to use 1$ 
+	instead of 2$ (end of line 5).</p>
+</blockquote>
+<p>&nbsp;</p>
+
+
+
+<h3><a name="zvm"></a>z/VM</h3>
+<p>These instructions are for use by a normal CMS user to perform an unassisted 
+install of <b><i>KICKS</i></b> into his or her own CMS account.&nbsp; Instructions 
+for systems programmers to install <b><i>KICKS</i></b> for general use are
+<a href="#System">elsewhere</a>.</p>
+<p><font color="#FF0000"><b>However, full function will require</b></font></p>
+<blockquote>
+	<p><font color="#FF0000"><b>(1) that DOS and VSAM is installed and
+	available on the system, and<br>(2) that an empty (or
+emptiable) mini-disk is available to DOS format for vsam use.</b></font></p>
+</blockquote>
+<p><font color="#FF0000"><b>If these requirements are not met vsam files can't
+be used, so although <i>KICKS</i> can be installed it may be of limited use and
+many of the example programs won't run.</b></font></p>
+1. <i><b>KICKS</b></i> is available from a number of 
+sites, including the
+<a target="_blank" href="http://tech.groups.yahoo.com/group/KICKSforTSO/files">
+<i><b>KICKS</b></i> forum on Yahoo</a>, so download a copy and review and accept 
+the license...<br><br>
+2. Unzip kicks-cms-v1r5m0.zip resulting in a single folder named 
+kicks-cms-v1r5m0. The following files and folders will be within.<br>
+<blockquote>
+	<p>kicks-cms-v1r5m0.vmarc - a VMARC file that you will upload to your system</p>
+	<p>User's Guide - a folder containing this User's Guide.</p>
+	<blockquote>
+		<p><b>Note - </b><u>Although a copy of the User's Guide is included in 
+		the distribution package you should always use the online version (at
+		<a target="_blank" href="http://www.kicksfortso.com/User's%20Guide">
+		www.kicksfortso.com/User's Guide</a>) if possible as it is the most 
+	current. In particular, many installation problems can be resolved by 
+	reinstalling using the instructions in the online version!</u></p>
+	</blockquote>
+	<p>kicks-license.txt - a text file of the license you agreed to when you
+	downloaded the <i><b>KICKS</b></i> package.</p>
+	<p>readme.txt - a text file with this information, and telling you to go to
+	the User's Guide Installation section to continue the install.</p>
+</blockquote>
+3. Prepare for install: <br>
+<ol type="a">
+	<li>
+	<p style="margin-bottom: 5px"> <i><b>KICKS </b></i>is packaged using the
+	VMARC utility. If that isn't already installed on your system it can be
+	downloaded from the
+	<a target="_blank" href="http://www.vm.ibm.com/download/">IBM Downloads</a>
+	site and installed in your own CMS for your own use with <i><b>KICKS </b></i>
+	(and anything else you choose).</li>
+	<li>
+	<p style="margin-bottom: 5px">All <i><b>KICKS </b></i>permanent non-vsam
+	files will be installed onto your 'A' mini-disk.</li>
+	<li>
+	<p style="margin-bottom: 5px">A DOS formated mini-disk is required for vsam
+	use. </li>
+</ol>
+<p>4. Upload the installation package. </p>
+<blockquote>
+	<p>Use a <b><u>binary</u></b> file transfer (ftp? ind$file?) to upload
+	kicks-cms-v1r5m0.vmarc to the z/VM system as KICKS VMARC A&nbsp; Specify LRECL
+	80. It may take several minutes to upload. </p>
+</blockquote>
+<p style="margin-top: 0; margin-bottom: 0">5. Do a 'VMARC UNPACK' to
+			get 1st level of <i><b>KICKS</b></i> files.</p>
+<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" bgcolor="#CCFFCC" width="630">
+		<!-- MSTableType="nolayout" --><tr>
+			<td><font face="Courier New"><b><font color="#FF0000">v</font></b></font><b><font face="Courier New" color="#FF0000">marc unpack
+						kicks vmarc a = = a (olddate replace notrace</font></b><font face="Courier New">
+			</font></td>
+		</tr>
+	</table></div>
+		<p>5. Build the VSAM environment on an empty mini-disk. This is in three
+		steps. Define the DOS environment to <i><b>KICKS</b></i> by updating and
+		assembling the FCT (file control table); then run the PREVSAM EXEC to
+		dos format the vsam mini-disk; and finally run the POSTVSAM EXEC to
+		define the vsam catalog and space, and to define and load the sample
+		files.</p>
+<ol type="a">
+	<li>
+	<p style="margin-top: 0; margin-bottom: 0">Edit KIKFCT1$ ASSEMBLE K and change the CATXXXX arguments in lines 3-5 per the instructions in
+	the <a href="Configuration.htm">configuration section</a> of this guide.&nbsp;
+	Especially note/change </p>
+	<p style="margin-top: 0; margin-bottom: 0">CATUSER, the CMS userid of the
+	'owner' of the mini-disk (probably your own id),</p>
+	<p style="margin-top: 0; margin-bottom: 0">CATLNK1, the disk address by
+	which the mini-disk is defined in the system directory,</p>
+	<p style="margin-top: 0; margin-bottom: 0">CATPASS, the write password for
+	the mini-disk.</p>
+	<p style="margin-top: 0; margin-bottom: 0">The other arguments (CATLNK2,
+	CATFM, CATVOL) are probably OK as they are...</p>
+	<p style="margin-top: 14px; margin-bottom: 0">You will also need
+	to re-assemble the FCT, which you do by entering the following command</p>
+<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" bgcolor="#CCFFCC" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr>
+			<td><b><font face="Courier New" color="#FF0000">k</font></b><font face="Courier New"><font color="#FF0000"><b>iktable
+			fct 1$</b></font> </font></td>
+		</tr>
+	</table>
+</div>
+	</li>
+</ol>
+<ol type="a" start="2">
+	<li>
+	<p style="margin-top: 0; margin-bottom: 0">Next start the PREVSAM EXEC and
+	proceed as directed..</p>
+<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" bgcolor="#CCFFCC" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr>
+			<td><b><font face="Courier New" color="#FF0000">prevsam</font></b><font face="Courier New">
+			<br>
+			DEV xxx DOES NOT EXIST <br>
+			About to erase and DOS format your xxx mini disk! <br>
+			<br>
+			Please type YES now to confirm this action.. <br>
+			<b><font color="#FF0000">YES</font></b> <br>
+			DASD 0xxx DETACHED <br>
+			Filemode O not accessed <br>
+			Device 0222 does not exist <br>
+			Device 0xxx does not exist <br>
+			222 replaces O (222) <br>
+			ICKDSF - CMS/XA/ESA DEVICE SUPPORT FACILITIES 17.0<br>
+			<br>
+			INIT UNIT(222) - <br>
+			PRG NVFY VOLID(VSAMIN) - <br>
+			FBAVTOC(END) <br>
+			ICK00700I DEVICE INFORMATION FOR 0222 IS CURRENTLY AS FOLLOWS: <br>
+			PHYSICAL DEVICE = 3370-2 <br>
+			STORAGE CONTROLLER = 3880 <br>
+			STORAGE CONTROL DESCRIPTOR = 01 <br>
+			DEVICE DESCRIPTOR = 04 <br>
+			ICK01731I MAP FUNCTION NOT SUPPORTED FOR MINI-DISKS <br>
+			ICK00001I FUNCTION COMPLETED, HIGHEST CONDITION CODE WAS 0<br>
+			<br>
+			After 'I CMS' press ENTER <br>
+			<b><font color="#FF00FF">you type enter here...</font></b></font></td>
+		</tr>
+	</table>
+</div>
+	</li>
+</ol>
+	<ol type="a" start="3">
+	<li>Define the VSAM catalog, space, sample files, and load test data into
+	the sample files using the POSTVSAM EXEC.<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr style="background-color: #CCFFCC">
+			<td><b>
+				<font face="Courier New" color="#FF0000">postvsam</font></b></td>
+		</tr>
+		<tr style="border: 1px solid #000000; padding-left: 4px; padding-right: 4px; padding-top: 1px; padding-bottom: 1px">
+			<td><font face="Courier New"><b>NOTE
+						</b>you will need to press enter several times (at the
+			end of a screen full of messages) until you finally get to a
+			'Ready;'..</font></td>
+		</tr>
+	</table>
+</div>
+	</li>
+</ol>
+<p>6. Startup KICKS to test your install </p>
+		<blockquote>
+			<blockquote>
+				<p>Type <b>KICKS</b> and press enter as below</p>
+			</blockquote>
+</blockquote>
+
+  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal">kicks                                                                           
+&lt;{&gt;}:EXEC TEST FOR MECAFF                                                       
+KICKS version 1.5.0(0) startup using SIT=1$,                                    
+      which with command line and stdin overrides results in...                 
+loading KIKSIT1$ - 80 bytes at D0398, ep D0398                                  
+loading KIKPCP1$ - 59912 bytes at D03E8, ep D09E8                               
+loading KIKKCP1$ - 23816 bytes at DEDF0, ep DF6E8                               
+loading KIKFCP1$ - 42168 bytes at E4AF8, ep E4CC4                               
+loading KIKDCP1$ - 34944 bytes at EEFB0, ep EF194                               
+loading KIKBMS1$ - 17192 bytes at F7830, ep F7DD0                               
+loading KIKTCP2$ - 61320 bytes at FBB58, ep 1009B0                              
+loading KIKSCP1$ - 4416 bytes at 10AAE0, ep 10AB68                              
+loading KIKTSP1$ - 15192 bytes at 10BC20, ep 10BCB0                             
+loading KIKPPT1$ - 4080 bytes at 10F778, ep 10F778                              
+loading KIKPCT1$ - 1464 bytes at 110768, ep 110768                              
+loading KIKFCT1$ - 9512 bytes at 110D20, ep 110D20                              
+loading KIKDCT1$ - 256 bytes at 113248, ep 113248                               
+                                                                                
+OPID=999,  DMPCLASS=A,  ICVR=5000,  ENQSCOP=SYSTEMS,  CWAL=100                  
+TRCFLAGS=1,  TCTUAL=100,  TRCNUM=100,  PLTPI=KSGM,  PLTSD=K999                  
+NATLANG=E,  MAXDELY=180,  FFREEKB=NO                                            
+                                                                               </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> 
+</span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">                                                                               
+                                                           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> RUNNING             
+</span></pre></td></tr>
+  </table>
+
+
+<blockquote>
+	<p>Briefly the above shows <i><b>KICKS</b></i> loading its nucleus modules and tables and
+displaying the other startup variables. </p>
+	<p>When 'MORE...' appears press enter (maybe more than once). Next you will see</p>
+</blockquote>
+
+  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> KSGM for CMS user CMSUSER  at terminal 00C0               15:19:41  07/31/14
+
+
+
+
+           </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK        KK  </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII   </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCC  </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK        KK  </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSS
+          </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK       KK   </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII  </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCCCC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK       KK  </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSSSS
+         </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK      KK        </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC        CC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK      KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS        SS
+        </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK     KK         </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK     KK    </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS
+       </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK    KK          </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK    KK     </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSS
+      </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KKKKKKK           </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC  </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">         </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KKKKKKK       </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSS
+     </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KKKKKKK           </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KKKKKKK        </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSS
+    </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK    KK          </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK    KK              </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSS
+   </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK     KK         </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK     KK              </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS
+  </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK      KK        </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC        CC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK      KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS        SS
+ </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK       KK   </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII  </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCCCC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK       KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSSSS
+</span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK        KK  </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII   </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCCC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK        KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSS
+                                                                     </span><span style="color:red;background:black;font-weight:normal;font-style:normal"> TM
+
+                                                           </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> For CMS
+
+                                                           </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> V1R5M0
+                                                            September 2014
+ Press PF1 for help, CLEAR to continue... </span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">                 © Mike Noel
+</span></pre></td></tr>
+  </table>
+
+
+<blockquote>
+	<p>Your colors may vary – they are randomly selected each time the program
+	starts up, and every 5-6 seconds thereafter.. Press clear to begin normal use. BTW, if you want
+to see this screen later just clear the screen and type KSGM (the <i><b>KICKS</b></i>
+good morning message transaction) and press enter. Do that now then press clear
+again. </p>
+	<p>On the resulting blank screen type KSSF (the <i><b>KICKS</b></i> signoff
+transaction) and press enter to logoff <i><b>KICKS</b></i>. You should see </p>
+</blockquote>
+
+  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> </span><span style="color:red;background:black;font-weight:normal;font-style:normal">K</span><span style="color:yellow;background:black;font-weight:normal;font-style:normal">I</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">C</span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal">K</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">S</span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> is shutting down...</span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal">
+
+
+</span></pre></td></tr>
+  </table>
+
+
+<blockquote>
+	<p>then the CMS ready prompt. </p>
+</blockquote>
+<p><b>This completes basic KICKS installation for a z/VM system.</b></p>
+<p>7. Optional post-installation steps for a 6-pack system:</p>
+<ol type="a">
+	<li>The above install enables the KSGM dynamic color logon screen. To change
+	the delay between color changes (or eliminate them) you can change the twa
+	size associated with the KSGM transaction. See the comments near the top of
+	KIKPCT1$ ASSEMBLE. After you change the PCT, reassemble it by typing<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" bgcolor="#CCFFCC" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr>
+			<td>
+				<font face="Courier New"><b><font color="#FF0000">kiktable pct
+				1$</font></b> </font>
+			<font face="Courier New" size="2">&nbsp;</font></td>
+		</tr>
+	</table>
+</div>
+	</li>
+	<li>
+	<p style="margin-bottom: 14px">In addition to Cobol programming,<i><b> KICKS</b></i> supports
+	application development using the GCCCMS C compiler and libraries.You may
+	want to download and install those next if you haven't already done so. Find
+	them at <a href="http://gccmvs.sourceforge.net/">
+	http://gccmvs.sourceforge.net/</a>
+	</li>
+	<li>Further testing of the execs,
+	preprocessors, and compilers is recommended, and the easiest way to do this
+	is to run the API test/demonstration execs in TESTCOB VMARC
+	(for Cobol) and TESTGCC VMARC (for C). <br>After that (and after trying the
+	precompiled versions!) , recompile the online example maps by reviewing then running the KIKSAMPM EXEC, then recompile the online
+	example programs by reviewing then running the KIKSAMPP EXEC. Finally verify that the online examples
+	work like the precompiled ones did. Note that these two execs run many
+	back-to-back compiles and generate voluminous output -- they'd be great
+	candidates for CMSBATCH.</li>
+</ol>
+<p><b>Uninstalling <i>KICKS</i>.</b></p>
+<p>There is a KGONE EXEC that will delete all (at least most) of the <b><i>
+KICKS </i></b>distribution files from the A mini-disk (type KGONE A).
+</p>
+
+
+<h3><a name="cms-legacy"></a>VM/370</h3>
+<p>These instructions are for use by a normal CMS user to perform an unassisted 
+install of <b><i>KICKS</i></b> into his or her own CMS account.&nbsp; Instructions 
+for systems programmers to install <b><i>KICKS</i></b> for general use are
+<a href="#System">elsewhere</a>.</p>
+1. <i><b>KICKS</b></i> is available from a number of 
+sites, including the
+<a target="_blank" href="http://tech.groups.yahoo.com/group/KICKSforTSO/files">
+<i><b>KICKS</b></i> forum on Yahoo</a>, so download a copy and review and accept 
+the license...<br><br>
+2. Unzip kicks-cms-v1r5m0.zip resulting in a single folder named 
+kicks-cms-v1r5m0. The following files and folders will be within.<br>
+<blockquote>
+	<p>kicks-cms-v1r5m0.vmarc - a VMARC file that you will upload to your system</p>
+	<p>User's Guide - a folder containing this User's Guide.</p>
+	<blockquote>
+		<p><b>Note - </b><u>Although a copy of the User's Guide is included in 
+		the distribution package you should always use the online version (at
+		<a target="_blank" href="http://www.kicksfortso.com/User's%20Guide">
+		www.kicksfortso.com/User's Guide</a>) if possible as it is the most 
+	current. In particular, many installation problems can be resolved by 
+	reinstalling using the instructions in the online version!</u></p>
+	</blockquote>
+	<p>kicks-license.txt - a text file of the license you agreed to when you
+	downloaded the <i><b>KICKS</b></i> package.</p>
+	<p>readme.txt - a text file with this information, and telling you to go to
+	the User's Guide Installation section to continue the install.</p>
+</blockquote>
+3. Prepare for install: <br>
+<ol type="a">
+	<li>
+	<p style="margin-bottom: 5px">The VM/370 6-pack 1.2 system may be downloaded
+	from <a href="http://vm370.31bits.net/vm370sixpack-1_2.zip">
+	http://vm370.31bits.net/vm370sixpack-1_2.zip</a></li>
+	<li>
+	<p style="margin-bottom: 5px">The X'58' full screen support
+	package may be downloaded from the
+	<a target="_blank" href="http://games.groups.yahoo.com/group/H390-VM/">Yahoo H390-VM forum</a> 
+	'FILES' area (most current as of this writing is
+	called 'diag58v108.zip'). This may not be absolutely necessary if you 
+	install the optional MECAFF console support, but these instructions assume 
+	you <u>do</u> have X'58' support installed.</li>
+	<li>
+	<p style="margin-bottom: 5px">The MECAFF tools
+	package may be downloaded from the
+	<a target="_blank" href="http://games.groups.yahoo.com/group/H390-VM/">Yahoo H390-VM forum</a> 
+	'FILES' area (most current as of this writing is
+	called 'mecaff-tools-and-console-1.2.5.zip'). Be sure you install the 'static linked'
+	version of the MECAFF tools. This is necessary because <i><b>KICKS</b></i>
+	uses the DOS/VSAM components of VM/370, whose use will cause the
+	'dynamically linked' versions of the MECAFF tools to abend (and require
+	you to re-IPL CMS all the time, very irritating... </li>
+	<li>
+	<p style="margin-bottom: 5px">The CMSUSER account on the VM/370 6-pack has
+	empty 192, 193, 194, and 195 mini-disks. The<b><i> KICKS</i></b> install
+	will modify CMSUSER's PROFILE EXEC to release/detach the 194 mini-disk, and
+	to access the 195 mini-disk as 'K'. </li>
+	<li>
+	<p style="margin-bottom: 5px">All <i><b>KICKS </b></i>permanent non-vsam
+	files will be installed onto the 195 mini-disk that will be accessed as 'K'.</li>
+	<li>
+	<p style="margin-bottom: 5px">The 194 mini-disk will be DOS formatted. A
+	vsam master catalog and vsam space will be allocated on it, and the <i><b>
+	KICKS</b></i> sample vsam files will be defined and loaded into that vsam
+	space. The 194 mini-disk will otherwise remain unlinked so that not just
+	CMSUSER, but <u>any</u> <i><b>
+	KICKS</b></i> user can access the vsam files. <i><b>KICKS</b></i> or
+	associated programs, run by any user, will access this 194 mini-disk as 'O'.</li>
+	<li>
+	<p style="margin-bottom: 5px"><u>Ensure you are not using CMSUSER's 194 or
+	195 mini-disks before you start the <i><b>KICKS</b></i> install!!</u></li>
+</ol>
+<p>4. Unload installation package from tape. </p>
+<ol type="a">
+	<li>Logon to MAINT from a full screen capable 3270 session.</li>
+	<li>
+	<p style="margin-top: 0; margin-bottom: 0">Edit SIXPACK DIRECT to change
+	CMSUSER's default storage size down to 14M</p>
+	<p style="margin-top: 0; margin-bottom: 0">(so that there is room for the
+	DOS/VSAM segment)<br>
+&nbsp;&nbsp;&nbsp; <u>change</u>&nbsp;&nbsp;&nbsp; 'USER CMSUSER CMSUSER
+	<font color="#FF0000">15M</font> 16M G'<br>
+&nbsp;&nbsp;&nbsp; to&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'USER
+	CMSUSER CMSUSER <font color="#FF0000">14M</font> 16M G'</p>
+	<p style="margin-top: 0; margin-bottom: 0">then after you save that change, </p>
+
+
+<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" bgcolor="#CCFFCC" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr>
+			<td>
+				<font face="Courier New"><b><font color="#FF0000">direct sixpack</font></b><br>
+				DMKUDR476I System Directory loaded from volume VM50-1 <br>
+				<br>
+				EOJ DIRECTORY UPDATED AND ON LINE </font>
+			<font face="Courier New" size="2">&nbsp;</font></td>
+		</tr>
+	</table>
+</div>
+
+
+	</li>
+	<li>Logoff MAINT and logon to CMSUSER..</li>
+	<li>Check to ensure there isn't anything you want on either the 194 (F) or
+	the 195 (G) mini-disk.<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr style="background-color: #CCFFCC">
+			<td><b>
+				<font face="Courier New" color="#FF0000">l * * f</font></b><p>
+				<b><font face="Courier New" color="#FF0000">l * * g</font></b></td>
+		</tr>
+		<tr>
+			<td><font face="Courier New">if there's anything you want on either
+			of those mini-disks (including old KICKS installs if you want to be
+			able to go back to them) <br>
+				<br><font color="#FF0000"><blink><b><font size="5">STOP now</font></b></blink>
+				</font><br><br>and back it up, 'cause this procedure will erase it!!!</font></td>
+		</tr>
+	</table>
+</div>
+	</li>
+	<li>
+	<p style="margin-top: 0; margin-bottom: 0">Edit PROFILE EXEC <br>&nbsp; <u>add</u> 'REL F (DET' after 'ACC 194 F',<br>&nbsp; and
+	<u>add</u> 'ACC 195 K' after 'ACC 195 G'</p></li>
+	<li>
+	<p style="margin-top: 0; margin-bottom: 0">Logoff CMSUSER</p></li>
+	<li>
+	<p style="margin-top: 0; margin-bottom: 0">Log back onto CMSUSER</p></li>
+	<li>
+	<p style="margin-top: 0; margin-bottom: 0">Check to ensure 194 is not linked
+	at all, and that 195 is accessed as K (not G)</p>
+<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" bgcolor="#CCFFCC" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr>
+			<td><b><font face="Courier New" color="#FF0000">q disk</font></b></td>
+		</tr>
+	</table>
+</div>
+	</li>
+<ol type="a">
+	<li>
+	<p style="margin-top: 0; margin-bottom: 0">Format the 195 k disk to get rid
+	of anything that's already on it.</p>
+<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" bgcolor="#CCFFCC" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr>
+			<td><b><font face="Courier New" color="#FF0000">format 195 k</font></b><p>
+				<font face="Courier New">DMSFOR603R FORMAT WILL ERASE<br>
+				? (YES|NO): <br>
+				<b>
+				<font color="#FF0000">yes</font></b> <br>
+				DMSFOR605R ENTER DISK LABEL:<br>
+				<font color="#FF0000"><b>cms195</b></font></font></td>
+		</tr>
+	</table>
+</div>
+	</li>
+</ol>
+	<ol start="10" type="a">
+			<li>
+			Use a <b><u>binary</u></b> file transfer&nbsp; (MECAFF ind$file by 
+			way of your tn3270 client) to upload kicks-cms-v1r5m0.vmarc to the 
+			VM/370 system as KICKS VMARC K&nbsp; Specify LRECL
+	80. It may take several minutes to upload.
+			</li>
+			<li>
+			<p style="margin-top: 10px; margin-bottom: 0">Do a 'VMARC UNPACK' to
+			get 1st level of <i><b>KICKS</b></i> files.</p>
+			<div align="center" style="margin-top: 14; margin-bottom: 14">
+				<table border="0" bgcolor="#CCFFCC" width="630">
+					<!-- MSTableType="nolayout" --><tr>
+						<td><font face="Courier New"><b><font color="#FF0000">v</font></b></font><b><font face="Courier New" color="#FF0000">marc unpack
+						kicks vmarc k = = k (olddate replace notrace</font></b><font face="Courier New">
+						</font></td>
+					</tr>
+				</table></div></li>
+		</ol>
+</ol>
+		<p>5. Build the VSAM environment on the 194 mini-disk. This is in three
+		steps. Define the DOS environment to <i><b>KICKS</b></i> by updating and
+		assembling the FCT (file control table); then run the PREVSAM EXEC to
+		dos format the vsam mini-disk; and finally run the POSTVSAM EXEC to
+		define the vsam catalog and space, and to define and load the sample
+		files.</p>
+<ol type="a">
+	<li>
+	<p style="margin-top: 0; margin-bottom: 0">Edit KIKFCT1$ ASSEMBLE K and, if
+	necessary, change the CATXXXX arguments in lines 3-5 per the instructions in
+	the <a href="Configuration.htm">configuration section</a> of this guide.
+	This will probably be unnecessary since <i><b>KICKS</b></i> comes with these
+	arguments pre-configured for the VM/370 6 pack system. If you change nothing
+	just quit out of the editor. If you do change something you will also need
+	to re-assemble the FCT, which you do by entering the following command</p>
+<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" bgcolor="#CCFFCC" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr>
+			<td><b><font face="Courier New" color="#FF0000">k</font></b><font face="Courier New"><font color="#FF0000"><b>iktable
+			fct 1$</b></font> </font></td>
+		</tr>
+	</table>
+</div>
+	</li>
+</ol>
+<ol type="a" start="2">
+	<li>
+	<p style="margin-top: 0; margin-bottom: 0">Next start the PREVSAM EXEC and
+	proceed as directed. When it's done you will need to re-ipl CMS as shown..</p>
+<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" bgcolor="#CCFFCC" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr>
+			<td><b><font face="Courier New" color="#FF0000">prevsam</font></b><font face="Courier New">
+			<br>
+			DEV 194 DOES NOT EXIST <br>
+			About to erase and DOS format your 194 mini disk! <br>
+			<br>
+			Please type YES now to confirm this action.. <br>
+			<b><font color="#FF0000">YES</font></b> <br>
+			DASD 194 DETACHED <br>
+			DISK 'O' NOT ACCESSED. <br>
+			DEV 222 DOES NOT EXIST <br>
+			O (222) R/W - DOS <br>
+			New file: <br>
+			EDIT: <br>
+			NO FILES PURGED <br>
+			PUN FILE 0782 TO CMSUSER COPY 01 NOHOLD <br>
+			PUN FILE 0783 TO CMSUSER COPY 01 NOHOLD <br>
+			<br>
+			IBCDASDI has been IPLed to format the vsam disk. <br>
+			- Press ENTER to see the 'DEFINE INPUT' request <br>
+			- then type 'INPUT=2540,00C' and press ENTER <br>
+			When done (almost immediately), type 'I CMS' and press ENTER, <br>
+			- then ENTER again to finish the IPL, <br>
+			Finally type POSTVSAM and press ENTER <br>
+			<b><font color="#FF00FF">you type enter here...</font></b><br>
+			IBC105A DEFINE INPUT DEVICE. DASDI 7.91 <br>
+			<b><font color="#FF0000">input=2540,00c</font></b> <br>
+			DASDI 7.91 <br>
+			JOB 'DOS INIT 194 AS VSAMIN' <br>
+			MSG TODEV=1052,TOADDR=009 <br>
+			DADEF TODEV=3350,TOADDR=222,IPL=NO,VOLID=SCRATCH,CYLNO=0115 <br>
+			VLD NEWVOLID=VSAMIN,OWNERID=CMSUSER <br>
+			VTOCD STRTADR=1,EXTENT=15 <br>
+			END <br>
+			IBC163A END OF JOB. <br>
+			CP ENTERED; DISABLED WAIT PSW '00060000 0000EEEE' </font>
+			<p><b><font face="Courier New" color="#FF0000">i cms</font></b></td>
+		</tr>
+	</table>
+</div>
+	</li>
+</ol>
+	<ol type="a" start="3">
+	<li>Define the VSAM catalog, space, sample files, and load test data into
+	the sample files using the POSTVSAM EXEC.<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr style="background-color: #CCFFCC">
+			<td><b>
+				<font face="Courier New" color="#FF0000">postvsam</font></b></td>
+		</tr>
+		<tr style="border: 1px solid #000000; padding-left: 4px; padding-right: 4px; padding-top: 1px; padding-bottom: 1px">
+			<td><font face="Courier New"><b>NOTE
+						</b>you will need to press enter several times (at the
+			end of a screen full of messages) until you finally get to a
+			'Ready;'..</font></td>
+		</tr>
+	</table>
+</div>
+	</li>
+</ol>
+<p>6. Startup KICKS to test your install </p>
+		<blockquote>
+			<blockquote>
+				<p>Type <b>KICKS</b> and press enter as below</p>
+			</blockquote>
+</blockquote>
+
+  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal">kicks                                                                           
+&lt;{&gt;}:EXEC TEST FOR MECAFF                                                       
+KICKS version 1.5.0(0) startup using SIT=1$,                                    
+      which with command line and stdin overrides results in...                 
+loading KIKSIT1$ - 80 bytes at D0398, ep D0398                                  
+loading KIKPCP1$ - 59912 bytes at D03E8, ep D09E8                               
+loading KIKKCP1$ - 23816 bytes at DEDF0, ep DF6E8                               
+loading KIKFCP1$ - 42168 bytes at E4AF8, ep E4CC4                               
+loading KIKDCP1$ - 34944 bytes at EEFB0, ep EF194                               
+loading KIKBMS1$ - 17192 bytes at F7830, ep F7DD0                               
+loading KIKTCP2$ - 61320 bytes at FBB58, ep 1009B0                              
+loading KIKSCP1$ - 4416 bytes at 10AAE0, ep 10AB68                              
+loading KIKTSP1$ - 15192 bytes at 10BC20, ep 10BCB0                             
+loading KIKPPT1$ - 4080 bytes at 10F778, ep 10F778                              
+loading KIKPCT1$ - 1464 bytes at 110768, ep 110768                              
+loading KIKFCT1$ - 9512 bytes at 110D20, ep 110D20                              
+loading KIKDCT1$ - 256 bytes at 113248, ep 113248                               
+                                                                                
+OPID=999,  DMPCLASS=A,  ICVR=5000,  ENQSCOP=SYSTEMS,  CWAL=100                  
+TRCFLAGS=1,  TCTUAL=100,  TRCNUM=100,  PLTPI=KSGM,  PLTSD=K999                  
+NATLANG=E,  MAXDELY=180,  FFREEKB=NO                                            
+                                                                               </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> 
+</span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">                                                                               
+                                                           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> RUNNING             
+</span></pre></td></tr>
+  </table>
+
+
+<blockquote>
+	<p>Briefly the above shows <i><b>KICKS</b></i> loading its nucleus modules and tables and
+displaying the other startup variables. </p>
+	<p>When 'MORE...' appears press enter (maybe more than once). Next you will see</p>
+</blockquote>
+
+  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> KSGM for CMS user CMSUSER  at terminal 00C0               15:19:41  07/31/14
+
+
+
+
+           </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK        KK  </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII   </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCC  </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK        KK  </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSS
+          </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK       KK   </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII  </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCCCC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK       KK  </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSSSS
+         </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK      KK        </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC        CC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK      KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS        SS
+        </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK     KK         </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK     KK    </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS
+       </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK    KK          </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK    KK     </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSS
+      </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KKKKKKK           </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC  </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">         </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KKKKKKK       </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSS
+     </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KKKKKKK           </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KKKKKKK        </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSS
+    </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK    KK          </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK    KK              </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSS
+   </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK     KK         </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC           </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK     KK              </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS
+  </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK      KK        </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> II      </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CC        CC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK      KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SS        SS
+ </span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK       KK   </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII  </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCCCC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK       KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSSSS
+</span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> KK        KK  </span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal"> IIIIIIIIII   </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> CCCCCCCCCCC </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> KK        KK   </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> SSSSSSSSSS
+                                                                     </span><span style="color:red;background:black;font-weight:normal;font-style:normal"> TM
+
+                                                           </span><span style="color:white;background:black;font-weight:normal;font-style:normal"> For CMS
+
+                                                           </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> V1R5M0
+                                                            September 2014
+ Press PF1 for help, CLEAR to continue... </span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">                 © Mike Noel
+</span></pre></td></tr>
+  </table>
+
+
+<blockquote>
+	<p>Your colors may vary – they are randomly selected each time the program
+	starts up, and every 5-6 seconds thereafter.. Press clear to begin normal use. BTW, if you want
+to see this screen later just clear the screen and type KSGM (the <i><b>KICKS</b></i>
+good morning message transaction) and press enter. Do that now then press clear
+again. </p>
+	<p>On the resulting blank screen type KSSF (the <i><b>KICKS</b></i> signoff
+transaction) and press enter to logoff <i><b>KICKS</b></i>. You should see </p>
+</blockquote>
+
+  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> </span><span style="color:red;background:black;font-weight:normal;font-style:normal">K</span><span style="color:yellow;background:black;font-weight:normal;font-style:normal">I</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">C</span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal">K</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">S</span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> is shutting down...</span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal">
+
+
+</span></pre></td></tr>
+  </table>
+
+
+<blockquote>
+	<p>then the CMS ready prompt. </p>
+</blockquote>
+<p><b>This completes basic KICKS installation for a VM/370 6-pack system.</b></p>
+<p>7. Optional post-installation steps for a 6-pack system:</p>
+<ol type="a">
+	<li>The above install enables the KSGM dynamic color logon screen. To change
+	the delay between color changes (or eliminate them) you can change the twa
+	size associated with the KSGM transaction. See the comments near the top of
+	KIKPCT1$ ASSEMBLE. After you change the PCT, reassemble it by typing<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" bgcolor="#CCFFCC" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr>
+			<td>
+				<font face="Courier New"><b><font color="#FF0000">kiktable pct
+				1$</font></b> </font>
+			<font face="Courier New" size="2">&nbsp;</font></td>
+		</tr>
+	</table>
+</div>
+	</li>
+	<li>
+	<p style="margin-top: 0; margin-bottom: 0">If you want to be able to run <i>
+	<b>KICKS</b></i> under CMSBATCH you will need to add the REALTIMER option to
+	that VM's directory entry (CMSBATCH won't allow a a submitted job to do a
+	'SET' to change that option). Logon to MAINT again and Edit SIXPACK DIRECT
+	again<br>&nbsp;&nbsp;&nbsp; <u>add</u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	'OPTION REALTIMER'<br>&nbsp;&nbsp;&nbsp; <u>after the line</u>&nbsp;&nbsp;'USER
+	CMSBATCH CMSBATCH 8M 8M G'</p>
+	<p style="margin-top: 0; margin-bottom: 0">then after you save that change,
+	</p>
+<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" bgcolor="#CCFFCC" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr>
+			<td>
+				<font face="Courier New"><b><font color="#FF0000">direct sixpack</font></b><br>
+				DMKUDR476I System Directory loaded from volume VM50-1 <br>
+				<br>
+				EOJ DIRECTORY UPDATED AND ON LINE </font>
+			<font face="Courier New" size="2">&nbsp;</font></td>
+		</tr>
+	</table>
+</div>
+	</li>
+	<li>In addition to Cobol programming,<i><b> KICKS</b></i> supports
+	application development using the GCCCMS C compiler and libraries. These are
+	already installed on the VM/370 6-pack, but unfortunately the installed
+	library has a bug that prevents it's use with <i><b>KICKS</b></i> . A fixed
+	(and more up-to-date) version of that library is included with <i><b>KICKS</b></i>
+	as PDPCLIB TXTLIB on the K mini-disk and will be used when any of the
+	standard <i><b>KICKS</b></i> compile exec's are used. If you want to use it
+	with other execs (ie, the standard GCC execs) you can copy it to the system
+	Y disk by logging on to MAINT, releasing the Y disk, accessing 19E as Y
+	disk, copying PDPCLIB TEXTLIB from CMSUSER K disk to the MAINT Y disk, then
+	releasing Y again and accessing 19E as Y/S.<div align="center" style="margin-top: 14; margin-bottom: 14">
+	<table border="0" bgcolor="#CCFFCC" width="630">
+		<!-- MSTableType="nolayout" -->
+		<tr>
+			<td>
+				<b><font face="Courier New" color="#FF0000">link cmsuser 195
+					111 </font></b>
+				<p><b><font face="Courier New" color="#FF0000">acc 111 k</font></b></p>
+				<p><b><font face="Courier New" color="#FF0000">rel y</font></b></p>
+				<p><b><font face="Courier New" color="#FF0000">acc 19e y</font></b></p>
+				<p><b><font face="Courier New" color="#FF0000">copy pdpclib
+					txtlib k = = y (replace</font></b></p>
+				<p><b><font face="Courier New" color="#FF0000">rel y</font></b></p>
+				<p><b><font face="Courier New" color="#FF0000">acc 19e y/s</font></b></p>
+				<p><b><font face="Courier New" color="#FF0000">rel k (det</font></b></td>
+		</tr>
+	</table>
+</div>
+	</li>
+	<li>Further testing of the execs,
+	preprocessors, and compilers is recommended, and the easiest way to do this
+	is to run the API test/demonstration execs in TESTCOB VMARC
+	(for Cobol) and TESTGCC VMARC (for C). <br>After that (and after trying the
+	precompiled versions!) , recompile the online example maps by reviewing then running the KIKSAMPM EXEC, then recompile the online
+	example programs by reviewing then running the KIKSAMPP EXEC. Finally verify that the online examples
+	work like the precompiled ones did. Note that these two execs run many
+	back-to-back compiles and generate voluminous output -- they'd be great
+	candidates for CMSBATCH.</li>
+</ol>
+<p><b>Uninstalling <i>KICKS</i>.</b></p>
+<p><b><i>KICKS </i></b>can be uninstalled simply by re CMS formatting the 194&nbsp;
+(<b><i>KICKS </i></b>code) and 195 (dos vsam) mini-disks. You might also want to
+revert your PROFILE EXEC to access these mini-disks as F and G respectively.</p>
+<p>There is also a KGONE EXEC that will delete all (at least most) of the <b><i>
+KICKS </i></b>distribution files from the K (ie, 194) mini-disk (type KGONE K).
+This may make it easier to find any of your own files you want to save before
+you reformat...</p>
+
+<h2><a name="System"></a>Installing <i>KICKS</i> for many users (system install)</h2>
+<p>Installing <i><b>KICKS</b></i> for many users is much the same as installing
+it for one. The effort is not so much in the installation as in deciding exactly
+what to provision to users who need access to it. Following is the simplest
+case: <i><b>KICKS</b></i> will be installed in one place and all TSO/CMS users
+will have fully shared access to it.&nbsp; To accomplish that</p>
+<ul>
+	<li>choose a name (&quot;KICKS&quot; is typical)</li>
+	<li>create a TSO or CMS user with the chosen name, aliases, and so on as
+	usual for any new user</li>
+	<li>install <i><b>KICKS</b></i> into that user's file structure as per the
+	above instructions for a normal user</li>
+	<li>establish security system rules to allow all TSO/CMS users to read and
+	execute that user's non-VSAM files, and to read and write that user's VSAM
+	files</li>
+	<li>for TSO: copy the KICKS clist into some cmdproc/clist library available
+	to all TSO users</li>
+	<li>for CMS: add a LINK/ACCESS to the &quot;KICKS&quot; non-VSAM minidisk to each
+	users profile (probably as K)</li>
+</ul>
+<p>For example, if you have a TK4- Tur(n)key MVS system you might have installed
+<i><b>KICKS</b></i> into the account HERC01. To turn that installation into a
+&quot;system install&quot; you would</p>
+<ul>
+	<li>establish RAKF security rules for <i><b>KICKS</b></i><ul>
+		<li>update RAKF rules to allow any user to read HERC01.KICKS &amp;
+		HERC01.KICKSSYS non-VSAM files<ul>
+			<li>no action required, all users can read anything not explicitly
+			forbidden in TK4-</li>
+		</ul>
+		</li>
+		<li>update RAKF rules to allow any user to read/write HERC01 VSAM files<ul>
+			<li>add the following to sys1.secure.cntl(profiles)<pre>
+DATASET HERC01.KICKS.MURACH.CUSTMAS                         UPDATE
+DATASET HERC01.KICKS.MURACH.INVCTL                          UPDATE
+DATASET HERC01.KICKS.MURACH.INVOICE                         UPDATE
+DATASET HERC01.KICKS.MURACH.INVOICE.PATH                    UPDATE
+DATASET HERC01.KICKS.MURACH.PRODUCT                         UPDATE
+DATASET HERC01.KICKS.TACDATA                                UPDATE
+DATASET HERC01.KICKS.V1R5M0.SDB                             UPDATE
+DATASET HERC01.KICKSSYS.V1R5M0.KIKINTRA                     UPDATE
+DATASET HERC01.KICKSSYS.V1R5M0.KIKTEMP                      UPDATE</pre>
+			</li>
+			<li>remember to activate the change by entering &quot;S RAKFPROF&quot; on the console. (or just ipl).</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>make KICKS clist/exec available<ul>
+		<li>copy KICKS clist to SYS2.CMDPROC</li>
+	</ul>
+	</li>
+</ul>
+<p>At this point all TSO users can start <i><b>KICKS</b></i>, run the sample
+applications, and read or update the sample application files. The&nbsp; first 
+time they run <i><b>KICKS</b></i> (that is, the KICKS clist) it will create 
+empty user SKIKLOAD, KIKRPL COBCOPY, and GCCCOPY libraries that they may use to 
+define and contain their own applications. They may however still require a 
+private copy of the KICKS clist to allocate their own files (or customize the 
+clist).</p>
+<p>VSAM files for <i><b>KICKS</b></i> use in TSO are shared if their 
+allocation in the KICKS clist specifies <u>SHR</u>. If that allocation instead 
+specifies <u>OLD</u> the file is not shared..</p>
+<ul>
+	<li>if KIKTEMP and/or KIKINTRA are to be shared they may need to be defined
+	somewhat larger. It may also be desirable to regularly delete/define them,
+	in effect &quot;cold starting&quot; those shared queues.</li>
+	<li>it probably does not make sense to share the KSDB (source code database)
+	file</li>
+	<li>if you decide to share the sample application VSAM files you should
+	probably arrange for them to regularly delete/define and reload them with
+	the supplied sample data (ie, rerun LOADTAC &amp; LOADMUR)</li>
+</ul>
+<p>If you are using a Z/OS system you would follow a very similar procedure.</p>
+<p>If instead you have a &quot;nicoff-playground&quot; VM/370 six pack system you 
+might have installed <i>
+<b>KICKS</b></i> into the account CMSUSER. To turn that installation into a
+&quot;system install&quot; you would</p>
+<ul>
+	<li>ignore <i><b>KICKS</b></i> security rules; VM/370 does not have a
+	security system</li>
+	<li>make KICKS clist/exec available<ul>
+		<li>change the profile exec's of those users who will be accessing <i><b>KICKS</b></i> to link read only to the <i><b>KICKS</b></i> non-vsam 
+		disk and access it as K, or</li>
+		<li>use the SYSPROF EXEC to similarly setup <i><b>KICKS</b></i> for all 
+		users</li>
+	</ul>
+	</li>
+</ul>
+<p>At this point all CMS users can start <i><b>KICKS</b></i>, run the sample 
+applications, and read or update the sample application files. The&nbsp; first 
+time they run <i><b>KICKS</b></i> (that is, the KICKS exec) it will create empty 
+user KIKULOD &amp; KIKURPL txtlibs and KIKCOUSR &amp; KIKGCUSR maclibs that they may use 
+to define and contain their own applications. They may however still require 
+private copies of the KICKS, KICKSD, TKICKS, and TKICKSD exec's to allocate 
+their own files (or customize the exec's).</p>
+<p>VSAM files for use of <i><b>KICKS</b></i> in CMS are either all shared 
+(meaning only that other <i><b>KICKS</b></i> users <u>will</u> access them) or 
+unshared (meaning only that other <i><b>KICKS</b></i> users <u>will not</u> 
+access them). If VSAM files are to be shared</p>
+<ul>
+	<li>KIKTEMP, KIKINTRA and KSDB may need to be defined somewhat larger. It 
+	may also be desirable to regularly delete/define KIKTEMP and KIKINTRA, in 
+	effect &quot;cold starting&quot; those shared queues. KSDB will need to be monitored 
+	and some means of cleaning it up developed. Or just delete/define it on some 
+	regular basis and live with the programmer complaints!</li>
+	<li>It may also be desirable to delete/define/reload the sample application 
+	VSAM files (ie, rerun LOADTAC &amp; LOADMUR) occasionally.</li>
+</ul>
+<p>If you are using a Z/VM system you might follow a similar procedure (but 
+don't ignore the security rules!).</p>
+<p><br>
+</p>
+<h2><a name="Source"></a>Installing &amp; Using <i><b>KICKS</b></i> source code</h2>
+<br>
+<i><b>KICKS</b></i> source materials for TSO and CMS are provided for users
+interested in how
+<i><b>KICKS</b></i> works or in improving it .<br>
+<br>
+<h3>Skills needed:</h3>
+<blockquote>
+	<br><i><b>KICKS</b></i> users are expected to possess skill sets roughly corresponding
+	to skill sets for similar roles in a CICS environment.
+	<p>Terminal users need to know how to logon, start and use the applications
+	they are assigned, and logoff.</p>
+	<p>Those who write and maintain those applications will require additional
+	skills, similar to those of a CICS application programmer, familiar with TSO or CMS tools and
+techniques necessary to write COBOL/VSAM/CICS programs. <i><b>KICKS</b></i>
+	installation is oriented to people with this skill set.</p>
+	<p>Those who wish to make
+effective use of the <i><b>KICKS</b></i> source will require additional skills,
+	similar to those of a CICS systems programmer, familiar with 360/370/z
+assembler programming and CICS internals. Additionally, since <i><b>KICKS</b></i> is written
+in C, substantial experience with that language is required.<i><b> KICKS</b></i>
+	source installation and use is oriented to people with all these skills.<br><br>
+	</p>
+</blockquote>
+<p></p>
+<h3>Supported build environment:</h3>
+<blockquote>
+
+
+	<br><i><b>KICKS for TSO</b></i> and <i><b>KICKS for CMS</b></i> are intended for use
+	across a broad spectrum of
+systems - from old MVS38J and VM/370 systems to the most current Z/OS and Z/VM
+systems. I expect the source can be built on any combination of the above,
+however I only support a single specific combination. Since that combination is
+freely available software that can build <i><b>KICKS</b></i> for any of the broader set of
+systems I do not consider this to be a significant limitation.<p>By &quot;support&quot; I
+	mean I've built <i><b>KICKS</b></i> in the environment myself and it works,
+	but that is not a guarantee I'll be able to help you in your own efforts to
+	build <i><b>KICKS</b></i> or otherwise use the source. I expect people who
+	try to do that to have a high level of skill and determination, and to solve
+	most (if not all) their own problems.<br><br>For TSO use the &quot;TK4-&quot; (update 5)
+	Tur(n)key MVS system.<br>
+	<br>For CMS use the same &quot;TK4-&quot; (update 5) system, plus the &quot;nicof-0.6.0-playground&quot;
+VM/370 system. There is only one source for both TSO and CMS. It 'lives' in TSO,
+and TSO is used to punch the build steps to the CMS reader (destined for
+CMSBATCH) to generate <i><b>KICKS for CMS</b></i>.<br><br>You first need to build a special &quot;TK4-&quot; (update 5) system that you will use to
+build <i><b>KICKS for TSO</b></i>, and as a necessary tool to build <i><b>KICKS for CMS</b></i>. You can get
+&quot;TK4-&quot; at&nbsp; <a target="_blank" href="http://wotho.ethz.ch/tk4-">http://wotho.ethz.ch/tk4-</a>. After you have installed &quot;TK4-&quot; update
+5 as per the instructions, you will need to install the following modifications:<br>
+	<br><b>*** NOTE ***</b> Most of these changes require RAKF authority, so
+	make them while logged on as HERC01.<br><br><b>1. </b>Update sys1.proclib(TSOlogon) to change dynamnbr=20 on the end of line 2 to
+dynamnbr=64<br><br>After you save this change you will have to logoff TSO, then log back on again
+to activate the change.<br><br>Reason for the change: <i><b>KICKS</b></i> needs to be able to dynamically allocate more than
+20 files<br><br><b>2. </b>Run the following job to copy sys2.linklib gcc member(s).
+	<font face="Courier New">
+	</p>
+	<pre>//MAKGCC JOB
+// EXEC PGM=IEBCOPY
+//SYSPRINT DD SYSOUT=*
+//OUT      DD DSN=GCC.LINKLIB,DISP=(NEW,CATLG),UNIT=SYSDA,
+//         SPACE=(CYL,(1,1,10)),DCB=(RECFM=U,BLKSIZE=6144)
+//IN       DD DSN=SYS2.LINKLIB,DISP=SHR
+//SYSUT3   DD UNIT=SYSDA,SPACE=(CYL,(1))
+//SYSUT4   DD UNIT=SYSDA,SPACE=(CYL,(1))
+//SYSIN    DD *
+ COPY INDD=IN,OUTDD=OUT
+ SELECT MEMBER=((GCC,GCC370))
+/*</pre></font>Reason for the change: Simplify <i><b>KICKS</b></i> installation by
+	standardizing gcc install.
+	<i><b>KICKS</b></i> compile procs refer to the 24 bit gcc compiler explicitly to emphasis the
+ability to run <i><b>KICKS</b></i> in &quot;pure&quot; 24 bit environments. Since those procs also
+assume the need for a steplib to access the compiler this change allows the procs to be installation modified similarly to typical Z/OS installs.<br>
+	<br><b>3. </b>Update sys1.jes2parm(jes2parm) to change initiator 1 from class
+	A only to
+class C and class A by changing line 160 to add a 'C' to the end, like this
+
+	<font face="Courier New"><pre>
+I1 START,NAME=1,CLASS=AC</pre>
+
+	</font>Reason for the change: <i><b>KICKS</b></i> needs to single thread jobs in it's build process
+so that those jobs will run in the correct order and it uses class C assuming it
+is so defined.<br><br><b>3b. </b>Update sys1.jes2parm(jes2parm) to add
+
+<font face="Courier New"><pre>
+&C       NOJOURN,LOG,OUTPUT,PROCLIB=00,PERFORM=1, Single thread batch  C
+               CONVPARM=00000100099921E00011</pre>
+
+	</font>after lines 184-185 which should look like
+
+<font face="Courier New"><pre>
+&B       NOJOURN,LOG,OUTPUT,PROCLIB=00,PERFORM=1, Standard batch       C
+               CONVPARM=00000100099921E00011
+</pre>
+
+	</font>After you save these two changes (3 &amp; 3b) you will need to ipl to activate them.<br><br>
+Reason for the change: The jes2parm default for undefined input classes requires that the JOB card contain accounting information and programmer id, but
+	<i><b>KICKS</b></i> jcl does not contain those job card fields.<br><br>
+
+<b>4. </b>Update sys1.secure.cntl(profiles) to add
+
+<font face="Courier New"><pre>
+DATASET *                                           PRDGROUPALTER</pre>
+
+</font>just *before* line 22, which should look like
+
+<font face="Courier New"><pre>
+DATASET *                                           STCGROUPALTER</pre>
+
+</font>after you save this change activate it by entering &quot;S RAKFPROF&quot; on the console.
+(or just ipl).<br><br>Reason for the change: <i><b>KICKS</b></i> submits jobs thru the internal reader, depending on
+any security system present to propagate user credentials. But RAKF does not do
+so, resulting in those jobs being assigned to the default user. This change
+allows the default user unrestricted dataset access.<br><br><b>5. </b>(optional) Make job step return codes show up on the console:<br>issue operator command &quot;<b><font face="Courier New">vary 009,console,rout=all</font></b>&quot;<br>or<br>add &quot;<b><font face="Courier New">$VS,'V 009,CONSOLE,ROUT=ALL'</font></b>&quot; to jes2parms (&amp; ipl)<br>or add a similar command to sys1.parmlib(startMVS) (&amp; ipl)<br>
+	<br>Reason for the change: It can save time to quickly see a job ran OK without
+reviewing the listing.<br><br><b>6. </b>(optional) Set the timezone for your location<br>change sys1.parmlib(parmtz) to match, for example, I use<br>
+	<b><font face="Courier New">W,09</font></b> for alaska standard time<br>
+	<font face="Courier New"><b>W,08</b> </font>for alaska daylight time<br><br>after you save this change you will need to ipl to activate it.<br>
+	<br>Reason for the change: I like to see the right date/time on messages and
+listings.<br><br><b>7. </b>Copy MVS.BAT to MVS3725.BAT, then edit MVS3275.BAT adding '<b><font face="Courier New">SET CNSLPORT=3275</font></b>'
+just in front of the last line.<br><br>Reason for the change: make the TK4- console port 3275 so that vm/370 can be up
+at the same time (with VM/370's console port staying at 3270). This enables use
+of VM/370 to generate <i><b>KICKS for CMS</b></i>.<br><br><b>8. </b>Copy tk4-.cnf to tk4-.oldcnf (as a backup) then edit tk4-.cnf adding
+&quot;<b><font face="Courier New">CODEPAGE 819/1047</font></b>&quot; pretty much anywhere (suggest after line 13 &quot;<font face="Courier New"><b>XPNDSIZE 0</b></font>&quot;).<br>
+	<br>Reason for the change: match the code page used by VM/370 so that output
+generated on MVS can be used on VM/370 to build <i><b>KICKS for CMS</b></i>.<br>
+	<br>Once these modifications (at least 1-4, 7, 8) are in place you should install<i><b> KICKS for TSO</b></i> 1.5.0 into &quot;userid&quot; 
+	(recommend HERC01) using the normal install
+instructions.<br><br>Follow that by installing the <i><b>KICKS</b></i> source into the same &quot;userid&quot;.
+	This install is a microcosm of the normal <i><b>KICKS</b></i> install: you upload the
+	source xmi file, receive it, then run a job inside the received pds to
+	receive most of the other members into more pds's, and finally run a clist
+	to customize the received pds's for the HLQ associated with the install. In
+	other words, steps 4 thru 9 of the Tur(n)key TSO install near the top of this
+	page. For the steps 4 thru 8 just substitute
+				<font face="Courier New">&nbsp;&quot;userid.KICKSTS.&quot; </font>for
+	<font face="Courier New">&quot;userid.KICKS.V1R5M0.&quot;</font>.<font face="Courier New"> </font>
+	For step 9 substitute <font face="Courier New">&quot;KICKSTS.UTIL(SFIX)&quot; for
+	&quot;KICKSSYS.V1R5M0.CLIST(KFIX)&quot;</font>.<p>You
+will note that the <i><b>KICKS</b></i> source datasets do not include VRM. That's because they
+are used to define and create new versions!<br><br>At this point your build environment is complete unless you want to build for
+CMS as well as TSO (or instead of TSO).<br><br>If you want to build <i><b>KICKS
+	for CMS</b></i> your next step is to build a special
+&quot;nicof-0.6.0-playground&quot; VM/370 system that you will use to build <i>
+	<b>KICKS for CMS</b></i>.
+You can get &quot;nicof-0.6.0-playground&quot; from the files area of the yahoo VM/370
+group
+	<a target="_blank" href="https://groups.yahoo.com/neo/groups/Hercules-VM370/info">https://groups.yahoo.com/neo/groups/Hercules-VM370/info</a>.<br>
+	<br>After you have installed the &quot;nicof-0.6.0-playground&quot; as per the instructions,
+you will need to install the following modifications:<br><br><b>1.</b> <i><b>KICKS for CMS</b></i>
+	<u>optional</u> install step 7b, configuring CMSbatch for
+	<i><b>KICKS</b></i> use, is <b><u>required</u></b> for building <i><b>KICKS for CMS</b></i> from source. To reiterate those
+instructions:</p>
+	</p>
+
+	<blockquote>
+		<p>Logon to MAINT from a full screen capable 3270 session.<br><br>Edit SIXPACK DIRECT
+		<br>add '<font face="Courier New">OPTION REALTIMER</font>' <br>after the line '<font face="Courier New">USER CMSBATCH CMSBATCH 8M 8M G</font>'<br>
+		<br>then after you save that change,<br><br>DIRECT SIXPACK<br><br>you should see messages<br>
+		<br>DMKUDR476I System Directory loaded from volume VM50-1<br><br>EOJ DIRECTORY UPDATED AND ON LINE<br>
+		<br>After these messages you will have shutdown/reboot to get CMSbatch running with
+timer support.</p>
+	</blockquote>
+
+Reason for the change: Some of the <i><b>KICKS for CMS</b></i> source compiles run
+	<i><b>KICKS</b></i> in
+batch.<br><br><b>2</b>. In addition to the <b><u>required</u></b>&nbsp; REALTIMER update to the CMSbatch directory entry (as above), that same entry must also be updated to
+increase its default memory allocation,</p>
+
+	<blockquote>
+	<p>Logon to MAINT from a full screen capable 3270 session.<br>
+	<br>Edit SIXPACK DIRECT<br>change 'USER CMSBATCH CMSBATCH 8M 8M G'<br>to 'USER CMSBATCH CMSBATCH 14M 16M G'<br>
+	<br>then after you save that change,<br><br>DIRECT SIXPACK<br><br>you should see messages<br>
+	<br>DMKUDR476I System Directory loaded from volume VM50-1<br><br>EOJ DIRECTORY UPDATED AND ON LINE<br>
+	<br>After these messages you will have shutdown/reboot to get CMSbatch running in a
+larger memory.</p>
+	</blockquote>
+
+Reason for the change: Some of the <i><b>KICKS for CMS</b></i> source compiles require more
+memory than the default CMSbatch 8M provides.<br><br>Once these modifications
+	(1, 2) are in place you should install <i><b>KICKS for CMS</b></i> 1.5.0 into 
+	&quot;userid&quot;
+(recommend CMSUSER) using the normal install
+instructions.<p>Then you need to obtain or create a couple a vmarc files that
+	will be used by the build process. </p>
+	<blockquote>
+		<p>GCCCMS VMARC is a more up-to-date version of the GCC compiler than is
+		installed on the nicof playground system. The copy I made is available
+		in the files area of the yahoo kicksfortso forum, but you really should
+		build your own from file on the source forge repository.</p>
+		<p>MECAFAPI VMARC is a set of compiler and linker include files for the
+		mecaf api used by the <i><b>KICKS </b></i> VM/370 terminal driver build.
+		The copy I made is available in the files area of the yahoo kicksfortso
+		forum, but you really should build your own from the files on the yahoo
+		H390-VM forum.</p>
+	</blockquote>
+	<p>These two vmarc files should be placed with the <i><b>KICKS</b></i> non-VSAM files
+	(probably in the CMSUSER 195 disk). </p>
+	<p>A final customization detail for your build environment: edit
+	the TSO dataset userid.KICKSTS.CMSBATCH(MAPN) to change lines 11-12 from<br>
+	</p>
+<blockquote>
+	<font face="Courier New">&amp;USER = CMSUSER<br>&amp;DISK = 195<br></font>to<br>
+	<font face="Courier New">&amp;USER = userid</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the CMS userid for the kicks install<br>
+	<font face="Courier New">&amp;DISK = ???</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the address of the kicks non-VSAM mini disk</blockquote>
+	<p>If you examine userid.KICKSTS.CMSBATCH you will see that the CMSbatch jobs are
+all routed as from CMSUSER. This isn't important; the <font face="Courier New">MAPN</font>
+	exec provides all the
+necessary targeting.<br><br>At this point your build environment is complete, except for one little detail.
+How is punched output from MVS going to make its way to the CMS reader? There
+are at least three ways: (1) You could run MVS under VM and simply spool the MVS punch to 
+	CMSBATCH; or (2) You could send the MVS punch to a PC file, then
+move it (physically or logically) to the PC file the CMS reader is attached to;
+or (3) You could attach the MVS punch to a socket device, and arrange that
+socket device sends its output to another socket device attached to the CMS
+reader. The following instructions detail the third alternative.<br><br>Download xbar.pl to your pc from userid.KICKSTS.UTIL(XBAR). This is a perl script to cross connect the socket devices as described above.
+	The procedure to use this script is: </p>
+<blockquote>
+	start the hercules &quot;TK4-&quot; instance.
+	<br>issue the following thru the &quot;TK4-&quot; web interface
+	(http://localhost:8038/):
+<blockquote>
+	<font face="Courier New">detach 10d
+	<br>attach 10d 1403 127.0.0.1:4510 sockdev </font>
+</blockquote>
+	start the hercules &quot;nicof-0.6.0-playground&quot; instance
+	<br>issue the following thru the &quot;nicof-0.6.0-playground&quot; console
+<blockquote>
+	<font face="Courier New">devinit 00c 127.0.0.1:3510 sockdev ascii trunc eof
+	</font>
+</blockquote>
+	start the xbar.pl script
+<blockquote>
+	in linux terminal get a shell windows
+	<br>in windows get a cygwin window
+	<br>in either, type &quot;<font face="Courier New">chmod +x xbar.pl</font>&quot;
+	<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then type &quot;<font face="Courier New">./xbar.pl &amp;</font>&quot;
+</blockquote>
+	<p>
+	<br>
+	</p>
+</blockquote>
+</blockquote>
+
+<h3>To use the supported environment to build <i><b>KICKS</b></i> </h3>
+<blockquote>
+	<p>To build all of <i><b>KICKS for TSO</b></i> submit userid.KICKSTS.JCL(ADOALL).
+	This set of jobs will take about 5 minutes. Review the output of about 20 jobs. There should be no failures.
+	Review of these jobs is fairly simple: Obtain the print listing (prt/prt00e.txt
+	for TK4-) and search for &quot;JES2 JOB STATISTICS&quot;. Immediately following will
+	be the job name and the step condition codes associated steps of the job.
+	Check that these look reasonable, mark off that job on the adoall list, then
+	search for the next set of job statistics. Note there are a few jobs that
+	didn't come directly from adoall, but rather came indirectly from jobs that
+	adoall submitted.<br><br>To build
+	all of <i><b>KICKS for CMS</b></i> submit userid.KICKSTS.CMSBATCH(ADOALL).
+	On the MVS side this will take about 15 seconds to ship all the necessary
+	jobs to the CMS reader. On the CMS side these jobs will take about 5 minutes. Review the output of about 20
+	CMS jobs. There should be no failures.
+	Review of these jobs is fairly simple: Obtain the print listing (io/print1.listing
+	for the nicof playground) and search for &quot;REPORT CARD&quot;. Immediately
+	following will be the job name and the step condition codes associated steps
+	of the job. Check that these look reasonable, mark off that job on the
+	adoall list, then search for the next set of job statistics. Note there are
+	a few jobs that didn't come directly from adoall, but rather came indirectly
+	from jobs that adoall submitted.<p>Both the TSO and CMS builds have an
+	optional final step, which is running a set of tests. If you examine the
+	adoall jobs you will see a '//' in front of the ADO12 steps. Remove these
+	will allow those steps to run, submitting the tests. These result in another
+	15 or so jobs, and take an additional 10 minutes, mostly due to delays
+	caused by exercising delay api calls!<p>As you no doubt noticed the ADOALL job (TSO
+	or CMS) is just an ordered submission of a long sequence of jobs to build <i>
+	<b>KICKS</b></i>. Once you understand the dependences you can run the jobs
+	individually, but exercise care in this: There is no &quot;make&quot; function
+	ensuring that dependencies are observed; that is all up to you!<br>
+</blockquote>
+<hr>
+
+<font size="3">Copyright <font face="Times New Roman">© Mike Noel, 2008-2014;
+</font></font>last updated 11/6/2014
+</body></html>

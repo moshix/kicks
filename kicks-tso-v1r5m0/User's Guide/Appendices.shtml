@@ -1,0 +1,417 @@
+<html>
+
+<head>
+<title>KICKS User's Guide - Appendices</title>
+<base target="_self">
+
+<script language="javascript">
+if(self.location==top.location)self.location="index.html?Appendices.htm";
+</script>
+
+</head>
+
+<BODY>
+
+<!--This is a comment. Comments are not displayed in the browser-->
+
+<table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" height="72">
+	<tr>
+		<td width="141" valign="top"><i><b><font size="7">KICKS</font></b></i></td>
+		<td valign="bottom">
+		<p align="right"><font size="6"><span style="font-weight: 400">A
+		transaction processing system for </span></font>
+		<font size="7" color="#FF0000"><span style="font-weight: 700">CMS</span></font><font size="6"><span style="font-weight: 400"> &amp; </span></font><font color="#FF0000" size="7">
+		<span style="font-weight: 700">TSO</span></font></td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+<h2>Appendix A – TSO (or CMS) versus CICS versus KICKS</h2>
+<p>Paraphrasing Wikipedia’s TSO entry (<a target="_blank" href="http://en.wikipedia.org/wiki/Time_Sharing_Option">http://en.wikipedia.org/wiki/Time_Sharing_Option</a>),</p>
+<blockquote>
+	<p><i>The Time Sharing Option (TSO) is an interactive time-sharing
+	environment for IBM mainframe operating systems running from OS/MVT through
+	MVS and OS/390 to the current z/OS. &quot;Time-sharing&quot; means that many persons
+	can access MVS concurrently but each is unaware that the operating system is
+	being accessed by others - so it appears to each TSO user that he or she is
+	the only user on the system. TSO is most commonly used by mainframe system
+	administrators and programmers because it provides: a text editor; the
+	ability to submit batch jobs, be notified of their completion and view the
+	results without waiting for printed reports; debuggers for some of the
+	programming languages used on System/360 and later IBM mainframes; other
+	vendors' end-user applications, for example for querying IMS and DB2
+	databases. The name &quot;Time Sharing Option&quot; derives from the fact that, when
+	it was originally introduced in the 1960s, time-sharing was considered an
+	&quot;optional feature&quot;, as compared to standard batch processing, and hence TSO
+	was offered as an optional feature of OS/MVT. It became a standard part of
+	MVS in 1974. TSO interacts with users in either a line-by-line mode or in a
+	full screen, menu-driven mode. In the line-by-line mode, the user enters
+	commands by typing them in at the keyboard; in turn, the system interprets
+	the commands, and then displays responses on the terminal screen. TSO
+	commands can be embedded in CLISTs which can be run either interactively or
+	in batch. </i></p>
+</blockquote>
+<p>Paraphrasing Wikipedia’s CICS entry (<a target="_blank" href="http://en.wikipedia.org/wiki/CICS">http://en.wikipedia.org/wiki/CICS</a>),</p>
+<blockquote>
+	<p><i>CICS (Customer Information Control System) is a transaction server
+	that runs primarily on IBM mainframe systems. It is a transaction manager
+	designed for rapid, high-volume online processing. This processing is mostly
+	interactive (screen-oriented), but background transactions are possible.
+	While CICS has its highest profile among financial institutions such as
+	banks and insurance companies, over 90 percent of Fortune 500 companies are
+	reported to rely on CICS for their core business function], along with many
+	government entities. CICS is used in bank-teller applications, ATM systems,
+	industrial production control systems, insurance applications, and many
+	other types of interactive applications. A CICS transaction is a set of
+	operations which together perform a task. Usually, the majority of
+	transactions are relatively simple tasks such as requesting an inventory
+	list or entering a debit or credit to an account. A primary characteristic
+	of a transaction is that it should be atomic. On large mainframes CICS
+	easily supports thousands of transactions per second, making it a mainstay
+	of enterprise computing. Each CICS program is initiated using a transaction
+	identifier. CICS screens are sent as a construct called a map, a little
+	program created with BMS (Basic Mapping Support) assembler macros. The end
+	user inputs data, which is made accessible to the program by receiving a map
+	from CICS. </i></p>
+	<p><i>The first release of the CICS Program Product developed by IBM became
+	available on July 8, 1969. CICS was originally developed in the United
+	States at an IBM Development Center in Des Plaines, Illinois, beginning in
+	1966. Since 1974 CICS development has been at IBM's Hursley, United Kingdom
+	Laboratory. When CICS was first released, it supported programs written in
+	IBM Assembler, PL/I and COBOL. Programs needed to be quasi-reentrant in
+	order to support multIPLe concurrent transaction threads. CICS services
+	emulated the functions of the operating system, but provided services
+	tailored to support only transaction processing that were more efficient
+	than the generalized services in the operating system and much simpler for
+	programmers to use, particularly with respect to communication with terminal
+	devices. CICS owes its early popularity to its relatively efficient
+	implementation, its multi-threaded processing architecture, and its relative
+	simplicity for developing terminal based applications. Today CICS has
+	millions of applications worldwide that have been executing reliably for
+	decades.</i></p>
+</blockquote>
+<p>And paraphrasing the TSO TIMES (see
+<a target="_blank" href="http://www.tsotimes.com/articles/archive/fall03/historyoftsopart2.html">
+http://www.tsotimes.com/articles/archive/fall03/historyoftsopart2.html</a>),</p>
+<blockquote>
+	<p><i>The most descriptive word for TSO is conversational. Conversational,
+	in a shared computing context, means that each TSO user logged on to MVS has
+	their own address space. The hallmark of a conversational environment is the
+	long term holding of what could be a shared resource. That is, a resource
+	(file, memory, source member) is held onto as long as a user is using it.
+	The term for this is think time. Something like editing a program (which can
+	take many hours of think time) would be a good example of a conversational
+	task. For the entire time that a TSO user is editing a file, an exclusive
+	lock is maintained on the file being edited. No one else can edit the same
+	file while the original TSO user edits it. </i></p>
+	<p><i>To underscore the conversational nature of TSO sessions, compare TSO
+	to CICS which is said to be pseudo-conversational. In the simplest sense,
+	the difference can be seen in the following graphics.</i></p>
+</blockquote>
+<p align="center">
+<img border="0" src="other-graphics/tsoessayfig1.gif" width="248" height="276"></p>
+<blockquote>
+	<blockquote>
+		<blockquote>
+			<blockquote>
+				<blockquote>
+					<p style="margin-bottom: 0"><b><font size="2">The
+					Conversational TSO teleprocessing model</font></b></p>
+					<p style="margin-top: 0"><font size="2">TSO requires a
+					server address space called the TCAS (Terminal Controlling
+					Address Space). TCAS constantly polls its chain of attached
+					TSO address spaces looking for input. When a TSO user is not
+					pressing Enter (or another AID key), the operating system
+					&quot;swaps out&quot; that TSO address space. This conserves some
+					resources but still each TSO user requires significant
+					operating system servicing.</font></p>
+				</blockquote>
+			</blockquote>
+		</blockquote>
+	</blockquote>
+</blockquote>
+<p align="center">
+<img border="0" src="other-graphics/tsoessayfig2.gif" width="279" height="253"></p>
+<blockquote>
+	<blockquote>
+		<blockquote>
+			<blockquote>
+				<blockquote>
+					<p style="margin-bottom: 0"><b><font size="2">The
+					Pseudo-Conversational CICS teleprocessing model</font></b></p>
+					<p style="margin-top: 0"><font size="2">CICS has a single
+					address space (commonly called a &quot;CICS region&quot;) with a large
+					number of terminals connected to it. It is a task-based
+					model in that when a user initiates some work, a pre-defined
+					task is run to display data on the user's terminal screen
+					and sometimes the displayed data is updated. However during
+					the time that occurs between the initial request to view
+					data and the eventual update of the data, no locks are held
+					(unless explicitly programmed) and other terminal users are
+					free to inquire against the same data. What this means is
+					that during the potentially long think time period, the CICS
+					user is not holding on to data resources as a TSO user would
+					be. This is called a pseudo-conversational task-based
+					environment.</font></p>
+				</blockquote>
+			</blockquote>
+		</blockquote>
+	</blockquote>
+	<p><i>With CICS, all terminals sign-on to a single address space. The CICS
+	software manages this multi-tasking, concurrent terminal access by using a
+	standard API. This is a one-to-many relationship: One CICS region (address
+	space), many users attached to it. </i></p>
+	<p><i>TSO is a direct one-to-one relationship: One user, one address space.
+	</i></p>
+	<p><i>Because of this, even on a large MVS mainframe, TSO consumes far too
+	many finite resources to be a viable application platform for a large group
+	of users. This is why CICS followed on to TSO and became the dominant
+	teleprocessing monitor for heavy-duty, high volume business applications—it
+	is far less expensive in terms of machine utilization.</i></p>
+</blockquote>
+<p>&nbsp;</p>
+<p>So what about <i><b>KICKS</b></i>, trying to be a CICS environment running
+under TSO or CMS? </p>
+<p>Ideally <i><b>KICKS</b></i> provides a happy combination of the TSO/CMS and CICS
+worlds: </p>
+<ul>
+	<li>Each <i><b>KICKS</b></i> user runs in his own address space, so when an
+	application problem occurs it should only affect the user that is running
+	that application. </li>
+	<li>As <i><b>KICKS</b></i> applications use the CICS pseudo-conversational
+	model think time will normally result in the <i><b>KICKS</b></i> user’s TSO
+	address space being swapped out so it should consume minimum system memory.
+	</li>
+	<li><i><b>KICKS</b></i> has shared files open only between reading the input
+	terminal screen and writing the output terminal screen, so file contention
+	should be low. This also avoids the need for gigantic regions. </li>
+</ul>
+<p>The above advantages are also the seeds of the major limitations <i><b>KICKS</b></i>
+faces: </p>
+<ul>
+	<li>Memory swapping and file open/close processing are things CICS does
+	not do at all (at least on a transaction basis) – so <i><b>KICKS</b></i> is
+	automatically incurring per-transaction overhead way over what CICS has.
+	“Thousands of transactions per second” is never going to happen! </li>
+</ul>
+<p>Although <i><b>KICKS</b></i> now supports nearly all of the CICS command
+level programming api, a big <i><b>KICKS</b></i> advantage over CICS
+is freedom from the CICS api! If you don’t care about compatibility, techniques
+that would crash a CICS system will work very well in <b> <i>KICKS</i></b>. Some
+examples: </p>
+<ul>
+	<li>Need ISAM or BDAM files? Set them up in the COBOL program just as you
+	would for a batch job! (these files don't need to be defined in the <i><b>
+	KICKS</b></i> FCT, but remember to allocate and free them in your <b><i>
+	KICKS</i></b> startup clist).</li>
+	<li>Want to use the COBOL Sort? Set it up in the COBOL program just as you
+	would for a batch job! </li>
+	<li>Want to use the COBOL Report Writer for your reports? Set it up in the
+	COBOL program just as you would for a batch job!&nbsp; Or write the report
+	to a temporary file and then use the SPOOLOPEN api to write lines from the
+	temporary file to any printer for finer control.</li>
+	<li>Want to use the COBOL Report Writer for your screens? Same as using it
+	for a report, only write temporary file lines to the screen with SEND TEXT
+	(or define a map and use SEND MAP).</li>
+	<li>Need help figuring out where your program is going wrong? Of course KEDF
+	and its source trace
+	is probably the easiest way to do this, but there's no reason you can't use
+	COBOL's own DISPLAY, EXHIBIT or TRACE commands to track your program's
+	progress if you want to.</li>
+</ul>
+<h2>&nbsp;</h2>
+<h2><a name="AppendixB"></a>Appendix B – Frequently Asked Questions </h2>
+<p><u>Q. Where can I find manuals for the Tur(n)key COBOL compiler? </u></p>
+<blockquote>
+	<p>A. The manuals for the Tur(n)key COBOL compiler (360S-CB-545) and library
+(360S-LM-546) are <u>COBOL Manual</u> GC28-6396 and <u>COBOL Programmer’s Guide</u>
+GC28-6399. The former is on Bitsavers (<a target="_blank" href="http://bitsavers.org/pdf/ibm/360/os/cobol">http://bitsavers.org/pdf/ibm/360/os/cobol</a>),
+	and although I've been unable to find the latter, a 'close' match is
+	SC28-6456, which is also available on Bitsavers. Other than those manuals
+the best reference I’ve found is Jay Moseley’s &quot;Assembling, Compiling,
+Link-Editing, and Executing User-Written Programs&quot; page (<a target="_blank" href="http://www.jaymoseley.com/hercules/compiling/compile.htm">http://www.jaymoseley.com/hercules/compiling/compile.htm</a>).
+	</p>
+</blockquote>
+<p>&nbsp;</p>
+<p><u>Q. I’m using a ‘programmer generated’ symbolic map but it doesn’t
+work right </u></p>
+<blockquote>
+	<p>A. This might happen because your programmer generated symbolic map does
+	not match the symbolic map that <i><b>KICKS</b></i> generates. Check that
+	there are no missing or changed fields between the two. Older versions of <i>
+	<b>KICKS</b></i> did not support DSATTS/MAPATTS in the map generation and
+	instead changed them to EXTATT, resulting in more or fewer bytes in the
+	symbolic map than might otherwise be expected. <i><b>KICKS</b></i> now honors DSATTS/MAPATTS
+	and should produce symbolic maps fully compatible (in this respect) with
+	CICS.</p>
+	<p>&nbsp;</p>
+</blockquote>
+<p><u>Q. I’m getting enqueue timeouts (30 second pause, then AFCT/ADCT
+abend). </u></p>
+<blockquote>
+	<p>A. Also RESP=19, RESP2=99 if you are trapping errors. This is probably
+	due to a <b><i>KICKS</i></b> batch job or perhaps an online conversational
+	transaction holding on to a file for a long time, preventing other
+	transactions like yours from being able to access the file. Batch jobs and
+	conversational transactions should periodically release their files
+	(SYNCPOINT) to allow others to operate normally. </p>
+	<p>This can also be caused by someone using KEDF to debug a transaction that
+	uses the file your transaction is trying to access. KEDF freezes
+	transactions at each api call, so transactions that might ordinarily hold a
+	file for a fraction of a second can end up holding the file indefinitely
+	while a programmer is slowly stepping thru the code analyzing its progress.
+	The best cure for this problem is to insist programmers use a different set
+	of files for their debugging.</p>
+</blockquote>
+<p>&nbsp;</p>
+<p><u>Q. My printout of CRLP batch runs has a few characters that are different
+from what's shown here. </u></p>
+<blockquote>
+	<p>A. And/Or my screen displays show different (or even missing) characters
+	from what's shown here. These are symptoms of 'CODEPAGE' issues, translating
+	EBCDIC characters to ASCII characters on your printouts and/or tn3270
+	client. Under hercules you
+	should use &quot;CODEPAGE 819/1047&quot; in your hercules.conf file (the one you use
+	to start hercules, define all you disks &amp; termnals, etc). This should
+	fix printout problems. Making the same codepage selection for your tn3270
+	client should fix screen problems.</p>
+	<p>&nbsp;</p>
+</blockquote>
+<p><u>Q. I’m getting a VER1 abend. </u></p>
+<blockquote>
+	<p>A. VER1 abend means your program was not compiled for the current version
+	of <b><i>KICKS</i></b>. You should recompile it.</p>
+	<p>&nbsp;</p>
+</blockquote>
+<p><u>Q. I’m getting a VER2 abend. </u></p>
+<blockquote>
+	<p>A. VER2 abend also means your program was not compiled for the current
+	version of <b><i>KICKS</i></b>. You should recompile it. This abend usually
+	happens instead of a VER1 abend if you attempt to just relink your program
+	instead of compile and relink...</p>
+	<p>&nbsp;</p>
+</blockquote>
+<p><u>Q. I’m getting a VER3 abend. </u></p>
+<blockquote>
+	<p>A. VER3 abend might mean your program was not compiled for the current
+	version of <b><i>KICKS</i></b>, but usually means there is a problem with
+	your COBOL compile options. <i><b>KICKS</b></i> programs require that PIC
+	S9(4) COMP items be able to hold halfword numbers (ie, -32768 to + 32767),
+	so you must specify whatever compiler option does that on your machine.
+	Probably something like <u>NOTRUNC</u> or <u>TRUNC(BIN)</u> as seen in the
+	standard <i><b>KICKS</b></i> COBOL compile procs.</p>
+	<p>&nbsp;</p>
+</blockquote>
+<p><u>Q. I’m getting an ATCP
+abend. </u></p>
+<blockquote>
+	<p>A. Also RESP=222, RESP2=?? if you are trapping errors. This can happen
+	when you are using the &quot;FULLSCR&quot; version of TCP (2$) in TSO when
+	you do a SEND MAP (or SEND TEXT) and that results in an attempt to send
+	invalid characters to the terminal. TCP=2$ checks outbound
+	messages for characters (0x01,.0x02, 0x03, 0x04, 0x06, 0x14, 0x15, 0x16,
+	0x17, 0x24, 0x26, 0x37, and 0x3D) that would be filtered (turned into colons) by the TSO
+	&quot;tput fullscr&quot; macro, and if it finds any it produces this abend and aborts sending
+	the data to the terminal. RESP2 will be the offset from the beginning of the
+	message (which is displayed as the 'TIOA' in the formatted dump) to the
+	first invalid character.</p>
+	<p>This error is unique to the &quot;FULLSCR&quot; version of TCP (2$) used with older
+	distributions of the Tur(n)key MVS system. It is not generated with the &quot;NOEDIT&quot; version of TCP (1$)
+	always used in
+	z/OS, nor in any of the CMS versions of <i><b>KICKS</b></i>.</p>
+</blockquote>
+<p>&nbsp;</p>
+<p><u>Q. My application can't lock the keyboard. </u></p>
+<blockquote>
+	<p>A. Older version of <i><b>KICKS</b></i> always unlocked the keyboard
+	regardless of the application specification (ie, FREEKB), but more current
+	version of <i><b>KICKS</b></i> honor (by default) the application
+	specification. To revert to the older behavior set the SIT parameter FFREEKB=YES.</p>
+	<p>A. The TSO tput macro, as used by the &quot;FULLSCR&quot; version of TCP (2$) in TSO , ignores the
+	FREEKB bit in the 3270 WCC and always unlocks the keyboard. To obtain
+	keyboard lock functionality in the TSO version of <i><b>KICKS</b></i> you
+	must use the &quot;NOEDIT&quot; version of TCP (1$). This does not apply to CMS; all
+	CMS version of the terminal driver support keyboard lock.</p>
+</blockquote>
+<p>&nbsp;</p>
+<p><u>Q. I’m getting a &quot;Alternate 3270 screen &gt; 4095 chars, ignoring&quot; startup
+message. </u></p>
+<blockquote>
+	<p>A. The TSO tput macro, as used by the &quot;FULLSCR&quot; version of TCP (2$) in TSO
+	, can only use 12 bit sba's due to its inability to use certain characters
+	that might occur using 14 bit sba's. This limits its maximum screen size to
+	4095 characters. To work with larger screens in the TSO version of <i><b>KICKS</b></i> you
+	must use the &quot;NOEDIT&quot; version of TCP (1$). This does not apply to CMS;
+	all CMS version of the terminal driver support large screens.</p>
+</blockquote>
+<p>&nbsp;</p>
+<p><u>Q. Can <i><b>KICKS</b></i> share VSAM files with CICS?</u></p>
+<blockquote>
+	<p>A. No. <i><b>KICKS</b></i> VSAM file sharing works by opening and closing
+files as necessary. CICS does not close files until explicitly asked to, so once
+CICS has opened the file (usually when it starts, sometimes not until first use)
+	<i><b>KICKS</b></i> probably won't be able to get it. If it does get it (because
+the file's VSAM share options are defined to allow it) <u>that's a very bad
+thing</u>, since neither <i><b>KICKS</b></i> nor CICS will know the other is
+using the file...</p>
+	<p>Different versions of <b><i>KICKS</i></b> <u>can</u> share VSAM files
+	without issue. A older version with the current, or the free version with <font face="Times New Roman"> <i><b>KICKS<font color="#FF0000">pro</font></b></i></font>,
+	etc.</p>
+	<p>&nbsp;</p>
+</blockquote>
+<p><u>Q. Is <b> <i>KICKS </i></b>available in other languages? </u>
+</p>
+<blockquote>
+	<p>A. <i><b>KICKS</b></i> is localized for American English (en-US). However
+	source is provided for the <u>User's Guide</u> (it's html), for the example
+	programs, and for almost all the 'supplied' transactions. If you translate
+	some of these to your own locale please upload your work to the 'files' area
+	in the support forum (
+	<a href="http://tech.groups.yahoo.com/group/kicksfortso">
+	http://tech.groups.yahoo.com/group/kicksfortso</a> ) so that others don't
+	need to reinvent the wheel. Thanks in advance!!</p>
+	<p>&nbsp;</p>
+</blockquote>
+<p><u>Q.&nbsp; DFHBMF?? is missing from KIKBMSCA</u></p>
+<blockquote>
+	<p>A. The DFHBMSCA copy member defines a number of useful 3270 attributes,
+	but by no means all of them. Even the member IBM distributes for CICS does
+	not cover all possibilities, and some find it's naming convention difficult.
+	The prevailing wisdom is to not use DFHBMSCA, but to code and use your own
+	attribute definition member with the names and combinations you like - or,
+	equivalently from my perspective, to use a 'shop standard' attribute
+	definition member. See for example
+	<a target="_blank" href="http://www.nwrdc.fsu.edu/mainframe/bms-attribute-names">http://www.nwrdc.fsu.edu/mainframe/bms-attribute-names</a>
+	or others you can easily find Googling DFHBMSCA. As such the BMSCA I supply
+	is just a starting point for your efforts if you don't have something
+	better. About the only time I add to it is if I need it something for an
+	example program.</p>
+	<p>&nbsp;</p>
+</blockquote>
+<p><u>Q. Do paid licenses include &quot;support&quot;? </u>
+</p>
+<blockquote>
+	<p>A. I offer free basic support with all licenses, paid or otherwise. However,
+	recognizing that some customers require a higher level of support I offer
+	&quot;guaranteed response&quot; telephone and/or online support on a prepaid basis. If you
+	require
+	such support please contact me. </p>
+	<p>&nbsp;</p>
+</blockquote>
+
+
+
+<h2><a name="AppendixC"></a>&nbsp;Note - direct link to issues is <font size="3">
+<a target="_blank" href="http://www.kicksfortso.com/User's%20Guide/Issues.htm">
+http://www.kicksfortso.com/User's Guide/Issues.htm</a></font></h2>
+
+
+<!--KICKS v1r5m0 issues list -->
+
+<p>&nbsp;</p>
+
+
+<hr>
+<font size="3">Copyright <font face="Times New Roman">© Mike Noel, 2008-2014;
+</font></font>last updated 10/12/2014
+</body></html>

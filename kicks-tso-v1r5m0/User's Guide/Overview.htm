@@ -1,0 +1,313 @@
+<html>
+
+<head>
+<title>KICKS User's Guide - Overview</title>
+<base target="_self">
+
+<script language="javascript">
+if(self.location==top.location)self.location="index.html?overview.htm";
+</script>
+
+</head>
+
+<BODY>
+
+<!--This is a comment. Comments are not displayed in the browser-->
+
+<table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" height="72">
+	<tr>
+		<td width="141" valign="top"><i><b><font size="7">KICKS</font></b></i></td>
+		<td valign="bottom">
+		<p align="right"><font size="6"><span style="font-weight: 400">A
+		transaction processing system for </span></font>
+		<font size="7" color="#FF0000"><span style="font-weight: 700">CMS</span></font><font size="6"><span style="font-weight: 400"> &amp; </span></font><font color="#FF0000" size="7">
+		<span style="font-weight: 700">TSO</span></font></td>
+	</tr>
+</table>
+
+<h2>Overview</h2>
+<p><i><font size="5">KICKS</font></i><font size="4"> is an enhancement
+for CMS &amp; TSO that lets you run your CICS applications directly instead of having to
+'install' those apps in CICS. You don't even need CICS itself installed
+on your machine.</font></p>
+<p><i><b>KICKS</b></i> provides a high level of source code compatibility with CICS
+so you can move an application either way between CICS and <i><b>KICKS</b></i>
+simply by recompiling. Whether for ease of testing, fast deployment to small
+groups of your users, or simple &quot;guerrilla marketing&quot;, join your colleagues
+using <b><i>KICKS</i></b> to speed up their development.</p>
+<p>Being TSO/CMS based, <i><b>KICKS</b></i> can't support the many thousands of
+users a multi-user system like CICS can. But if <i>
+<b>KICKS</b></i> can't support thousands of users, it can certainly support a
+few hundred of your users, and if having separate address spaces means it can't run as many users it also means
+your users aren't so tied to each other's fates - one crash
+does not kill all. This reduced consequence of failure often means your new
+application's &quot;Time to Market&quot; can be dramatically shortened.</p>
+<p>Like CICS, <i><b>KICKS</b></i> supports file sharing among its users. Hundreds of TSO
+or CMS users share
+db2 tables or VSAM files
+with no more concern about doing so than CICS users - and since <i><b>KICKS</b></i>
+VSAM support is also available in batch there's usually no need to &quot;close&quot; <i>
+<b>KICKS</b></i> VSAM files just so such batch jobs can access them.</p>
+<p>Unlike CICS, <i><b>KICKS</b></i> requires no special systems or security
+services and can be
+easily installed and used by a single applications programmer with a TSO or CMS account.
+</p>
+<h2><a name="VRM"></a>Version/Release encoding (VRM) </h2>
+<p><i><b>KICKS</b></i> modification levels are encoded in a
+Version/Release/Modification format. So for example its TSO distribution datasets
+for this release are named as USERID.KICKS.V1R5M0.XXX, signifying version 1, release
+5,
+modification 0 (aka 1.5.0).</p>
+<p>Since <i><b>KICKS</b></i> is highly modular, with separate nucleus management modules and
+tables as well as components compiled and linked with user applications, <i><b>KICKS</b></i>
+performs extensive version checking to ensure all components are compatible.
+Eventually that will allow a newer release of <i><b>KICKS</b></i> to tolerate older
+applications and maps, perhaps even older tables or even older
+management modules in some cases. But for now the version checking is very
+rigid: All components, including user applications and maps, must be at exactly
+the same level. This means <u>you will have to recompile all your applications with
+each new <i><b>KICKS</b></i> distribution</u>. The symptom of a version mismatch in your
+application is a <b>VERS</b> abend (or similar, such as VER1, VER2, etc). </p>
+<h2><a name="ReleaseHistory"></a>Release history </h2>
+<p>1.5.0</p>
+<ul>
+	<li>Integrated commercial <b><i>KICKS</i></b> features into free version,
+	including<ul>
+	<li>Support for large screens (up to 62x160) via 14 bit sba's.</li>
+	<li>Support for OCCURS in BMS maps.</li>
+	<li>Shared intrapartition transient data queues.</li>
+	<li>Shared temporary storage queues.</li>
+	<li>Improved DB2 compatibility using SYNCPOINT exit to automatically drive
+	database COMMIT/ROLLBACK.</li>
+	<li>Enhanced application error recovery with HANDLE ABEND.</li>
+</ul></li>
+	<li>Enhanced application debugging with COBOL and GCC source code trace /
+	breakpoint in KEDF.</li>
+	<li>First release of full source code.</li>
+</ul>
+<p>1.4.1</p>
+<ul>
+	<li>'Golden' version of <i><b>KICKS</b></i></li>
+	<li>Improved (simplified) Z/OS install. Ability of install on any userid in
+	Tur(n)key system.</li>
+	<li>Major cleanup of documentation and example programs.</li>
+	<li>Implementation of keyboard locking with SIT override/control.</li>
+</ul>
+<p>1.4.0</p>
+<ul>
+	<li>Release candidate for 'Golden' version of <i><b>KICKS</b></i></li>
+	<li>'LENGTH OF' support for MVT COBOL; relaxed requirements for
+	LENGTH, FLENGTH, KEYLENGTH, (etc)</li>
+		<li>Mapgen support for DSATTS &amp; MAPATTS in addition to current support
+		for EXTATT.</li>
+	<li>'Help' screen &amp; license display added to Good Morning Message (aka KSGM)
+	transaction.</li>
+	<li>STRFIELD argument&nbsp; added to SEND TEXT api</li>
+	<li>FROM/LENGTH added to DUMP api</li>
+	<li>HOLD argument added to LOAD api</li>
+	<li>Support for qualified names (X of Y of Z ...) as api arguments</li>
+	<li>Catch/Fixup error on write to empty ksds</li>
+	<li>COBOL preprocessor markup &lt;ZOS&gt;, &lt;/ZOS&gt; changed to &lt;CB2&gt;,
+	&lt;/CB2&gt; </li>
+	<li>and of course the biggest new feature -- <b>
+	<font color="#FF0000" size="4">CMS</font></b> support</li>
+</ul>
+<p>What happened to the releases between 1.1.3 and 1.4.0 ?&nbsp; They never
+existed. While in development of 1.1.4 we decided VRM was off track. There was a
+reason for 1.1.1 in that substantial features (GCCMVS &amp; LE support) intended for
+1.1.0 were being delivered late, but 1.1.2 and 1.1.3 really should have been
+1.2.0 and 1.3.0. We fixed it by changing VRM for the new release from 1.1.4 to
+1.4.0.</p>
+<p>1.1.3</p>
+<ul>
+	<li>Improved sequential terminal (aka CRLP) with fielded input. The BATCH1
+	job in TESTCOB has been substantially updated to show most of the features
+	of this improved interface.</li>
+	<li>Support for localization with ASSIGN api LANGINUSE and NATLANGINUSE
+	options, and SIT parameter to specify NATLANG, which defaults to E, (ENU,
+	American English). </li>
+	<li>Other fixes / improvements:<ul>
+	<li>dynamic logo, colored letters changing every few seconds (can be turned
+	off)</li>
+	<li>added 'API' section to 'Programming' section of KICKS User's Guide.</li>
+	<li>more API test/examples added to TESTCOB and TESTGCC libraries.</li>
+	<li>fixes for BMS input - erase EOF, numeric justify default, and improved
+	MAPFAIL compatibility.</li>
+</ul>
+	</li>
+</ul>
+<p>1.1.2</p>
+<ul>
+	<li>Support for ENQ and DEQ api calls.</li>
+	<li>Support for GETMAIN and FREEMAIN api calls.</li>
+	<li>Integrates a number of fixes from the first few months of user
+	experience with GCCMVS support.</li>
+	<li>Other fixes / improvements:<ul>
+	<li>added NOHANDLE support to all api calls</li>
+	<li>added preprocessor markup &lt;PRO&gt; &lt;/PRO&gt;, &lt;NPRO&gt; &lt;/NPRO&gt; so programs can
+	be setup to use <b><i>KICKS</i></b> Pro features based on availability. See
+	...TESTCOB(LINKTST) for example.</li>
+	<li>added preprocessor markup &lt;ZOS&gt; &lt;/ZOS&gt;, &lt;NZOS&gt; &lt;/NZOS&gt; so programs can
+	be setup to use LE COBOL features based on availability. See ...TESTCOB(GETFREE)
+	for example.</li>
+</ul>
+	</li>
+</ul>
+<p>1.1.1</p>
+<ul>
+	<li>Support for modern LE COBOL compilers on Z/OS.<ul>
+	<li>A proc (KIKCB2CL) is supplied to compile and link using the LE compiler.</li>
+	<li>Two new 'CB2' datasets - similar to the corresponding 'COB' datasets.
+	These contain the sample and supplied programs in COBOL2 form. The CB2
+	'Murach' programs in particular are completely different from the COB
+	versions: they are essentially straight out of the book.</li>
+	<li>All the sample programs and all the api test programs work as expected.</li>
+	<li>Only usable on modern systems obviously. Tested on Z/OS 1.6 (COBOL
+	3.3.1)</li>
+	<li>The Z/OS install procedure has also been substantially improved.</li>
+</ul>
+	</li>
+	<li>Command Level GCCMVS support.<ul>
+		<li>The TESTJCL dataset introduced in 1.1.0 has been split into TESTCOB
+		(COBOL programs) and TESTGCC (GCCMVS programs). In general the names of
+		the members are the same in both, and the programs exercise the same
+		api's.</li>
+		<li>Four new 'GCC' datasets - similar to the
+		corresponding 'COB' and 'COBCOPY' datasets.</li>
+		<li>The map generator proc KIKMG now generates GCC symbolic maps (by
+		default into GCCCOPY as well as COBOL symbolic
+		maps. The map generator also supports the FOLD= parameter on KIKMSD,
+		with LOWER being the default.</li>
+		<li>A GCCMVS proc (KIKGCCPP) is provided to preprocess GCCMVS programs
+		(like KIKCOBPP does for COBOL programs). Since GCCMVS does not provide a
+		compile listing the proc provides one (with line numbers) so that GCCMVS
+		compiler diagnostics can be more easily traced to the offending source.</li>
+		<li>GCCMVS programs are handled by KICKS just like COBOL programs, and
+		should be so defined in the PPT (ie, as LANG=COBOL).</li>
+		<li>GCCMVS programs may LINK or XCTL to other GCCMVS programs or to
+		COBOL programs. And visa-versa: COBOL programs may LINK or XCTL to
+		GCCMVS programs.</li>
+		<li>May need to increase region size for KICKS use: Each &quot;link level&quot; of
+		GCCMVS requires about 200k (~64 k for PDPCLIB plus 128k for the stack it
+		allocates). So a GCCMVS transaction will need at least 200K, and if it
+		links to another GCCMVS program add 200k more, etc. This is transient
+		use: KICKS cleans up when the program(s) return and when the transaction
+		ends (or abends), so a 1 meg TSO region should be sufficient for most
+		use (several link levels + some VSAM).</li>
+		<li>Tested in Z/OS,MVS380, TK3UPD, and the base TK3 with GCCMVS and PDPCLIB 7.0, 7,6, and 8.0 (current
+		as of 10/31/2010).</li>
+		<li><b>NOTE</b> - <i><b>KICKS</b></i> does <u>not</u> include GCCMVS. It
+		is a standard component of MVS380, and may be downloaded and installed
+		on other operating systems as desired. See
+		<a target="_blank" href="http://gccmvs.sourceforge.net">
+http://gccmvs.sourceforge.net</a><b><font color="#FF0000">. </font></b></li>
+	</ul>
+	</li>
+	<li>A new SIT parameter, MAXDELAY (default 180 seconds) added to allow
+	overriding the previously hardwired 3 minute maximum delay.</li>
+	<li>Changed install (TK3 &amp; Z/OS) so that it is now by default all into one (userid)
+	HLQ. Added procedures to semi-automate customization for Z/OS use.</li>
+	<li>A few other fixes / improvements:<ul>
+		<li>Fixed a variety of issues in new transient data &amp; &quot;spool&quot; api's</li>
+		<li>Fixed missing pgm/offset in KEDF on RETURN COMPLETE. Also RETURN
+		COMPLETE now displays as LINK COMPLETE.</li>
+		<li>Fixed several formatted dump trace table print (and related KEDF hex
+		output) anomalies</li>
+		<li>Fixed timestamp in map generator output (was gmt instead of
+		localtime)</li>
+		<li>Added check in map generator to ensure field (MFD) is within map
+		(MDI)</li>
+		<li>Fxed batch userid capture (when USERID= not coded on job card)</li>
+		<li>Fxed KEDF for SEND MAP / RECEIVE MAP dsect scrolling</li>
+		<li>Added KEDF display of absolute time when DELAY is for TIME or UNTIL
+		(ie, wait until a certain time).</li>
+	</ul>
+	</li>
+</ul>
+<p>1.1.0</p>
+<ul>
+	<li>The User's Guide (what you're reading) has been migrated to the web.</li>
+	<li>KEDF, a debugging facility similar to CEDF in real CICS. You use it to
+	peek around before and after each of your api calls. You can see the api
+	call itself, the variables passed in and out, the EIB, the trace table, the
+	comm-area(s), your program and it’s working storage, and various system
+	areas (cwa, twa, tctteua). See the “Debugging” topic in the “Programming”
+	section. </li>
+	<li>Sequential terminal - <i><b>KICKS</b></i> can now run in batch as well as TSO. In batch, 3270 input comes
+	from the ‘card reader’, and 3270 output goes to the ‘line printer’ – so this
+	feature is also called a CRLP terminal. The CRLP terminal supports limited 3270
+	emulation. 3270 output screens are reasonably well rendered, less color and
+	highlighting obviously. On the input side provision for 3270 ‘aids’ is
+	provided so you can, for example, enter a CLEAR command. Sample jobs are
+	included to use <i><b>KICKS</b></i> with normal batch jcl, as well as use of the normal
+	KICKS clist with the TMP in a batch environment. See the “Using <i>KICKS</i> in
+	Batch” topic in the “Operation” section. </li>
+	<li>Many of the 'supplied' transactions (KSGM, KSSF, KSMT, KEDF, etc) now
+	use larger screens when available (3270 mod 3, mod 4's). Alternate screen
+	size support is not new, but its use by the supplied transactions is. Source
+	for these transactions can be examined to see how it's done.</li>
+	<li>Printing and job submission is supported with the SPOOLOPEN, SPOOLWRITE,
+	and SPOOLCLOSE protocol. </li>
+	<li>Extrapartition Transient Data (TD) input and output queues are
+	supported, and a new table, the DCT, is provided to define those queues.
+	These can be used for general sequential file purposes, for example log
+	files. They could also be used (and often are) for printing and job
+	submission but the SPOOLOPEN api is much easier to use for those purposes.
+	</li>
+	<li>Screen handling has been improved in several subtle but important ways.
+	First, screens are rendered with 3270 sfe orders instead of with sa orders.
+	This means <i><b>KICKS</b></i> maps almost always display exactly like they display in CICS. Second,
+	<i><b>KICKS</b></i> now supports the “dataonly” option for SEND MAP, so
+	complex applications that partially update and reread screens now look and
+	work exactly like they do in CICS. Finally, SEND CONTROL has been
+	implemented making porting existing programs between CICS and <i><b>KICKS</b></i> a
+	little bit easier.</li>
+	<li>WRITE OPERATOR (including REPLY option) has been implemented. </li>
+	<li>The COBOL language preprocessor has a SYSLIB facility, providing a COBOL
+	‘COPY’ syntax more like modern COBOL compilers and the old ANSI COPY syntax
+	is still available as well. </li>
+</ul>
+<p>1.0.0 </p>
+<ul>
+	<li>The first real release of <i><b>KICKS</b></i>, implementing enough of the full CICS api that useful applications could be developed and run, and many existing
+CICS applications could be ported to <i><b>KICKS</b></i>. </li>
+</ul>
+<p>0.9.0 </p>
+<ul>
+	<li>An alpha distribution of <i><b>KICKS</b></i>. It initially lacked an MVS based
+BMS map generator; a PC based Perl script had to be used to generate maps and
+the resulting output upload to MVS for final processing. </li>
+</ul>
+<h2><a name="Goals"></a>Goals for the next release / level-set.</h2>
+<ul>
+	<li>The 1.5.1 interim release (mid 2015?) will provide early support for 31 
+	bit applications; the goal being to get that into user testing well before 
+	its official debut in the 1.6.0 release. 1.5.1 thus is primarily for 'z' 
+	users and will also feature a preprocessor for IBM C and <b><i>KICKS</i></b> 
+	build using that compiler.</li>
+	<li>The 1.6.0 release (2016 timeframe?) will feature 31 bit compatibility, IC
+	(interval control), trigger processing, and internals documentation.</li>
+	<li>The 1.7.0 release (2018 timeframe?) will feature Journaling &amp; DTB
+	(dynamic transaction backout), dynamic table update, and maybe a command
+	level interpreter.</li>
+</ul>
+
+<h2><a name="MaintenanceSupport"></a>Maintenance/support plan for this release
+</h2>
+<p>1.5.0 requires that all user programs and maps be recompiled. </p>
+<p><i><b>KICKS</b></i> has been tested been tested with Z/OS thru 1.12 and with
+the MVS38J&nbsp; &quot;Tur(n)key&quot; system including the base TK3 (the one on the CD) as
+well as with TK3UPT, MVS380 and TK4-. It greatly benefits from the VTAM fixes and dynamic proclib support in
+the newer TK3 versions, but does not require them. </p>
+<p><i><b>KICKS</b></i> has been tested with Z/VM thru 6.x and with
+the VM/370 &quot;Six Pack&quot; system. Its usability with Z/VM is limited by lack of
+VSAM support on most Z/VM systems.</p>
+<p>User self help is available on the <i>kicksfortso</i> yahoo forum at<a target="_blank" href="https://groups.yahoo.com/neo/groups/kicksfortso/info">
+https://groups.yahoo.com/neo/groups/kicksfortso/info</a></p>
+<p>Paid support is also available, for more information please contact me at
+<a target="_blank" href="http://www.kicksfortso.com/same/kicks-contact.htm">http://www.kicksfortso.com/same/kicks-contact.htm</a></p>
+<hr>
+
+<font size="3">Copyright <font face="Times New Roman">© Mike Noel, 2008-2014;
+</font></font>last updated 10/23/2014
+</body></html>

@@ -1,0 +1,1167 @@
+<html>
+
+<head>
+<title>KICKS User's Guide - Operations</title>
+<base target="_self">
+
+<script language="javascript">
+if(self.location==top.location)self.location="index.html?Operation.shtml";
+</script>
+
+</head>
+
+<BODY>
+
+<!--This is a comment. Comments are not displayed in the browser-->
+
+<table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" height="72">
+	<tr>
+		<td width="141" valign="top"><i><b><font size="7">KICKS</font></b></i></td>
+		<td valign="bottom">
+		<p align="right"><font size="6"><span style="font-weight: 400">A 
+		transaction processing system for </span></font>
+		<font size="7" color="#FF0000"><span style="font-weight: 700">CMS</span></font><font size="6"><span style="font-weight: 400"> &amp; </span></font><font color="#FF0000" size="7">
+		<span style="font-weight: 700">TSO</span></font></td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+<h2>Operation </h2>
+<h3>&nbsp;</h3>
+<h3>File Sharing </h3>
+<p><i><b>KICKS</b></i> implements VSAM file sharing by the simple expedient of
+opening files only when access is demanded and closing files at the end of each
+transaction (or when a blocking terminal read is attempted). Enqueues against
+the base cluster are issued to ensure opens will succeed without excessive
+console messages. </p>
+<p>This creates a possibility for deadly embrace in that since enqueues are
+obtained as files are accessed, a program that accesses files in different
+initial order (based on some criteria) could lock up against another copy of the
+same program operated by another user – even if that program did not exhibit
+such behavior under real CICS. If such a scenario is detected <i><b>KICKS</b></i>
+will abend one of the tasks. Programs that exhibit such behavior can be fixed by
+making them initially access (in fixed order) each of the files they might use.
+</p>
+<p>Since with this scheme only one task will ever be using any file those files
+should be defined with VSAM shareoptions (1 3) – meaning only one task can have
+the file open at a time for read or write. Of course in order for multiple users
+to be able to open the files as needed the files must be allocated DISP=SHR. </p>
+<p>This provides for file sharing between <i><b>KICKS</b></i> users. It does not
+allow for file sharing between <i><b>KICKS</b></i> users and CICS users, or
+between <i><b>KICKS</b></i> users and normal batch jobs (ie, batch jobs other
+than <i><b>KICKS</b></i> in batch) . CICS and normal batch jobs usually open
+files at startup and keep them open until the program ends so usually can’t
+participate in the kind of file sharing <i><b>KICKS</b></i> uses. </p>
+<h3><a name="shutdown"></a>Shutdown <i>KICKS</i>, prevent any new <i>KICKS</i>
+startups</h3>
+<p>In an environment where <i><b>KICKS</b></i> is installed at the system level 
+and available to all users it may be desirable to control when <i> <b>KICKS</b></i> is available and/or
+shutdown all running <i><b>KICKS</b></i> users. </p>
+<p>When <i><b>KICKS</b></i> is started the clist performs a test allocation of 
+the system level SKIKLOAD dataset. If
+the attempted allocation fails, the clist issues a message to the TSO user and
+quits. This behavior allows the operator to control new <i><b>KICKS</b></i>
+logons by cataloging or uncataloging that SKIKLOAD dataset. </p>
+<p>So
+<ul>
+	<li>To disable further <i><b>KICKS</b></i> logons run a job (or started
+	task) to uncatalog that SKIKLOAD dataset</li>
+	<li>To terminate currently running <i><b>KICKS</b></i> tasks ‘P TSO’ (then
+	restart it with S TSO to enable non-KICKS TSO use) </li>
+</ul>
+And
+<ul>
+	<li>To re-enable <i><b>KICKS</b></i> logons run a job (or started task) to
+	recatalog that SKIKLOAD dataset.</li>
+</ul></p>
+<h3><a name="batch"></a>Using <i>KICKS</i> in batch</h3>
+<p>It's possible to run <i><b>KICKS</b></i> as a batch job. Essentially
+what you do is replace the <i><b>KICKS</b></i> clist with similar JCL and
+allocate two new datasets, CRLPIN and CRPLOUT. These are the input and output
+side (respectively) of the simulated terminal <i><b>KICKS</b></i> uses for
+the batch run. </p>
+<p>The <i><b>KICKS</b></i>
+userid in batch will be either the JOBNAME on the JCL jobcard, or the USERID you
+specified on the JCL jobcard or that your security system supplied (if you have
+a security system installed).</p>
+<p>The simulated terminal is by default a 24x80 3270 and has a default id of &quot;CRLP&quot;. 
+If there is a problem using that as a terminal id - for example some 
+transactions use the terminal id as part of some resource name (a common 
+practice in naming temporary storage queues) - you can use the CRLP <i>
+transaction</i> to change it.&nbsp; The CRLP <i>transaction</i> can also change 
+the batch terminal's default behavior from 3270 to a legacy pure card-in / 
+printer-out behavior if necessary (specify PURE or NO3270 to change it, 3270 to 
+change it back).</p>
+<p>When the terminal is in legacy mode each record of CRLPIN is presented to the 
+program one at a time without any edits (including line numbers if present) and 
+each terminal write results in printing exactly one line into CRLPOUT. The 
+maximum input or output length is 80 characters.</p>
+<p><i>When <u>NOT</u> in legacy mode:</i></p>
+<p>When the transaction sends 3270 data to the terminal <i><b>KICKS</b></i>
+translates that datastream into a printer representation (pretty much like a
+screen shot - black characters on a white background, attributes ignored) and
+writes it to CRLPOUT.</p>
+<p><i><b>KICKS</b></i> reads card images from CRLPIN and makes the data
+available to the transaction. Data on each card should end with a &lt;XXX&gt; ,
+where the XXX can be an upper or lower case command or aid. Commands are REMARK
+(or just REM), TAB, BTAB, HOME, END, ERASE and &lt;RR,CC&gt; cursor placement. Aids are ENTER, CLEAR, PA1-PA3,
+and PF1-PF24. Anything following the &lt;XXX&gt; on the card is a remark.</p>
+<p>&lt;REM&gt; or &lt;REMARK&gt; is just a way to end terminal input from the
+current card (allowing remarks to follow)
+without doing anything.</p>
+<p>&lt;TAB&gt; advances the cursor (where data goes) to the next input field.</p>
+<p>&lt;BTAB&gt; moves the cursor to the start of the current field, or, if the cursor
+is already at the start of a field, to the start of the previous field. </p>
+<p>&lt;HOME&gt; moves the cursor to the start of the first field on the screen. First
+being top left most.</p>
+<p>&lt;END&gt; moves the cursor to the start of the last field on the screen, Last
+being the bottom right most. &lt;END&gt; is logically equivalent to &lt;HOME&gt;&lt;BTAB&gt;.</p>
+<p>&lt;ERASE&gt; fills the remainder of the current field with binary zeros but does
+not move the cursor.</p>
+<p>&lt;RR,CC&gt; places the cursor at row RR (1-24), column CC (1-80).</p>
+<p>Since anything following a &lt;XXX&gt;&nbsp; is a remark only the first &lt;XXX&gt; on
+the card is a command. (Others being remarks!)</p>
+<p>Actually, anything starting with a &lt; is expected to be a &lt;XXX&gt; and terminates
+input on the card. If you need to enter data containing a &lt; you must 'escape' it
+using a \, so to enter &quot;here is an &lt;XXX&gt;&quot; you would code &quot;here is an \&lt;XXX&gt;&quot;. If
+you need to enter a \ you would use \\.&nbsp; </p>
+<p>Data on a card preceding the &lt;XXX&gt; is put, character by character, into
+fields starting at the current cursor location (which is initially wherever the
+last terminal write left it). If the cursor hits the end of a field it will
+either advance to the next field, or to the next input field depending on askip
+as usual. If the field it ends up in does not allow input then any data entered is
+thrown away without moving the cursor until something (&lt;TAB&gt; ?) does move the
+cursor. This simulates a 'locked' state.</p>
+<p>When a &lt;XXX&gt; is an aid - &lt;ENTER&gt; &lt;CLEAR&gt; &lt;PA1&gt; &lt;PF1&gt; etc - the resulting data
+is made available to the transaction.</p>
+<p>End of file on CRLPIN simulates a &lt;CLEAR&gt; and sets the <i><b>KICKS</b></i> shutdown bit,
+which will take effect when the current transaction (if any) ends.</p>
+<p>Here is sample JCL from <font face="Courier New">userid.KICKSSYS.V1R5M0.TESTCOB(BATCH1)</font> to start <i><b>KICKS</b></i> and
+run a couple of transactions.<br></p>
+<blockquote>
+	<table border="0" style="border-collapse: collapse" width="550">
+		<tr>
+			<td nowrap bgcolor="#CCFFCC">
+			<PRE><font size="2">//BATCH1  JOB  CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),REGION=2000K,
+// USER=HERC01
+//*
+//ALLOW  EXEC PGM=IEFBR14
+//ALLOW    DD DSN=HERC01.KICKSSYS.V1R5M0.ALLOW.STARTUP,DISP=SHR
+//* fail job if KICKS startup not allowed...
+//GO     EXEC PGM=KIKSIP1$,TIME=1,PARM='SIT=1$'
+//* kiksip1$ comes from steplib...
+//STEPLIB  DD DSN=HERC01.KICKSSYS.V1R5M0.SKIKLOAD,DISP=SHR
+//* tables come from skikload...
+//SKIKLOAD DD DSN=HERC01.KICKSSYS.V1R5M0.SKIKLOAD,DISP=SHR
+//* programs &amp; maps come from kikrpl...
+//KIKRPL   DD DSN=HERC01.KICKS.V1R5M0.KIKRPL,DISP=SHR,
+//         DCB=BLKSIZE=32000
+//         DD DSN=HERC01.KICKSSYS.V1R5M0.KIKRPL,DISP=SHR
+//*
+//SYSPRINT DD SYSOUT=*,DCB=(RECFM=F,BLKSIZE=80)
+//SYSTERM  DD SYSOUT=*,DCB=(RECFM=F,BLKSIZE=80)
+//SYSOUT   DD SYSOUT=*,DCB=BLKSIZE=132
+//CRLPOUT  DD SYSOUT=*,DCB=(RECFM=F,BLKSIZE=132)
+//TRANDUMP DD SYSOUT=*,DCB=(RECFM=F,BLKSIZE=132)
+//SYSUDUMP DD SYSOUT=*
+//*
+//AUXTRC   DD SYSOUT=*,DCB=(RECFM=F,BLKSIZE=120)
+//*
+//SYSIN    DD DUMMY,DCB=(RECFM=F,BLKSIZE=80)
+//*
+//TACDATA  DD DSN=HERC01.KICKS.TACDATA,DISP=SHR
+//*
+//CRLPIN   DD *,DCB=BLKSIZE=80
+&lt;clear&gt;            get blank screen to enter next transaction
+crlp&lt;REMARK&gt;       the CRLP transaction can be used to set
+    &lt;REMARK&gt;       or change the sequential terminal name or options
+    &lt;REMARK&gt;       TERMID=xxxx - change name from default CRLP to ?
+    &lt;REMARK&gt;       TRIM/NOTRIM - trailing spaces trimmed off (or not)
+    &lt;REMARK&gt;       BORDER/NOBORDER - box around screen (or not)
+    &lt;REMARK&gt;       ** note that TRIM & BORDER are mutually exclusive
+    &lt;REMARK&gt;       ECHO/NOECHO - crlpin echoed to crlpout (or not)
+    &lt;REMARK&gt;       TIOA/NOTIOA - generated TIOA displayed (or not)
+    &lt;REMARK&gt;       SHOWI/NOSHOWI - input screen displayed (or not)
+border&lt;enter&gt;      show current options
+&lt;clear&gt;            get blank screen to enter next transaction
+BTC0&lt;ENTER&gt;        show the main menu
+&lt;PF1&gt;              show the auto refund menu
+&lt;PF1&gt;              show the add request screen
+10&lt;REM&gt;            YEAR, NO &lt;TAB&gt; 'CAUSE AUTOSKIPPED ALREADY
+memyself&lt;erase&gt;    NAME, NO SPACES, AUTOSKIP (except last!)
+&lt;TAB&gt;              &lt;tab&gt; can't go on same line &lt;erase&gt; above...
+14725 INNER WAY&lt;ERASE&gt;
+&lt;TAB&gt;
+SITKA&lt;ERASE&gt;
+&lt;TAB&gt;
+AK&lt;REM&gt;            ST,  NO &lt;ERASE&gt; OR &lt;TAB&gt; 'CAUSE FIELD FILLED
+99835&lt;REM&gt;         ZIP, NO &lt;ERASE&gt; OR &lt;TAB&gt; 'CAUSE FIELD FILLED
+516384991&lt;REM&gt;     SSN, NO &lt;ERASE&gt; OR &lt;TAB&gt; 'CAUSE FIELD FILLED
+43210&lt;ERASE&gt;       GROSS
+&lt;TAB&gt;
+1NOT&lt;ERASE&gt;        CONTRIB - not numeric, force error
+&lt;ENTER&gt;            try to do the add, get error msg
+&lt;CLEAR&gt;            back up to auto refund menu
+&lt;CLEAR&gt;            back up to main menu
+&lt;CLEAR&gt;            back up to 'data entry concluded'
+&lt;clear&gt;            get blank screen to enter next transaction
+KSSF&lt;ENTER&gt;        LOGOFF - would happen anyway at following /*
+/*
+//</pre></font>
+			</td>
+		</tr>
+	</table>
+</blockquote>
+<p>Here is the output (from DD CRLPOUT) the above JCL produces. I've highlighted
+the echoed input in yellow...</p>
+<blockquote>
+	<table border="0" style="border-collapse: collapse" width="550">
+		<tr>
+			<td nowrap bgcolor="#99CCFF">
+	<PRE>
+*--------------------------------------------------------------------------------*
+| KSGM for TSO user HERC01   at terminal CRLP       BSP1    08:51:21  02/25/14   |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|            KK        KK   IIIIIIIIII    CCCCCCCCCC   KK        KK   SSSSSSSSSS |
+|           KK       KK    IIIIIIIIII   CCCCCCCCCCCC  KK       KK   SSSSSSSSSSSS |
+|          KK      KK         II       CC        CC  KK      KK    SS        SS  |
+|         KK     KK          II       CC            KK     KK     SS             |
+|        KK    KK           II       CC            KK    KK      SSS             |
+|       KKKKKKK            II       CC            KKKKKKK        SSSSSSSSS       |
+|      KKKKKKK            II       CC            KKKKKKK         SSSSSSSSS       |
+|     KK    KK           II       CC            KK    KK               SSS       |
+|    KK     KK          II       CC            KK     KK               SS        |
+|   KK      KK         II       CC        CC  KK      KK    SS        SS         |
+|  KK       KK    IIIIIIIIII   CCCCCCCCCCCC  KK       KK    SSSSSSSSSSSS         |
+| KK        KK   IIIIIIIIII    CCCCCCCCCCC  KK        KK    SSSSSSSSSS           |
+|                                                                      TM        |
+|                                                                                |
+|                                                            For TSO             |
+|                                                                                |
+|                                                            V1R5M0              |
+|                                                            January 2014        |
+| Press CLEAR to continue...                                 © Mike Noel         |
+*--------------------------------------------------------------------------------*
+
+<span style="background-color: #FFFF00">&lt;clear&gt;            get blank screen to enter next transaction
+</span>
+*--------------------------------------------------------------------------------*
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+*--------------------------------------------------------------------------------*
+
+<span style="background-color: #FFFF00">crlp&lt;REMARK&gt;       the CRLP transaction can be used to set
+    &lt;REMARK&gt;       or change the sequential terminal name or options
+    &lt;REMARK&gt;       TERMID=xxxx - change name from default CRLP to ?
+    &lt;REMARK&gt;       TRIM/NOTRIM - trailing spaces trimmed off (or not)
+    &lt;REMARK&gt;       BORDER/NOBORDER - box around screen (or not)
+    &lt;REMARK&gt;       ** note that TRIM & BORDER are mutually exclusive
+    &lt;REMARK&gt;       ECHO/NOECHO - crlpin echoed to crlpout (or not)
+    &lt;REMARK&gt;       TIOA/NOTIOA - generated TIOA displayed (or not)
+    &lt;REMARK&gt;       SHOWI/NOSHOWI - input screen displayed (or not)
+&lt;enter&gt;            show current options
+</span>
+
+*--------------------------------------------------------------------------------*
+|CRLP TERMID=CRLP NOTRIM BORDER ECHO NOTIOA NOSHOWI 3270                         |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+*--------------------------------------------------------------------------------*
+
+<span style="background-color: #FFFF00">&lt;clear&gt;            get blank screen to enter next transaction</span>
+
+*--------------------------------------------------------------------------------*
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+*--------------------------------------------------------------------------------*
+
+<span style="background-color: #FFFF00">BTC0&lt;ENTER&gt;        show the main menu</span>
+
+*--------------------------------------------------------------------------------*
+| TACMS01     NEVADA DEPARTMENT OF LABOR - ACCOUNTS AND CONTRIBUTIONS    TACMENU |
+| 02/24/14                                                               02/24/14|
+|                                   MASTER MENU                                  |
+|                                                                                |
+|                                                                                |
+|             PRESS THE PF KEY CORRESPONDING TO THE DESIRED FUNCTION             |
+|                                                                                |
+|             PF1  ---  EMPLOYEE AUTOMATIC REFUND  ------------ PF13             |
+|             PF2  ---  MANUAL REFUND  ------------------------ PF14             |
+|             PF3  ---  CANCELLATION  ------------------------- PF15             |
+|             PF4  ---  DISHONORED ITEM  ---------------------- PF16             |
+|             PF5  ---  DEPOSIT  ------------------------------ PF17             |
+|             PF6  ---  REDEMPTION  --------------------------- PF18             |
+|             PF7  ---  OTHER MANUAL PROCESSES  --------------- PF19             |
+|       N/A   PF8  ---  --------------------------------------- PF20   N/A       |
+|       N/A   PF9  ---  --------------------------------------- PF21   N/A       |
+|       N/A   PF10 ---  --------------------------------------- PF22   N/A       |
+|       N/A   PF11 ---  --------------------------------------- PF23   N/A       |
+|             PF12 ---  RETURN TO KICKS ----------------------- PF24             |
+|                                                                                |
+|             IF TERMINAL HAS NO PF KEYS ENTER CODE HERE ====&gt;                   |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+*--------------------------------------------------------------------------------*
+
+<span style="background-color: #FFFF00">&lt;PF1&gt;              show the auto refund menu</span>
+
+*--------------------------------------------------------------------------------*
+| TACMS01     NEVADA DEPARTMENT OF LABOR - ACCOUNTS AND CONTRIBUTIONS    TACMENU |
+| 02/24/14                                                               02/24/14|
+|                         EMPLOYEE AUTOMATIC REFUND MENU                         |
+|                                                                                |
+|                                                                                |
+|             PRESS THE PF KEY CORRESPONDING TO THE DESIRED FUNCTION             |
+|                                                                                |
+|             PF1  ---  ADD    REFUND REQUEST  ---------------- PF13             |
+|             PF2  ---  REVIEW REFUND REQUEST  ---------------- PF14             |
+|       N/A   PF3  ---  CHANGE REFUND REQUEST  ---------------- PF15   N/A       |
+|       N/A   PF4  ---  DELETE REFUND REQUEST  ---------------- PF16   N/A       |
+|       N/A   PF5  ---  --------------------------------------- PF17   N/A       |
+|       N/A   PF6  ---  --------------------------------------- PF18   N/A       |
+|       N/A   PF7  ---  --------------------------------------- PF19   N/A       |
+|       N/A   PF8  ---  --------------------------------------- PF20   N/A       |
+|       N/A   PF9  ---  --------------------------------------- PF21   N/A       |
+|       N/A   PF10 ---  --------------------------------------- PF22   N/A       |
+|       N/A   PF11 ---  --------------------------------------- PF23   N/A       |
+|             PF12 ---  RETURN TO MASTER MENU  ---------------- PF24             |
+|                                                                                |
+|             IF TERMINAL HAS NO PF KEYS ENTER CODE HERE ====&gt;                   |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+*--------------------------------------------------------------------------------*
+
+<span style="background-color: #FFFF00">&lt;PF1&gt;              show the add request screen</span>
+
+*--------------------------------------------------------------------------------*
+| TACMS02     NEVADA DEPARTMENT OF LABOR - ACCOUNTS AND CONTRIBUTIONS    TACARA  |
+| 02/24/14                                                               02/24/14|
+|                         EMPLOYEE AUTOMATIC REFUND - ADD                        |
+|                                                                                |
+|                                                                                |
+|              CALENDAR YEAR              81                                     |
+|                                                                                |
+|              NAME                       * * *************                      |
+|              ADDRESS FIRST LINE         *************************              |
+|              CITY                       **********************                 |
+|              STATE                      **                                     |
+|              ZIP CODE                   00000                                  |
+|                                                                                |
+|              SSN                        000000000                              |
+|                                                                                |
+|              GROSS WAGES                00000000                               |
+|              EMPLOYEE CONTRIBUTIONS     00000                                  |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|       TYPE REQUIRED DATA AND PRESS ENTER.  PRESS CLEAR TO RETURN TO MENU.      |
+|                                                                                |
+|                                                                                |
+*--------------------------------------------------------------------------------*
+
+<span style="background-color: #FFFF00">12&lt;REM&gt;            YEAR, NO &lt;TAB&gt; 'CAUSE AUTOSKIPPED ALREADY
+</span><span style="background-color: #FFFF00">memyself&lt;erase&gt;    NAME, NO SPACES, AUTOSKIP (except last!)
+&lt;TAB&gt;              &lt;tab&gt; can't go on same line &lt;erase&gt; above...
+14725 INNER WAY&lt;ERASE&gt;
+&lt;TAB&gt;
+SITKA&lt;ERASE&gt;
+&lt;TAB&gt;
+AK&lt;REM&gt;            ST,  NO &lt;ERASE&gt; OR &lt;TAB&gt; 'CAUSE FIELD FILLED
+99835&lt;REM&gt;         ZIP, NO &lt;ERASE&gt; OR &lt;TAB&gt; 'CAUSE FIELD FILLED
+516384991&lt;REM&gt;     SSN, NO &lt;ERASE&gt; OR &lt;TAB&gt; 'CAUSE FIELD FILLED
+43210&lt;ERASE&gt;       GROSS
+&lt;TAB&gt;
+1NOT&lt;ERASE&gt;        CONTRIB - not numeric, force error
+&lt;ENTER&gt;            try to do the add, get error msg</span>
+
+*--------------------------------------------------------------------------------*
+| TACMS02     NEVADA DEPARTMENT OF LABOR - ACCOUNTS AND CONTRIBUTIONS    TACARA  |
+| 02/24/14                                                               02/24/14|
+|                         EMPLOYEE AUTOMATIC REFUND - ADD                        |
+|                                                                                |
+|                                                                                |
+|              CALENDAR YEAR              12                                     |
+|                                                                                |
+|              NAME                       M E MYSELF                             |
+|              ADDRESS FIRST LINE         14725 INNER WAY                        |
+|              CITY                       SITKA                                  |
+|              STATE                      AK                                     |
+|              ZIP CODE                   99835                                  |
+|                                                                                |
+|              SSN                        516384991                              |
+|                                                                                |
+|              GROSS WAGES                00043210                               |
+|              EMPLOYEE CONTRIBUTIONS     01NOT                                  |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|       TYPE REQUIRED DATA AND PRESS ENTER.  PRESS CLEAR TO RETURN TO MENU.      |
+|                                                                                |
+| EMPLOYEE CONTRIBUTIONS NOT NUMERIC                                             |
+*--------------------------------------------------------------------------------*
+
+<span style="background-color: #FFFF00">&lt;CLEAR&gt;            back up to auto refund menu</span>
+
+*--------------------------------------------------------------------------------*
+| TACMS01     NEVADA DEPARTMENT OF LABOR - ACCOUNTS AND CONTRIBUTIONS    TACMENU |
+| 02/24/14                                                               02/24/14|
+|                         EMPLOYEE AUTOMATIC REFUND MENU                         |
+|                                                                                |
+|                                                                                |
+|             PRESS THE PF KEY CORRESPONDING TO THE DESIRED FUNCTION             |
+|                                                                                |
+|             PF1  ---  ADD    REFUND REQUEST  ---------------- PF13             |
+|             PF2  ---  REVIEW REFUND REQUEST  ---------------- PF14             |
+|       N/A   PF3  ---  CHANGE REFUND REQUEST  ---------------- PF15   N/A       |
+|       N/A   PF4  ---  DELETE REFUND REQUEST  ---------------- PF16   N/A       |
+|       N/A   PF5  ---  --------------------------------------- PF17   N/A       |
+|       N/A   PF6  ---  --------------------------------------- PF18   N/A       |
+|       N/A   PF7  ---  --------------------------------------- PF19   N/A       |
+|       N/A   PF8  ---  --------------------------------------- PF20   N/A       |
+|       N/A   PF9  ---  --------------------------------------- PF21   N/A       |
+|       N/A   PF10 ---  --------------------------------------- PF22   N/A       |
+|       N/A   PF11 ---  --------------------------------------- PF23   N/A       |
+|             PF12 ---  RETURN TO MASTER MENU  ---------------- PF24             |
+|                                                                                |
+|             IF TERMINAL HAS NO PF KEYS ENTER CODE HERE ====&gt;                   |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+*--------------------------------------------------------------------------------*
+
+<span style="background-color: #FFFF00">&lt;CLEAR&gt;            back up to main menu</span>
+
+*--------------------------------------------------------------------------------*
+| TACMS01     NEVADA DEPARTMENT OF LABOR - ACCOUNTS AND CONTRIBUTIONS    TACMENU |
+| 02/24/14                                                               02/24/14|
+|                                   MASTER MENU                                  |
+|                                                                                |
+|                                                                                |
+|             PRESS THE PF KEY CORRESPONDING TO THE DESIRED FUNCTION             |
+|                                                                                |
+|             PF1  ---  EMPLOYEE AUTOMATIC REFUND  ------------ PF13             |
+|             PF2  ---  MANUAL REFUND  ------------------------ PF14             |
+|             PF3  ---  CANCELLATION  ------------------------- PF15             |
+|             PF4  ---  DISHONORED ITEM  ---------------------- PF16             |
+|             PF5  ---  DEPOSIT  ------------------------------ PF17             |
+|             PF6  ---  REDEMPTION  --------------------------- PF18             |
+|             PF7  ---  OTHER MANUAL PROCESSES  --------------- PF19             |
+|       N/A   PF8  ---  --------------------------------------- PF20   N/A       |
+|       N/A   PF9  ---  --------------------------------------- PF21   N/A       |
+|       N/A   PF10 ---  --------------------------------------- PF22   N/A       |
+|       N/A   PF11 ---  --------------------------------------- PF23   N/A       |
+|             PF12 ---  RETURN TO KICKS ----------------------- PF24             |
+|                                                                                |
+|             IF TERMINAL HAS NO PF KEYS ENTER CODE HERE ====&gt;                   |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+*--------------------------------------------------------------------------------*
+
+<span style="background-color: #FFFF00">&lt;CLEAR&gt;            back up to 'data entry concluded'</span>
+
+*--------------------------------------------------------------------------------*
+|DATA ENTRY CONCLUDED                                                            |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+*--------------------------------------------------------------------------------*
+
+<span style="background-color: #FFFF00">&lt;clear&gt;            get blank screen to enter next transaction</span>
+
+*--------------------------------------------------------------------------------*
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+*--------------------------------------------------------------------------------*
+
+<span style="background-color: #FFFF00">KSSF&lt;ENTER&gt;        LOGOFF - would happen anyway at following /*</span>
+
+*--------------------------------------------------------------------------------*
+| KICKS is shutting down...                                                      |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+|                                                                                |
+*--------------------------------------------------------------------------------*</PRE>
+			</td>
+		</tr>
+	</table>
+</blockquote>
+<p>One use for <i><b>KICKS</b></i> in batch is CLG (Compile, Link &amp; Go)
+debugging of your <i><b>KICKS</b></i> transactions - see the various jobs
+in <font face="Courier New">userid.KICKSSYS.V1R5M0.TESTCOB (and TESTGCC). </font>
+<font face="Times New Roman">These jobs are intended to illustrate how to use
+some of the <i><b>KICKS</b></i> API's, but are also useful as models for your
+own 'CLG' jcl. A few things to notice about those jobs: they use SIT=B$, which
+pulls in PCT=B$, PPT=B$, FCT=B$, and DCT=B$. SIT=B$ also specifies a null PLTPI,
+which is why KSGM doesn't show up as the initial screen when you run the TESTJCL
+jobs. You should examine the tables so you know what is in them, but the most
+important point is that the PCT has a entry named TCOB that calls a program
+TESTCOB; and the PPT has an entry TESTCOB for a command level program. So all the CLG
+test jobs link their programs as TESTCOB, and all the test jobs run the
+transaction TCOB in batch <i><b>KICKS</b></i>.</font></p>
+
+<blockquote>
+</blockquote>
+
+<h3><a name="supplied"></a>Supplied Transactions</h3>
+<p>KICKS is supplied with a number of&nbsp; transactions and associated programs 
+to assist with its operation These include</p>
+
+<h3><a name="supplied-ksgm"></a>KSGM <span style="font-weight: 400">(aka CSGM)</span></h3>
+<p>The KSGM transaction is typically used to present the first screen the user 
+sees when <b><i>KICKS</i></b> is started. This occurs because KSGM is typically 
+the argument of the SIT PLTPI option, so this transaction is automatically run 
+when <b><i>KICKS</i></b> starts.&nbsp; Since it's the first message, this has 
+been called the &quot;good morning&quot; (ie, GM) message.</p>
+<p>The most usual action following display of the KSGM screen is to simply press 
+the CLEAR (or PF3) key and enter the first transaction you need to run. But if 
+you decide to stop and play you'll find you can get rapidly changing set of 
+colors by rapidly pressing the ENTER key (or holding the ENTER key down if your 
+terminal emulator implements repeat in that case). PF1 will display a limited 
+help screen, and PF2 from the help screen will display (and allow you to print) 
+the <i><b>KICKS</b></i> license.</p>
+<p>The PCT entry for KSGM has an optional &quot;TWASIZE&quot; agrument. KSGM does not 
+actually use a TWA (transaction work area), but it uses the defined size as the 
+number of seconds to delay between changing the colors on the block letters 
+displayed. If a static display (no color updates) is desired simply specify 
+TWASIZE=0 (or omit TWASIZE altoghther). TWASIZE=1 is a special case that always 
+produces exactly the same color combination, it's used for documentation 
+purposes. TWASIZE=2 (meaning 2 seconds between color updates) thru 60 (once a 
+minute) are available.</p>
+<p>KSGM requires a PCT entry pointing to the COBOL program KSGMPGM, which in 
+turn requires a PPT entry for KSGMPGM. It also requires a PPT entry for KSGMAPL 
+which defines BMS maps for 24x80, 32x80, 43x80, 32x87, 27x132, and 62x160 
+screens. Limited help for this program is presented by the GCC program KSGMHLP 
+(which also requires a PPT entry), and the help program may display or print the
+<i><b>KICKS</b></i> license agreement using the COBOL program KSGMLIC (which 
+also requires a PPT entry. KSGMLIC is an example of a <i><b>KICKS</b></i> 
+program that uses non-CICS api's, in this case batch COBOL i/o used to read the 
+license from a pds member.</p>
+<p>Other PCT entries may also point to KSGMPGM; CSGM (the usual CICS transaction 
+id for the good morning message) is supplied with TWASIZE=0 for a random color 
+but static display, and KSG1 is supplied to access the TWASIZE=1 special 
+&quot;documentation&quot; version of the display.</p>
+<p>Source for KSGMPGM (and for KSGMHLP and for KSGMLIC) is in 
+HERC01.KICKSSYS.V1R5M0.COB as one source member KSGMPGM. Source for KSGMAP and 
+KSGMAPL maps are in HERC01.KICKSSYS.V1R5M0.MAPSRC as one source member KSGMMAP.</p>
+
+<h3><a name="supplied-kssf"></a>KSSF<span style="font-weight: 400"> (aka CSSF, 
+aka LOGOFF)</span></h3>
+<p>The KSSF transaction is used for user initiated <i><b>KICKS</b></i> shutdown. 
+The similar CICS transaction, CSSF, refers to &quot;sign off&quot;, and indeed signoff is 
+the api that the KSSF transaction will initiate. But signoff from <i><b>KICKS</b></i> 
+is the same as shutting down <i><b>KICKS</b></i> and returning to TSO...</p>
+<p>The KSSF transaction runs KSSFPGM, which, besides putting out a cute little
+<font color="#FF0000"><span style="background-color: #000000">K</span></font><font color="#FFFF00"><span style="background-color: #000000">I</span></font><font color="#0000FF"><span style="background-color: #000000">C</span></font><font color="#800080"><span style="background-color: #000000">K</span></font><font color="#008000"><span style="background-color: #000000">S 
+is shutting down</span></font> message, mainly does an<br>
+&nbsp;&nbsp;&nbsp; <font face="Courier">EXEC KICKS SIGNOFF END-EXEC</font><br>
+to tell KICKS it's time to quit (see the SIGNOFF api in the Programming 
+section of this User's Guide).</p>
+<p>If you have some action that needs to happen at <b><i>KICKS</i></b> shutdown 
+you might be tempted to add them to KSSFPGM. <b> <u><font size="4">Do NOT</font></u></b>. 
+This isn't the only 
+place that the SIGNOFF api might be triggered! For example the batch (CRLP) 
+terminal will signal SIGNOFF when it encounters EOF on the input file (CRLPIN). 
+Instead add your actions to K999PGM (or whatever you are using for a PLTSD 
+program); these will always be executed at shutdown, regardless of the path 
+taken to get there...</p>
+<p>KSSF requires a PCT entry pointing to the COBOL program KSSFPGM, which in 
+turn requires a PPT entry for KSSFPGM.</p>
+<p>Other PCT entries may also point to KSSFPGM; CSSF (the usual CICS transaction 
+id for 'signoff') is available, as is LOGOFF (LOGO actually, KICKS and CICS only 
+see the first 4 characters of a transaction).</p>
+<p>Source for KSSFPGM is in HERC01.KICKSSYS.V1R5M0.COB.</p>
+
+<h3><a name="supplied-k999"></a>K999</h3>
+<p>The K999 transaction is typically the last thing run when <b><i>KICKS</i></b> 
+is shutdown. This occurs because K999 is typically the argument of the SIT PLTSD 
+option, so this transaction is automatically run just before <b><i>KICKS</i></b> 
+quits.&nbsp; </p>
+<p>The K999 transaction runs K999PGM, which, as delivered, is just a shell you 
+can modify to do anything you think needs to happen at that point.</p>
+<p>K999 requires a PCT entry pointing to the COBOL program K999PGM, which in 
+turn requires a PPT entry for K999PGM. </p>
+<p>Source for K999PGM is in HERC01.KICKSSYS.V1R5M0.COB.</p>
+
+<h3><a name="supplied-ksmt"></a>KSMT<span style="font-weight: 400"> (aka KEMT, 
+aka CSMT, aka CEMT)</span></h3>
+<p>The KSMT transaction is used to display and modify <i><b>KICKS</b></i> 
+internal control variables.</p>
+
+  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> KICKS Master Terminal Program      (maxcc =     0)                             
+                                                                                
+                                                                                
+Press a PF key to obtain indicated action:                                      
+                                                                                
+PF1  =  SHOW TRACE STATUS                                                       
+PF2  =  TOGGLE INTERNAL TRACE ON/OFF                                            
+PF3  =  TOGGLE AUX TRACE ON/OFF                                                 
+PF4  =  TOGGLE INTENSE TRACE ON/OFF                                             
+                                                                                
+PF5  =  SHOW ICVR VALUE                                                         
+PF6  =  DECREASE ICVR                                                           
+PF7  =  INCREASE ICVR                                                           
+PF8  =                                                                          
+PF9  =                                                                          
+PF10 =                                                                          
+PF11 =                                                                          
+PF12 =  QUIT                                                                    
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+</span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">                                                                               
+</span></pre></td></tr>
+  </table>
+
+
+<p>As above,KSMT is PF key driven, PF12 quits.</p>
+<p>The KSMT transaction runs the KSMTPGM program</p>
+<p>KSMT requires a PCT entry pointing to the COBOL program KSMTPGM, which in 
+turn requires a PPT entry for KSMTPGM. It also requires a set of PPT entries for 
+MACC routines it uses to obtain and change <i><b>KICKS</b></i> system 
+information; these entries are KTRCSTA (get trace status), KTRCON (turn trace 
+on), KTRCOFF (turn trace off), KTRCAON (turn aux trace on), KTRCAOF (turn aux 
+trace off), KTRCINON (turn intense trace on), KTRCINOF (turn intense trace off), 
+KICVRGET (obtain ICVR value), KICVRPUT (change ICVR value),&nbsp; KLASTCCG (get 
+lastcc value), KLASTCCP (change lastcc value), KMAXCCG (get maxcc value), and 
+KMAXCCP&nbsp; (change maxcc value).</p>
+<p>Other PCT entries such as CSMT and CEMT may also point to KSMTPGM.</p>
+<p>Source for KSMTPGM is in HERC01.KICKSSYS.V1R5M0.COB. Source for the 
+subroutines is part of the KICKS source distribution, in HERC01.KICKSTS.JCL 
+members KSMTSUBS and LASTCC.</p>
+
+<h3><a name="supplied-kedf"></a>KEDF<span style="font-weight: 400"> (aka CEDF)</span></h3>
+<p>The KEDF transaction is used to turn the interactive debug facility on or 
+off; to specify on which EXEC KICKS api calls the debug facility is to display 
+it's before/after screens; and to enable source code trace.</p>
+<p>When entered as just &quot;KEDF&quot; it displays a table of api calls, each 
+of which is shown 
+as hightlighed (enabled), or not highlighed (not enabled). </p>
+
+  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> KEDF (1.5.0) is  OFF  to toggle it ON   press PF4            12:31:49  10/21/14
+                                                                                
+</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> Highlighed</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> items will be displayed, to change put cursor on item,  press PF5   
+                                                                                
+                                                                                
+                                                                                
+   </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> DELETEQ TD      DELETE         ADDRESS       ABEND         RECEIVE          
+    READQ TD        ENDBR          ASKTIME       DUMP          RECEIVE MAP      
+    WRITEQ TD       READ           ASSIGN        ENTER         SEND TEXT        
+                    READNEXT       ENQ           LINK          SEND MAP         
+    SPOOLOPEN       READPREV       DELAY         LOAD          SEND CONTROL     
+    SPOOLWRITE      RESETBR        DEQ           RELEASE                        
+    SPOOLCLOSE      REWRITE        FORMATTIME    RETURN       </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> HANDLE CONDITION 
+                   </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> STARTBR        SIGNOFF       XCTL          IGNORE CONDITION 
+    DELETEQ TS      UNLOCK         SUSPEND                    </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> HANDLE AID       
+   </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> READQ TS        WRITE          SYNCPOINT     FREEMAIN      HANDLE ABEND     
+    WRITEQ TS       WRITE OPERATOR               GETMAIN                        
+                                                                                
+                    SOURCE TRACE                              </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> </span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">                
+                                                                                
+                                                                                
+ To highlight all press PF6, to Un-high all press PF7                           
+                                                                                
+ Enter (or PF3) - exit+save                                  Clear - exit+nosave
+</span></pre></td></tr>
+  </table>
+
+
+<p>KEDF is PF driven. On the top line you will note use of PF4 to turn the 
+debugger on or off. On the bottom line you will note use of ENTER or PF3 to exit 
+with changes saved, and CLEAR to exit with any changes discarded. PF6 is used to 
+highlight (enable) all the api's, and PF7 is used to un-highlight (disable) all 
+the api's.&nbsp; Individual api's can be toggled between enabled/disabled by 
+moving the cursor to the api name and pressing PF5.</p>
+<p>Besides the interactive &quot;KEDF&quot; invocation as above you can also use &quot;KEDF ON&quot; to 
+simply turn on the debugger with current api selection but no source trace, or &quot;KEDF 
+ON/S&quot; to turn in on with current api selection and source trace, or &quot;KEDF OFF&quot; 
+to turn off further debugger interaction.</p>
+<p>The KEDF transaction runs KEDFPGM.</p>
+<p>KEDF requires a PCT entry pointing to the COBOL program KEDFPGM, which in 
+turn requires a PPT entry for KEDFPGM. It also requires a PPT entry for KEDMAP 
+which defines BMS maps for a 24x80 screen. It also requires a PPT entry for KEDFILTR 
+which is the table of default api trace enable switches that KEDFPGM displays 
+and modifies. It also requires a set of PPT entries for MACC routines it uses to 
+obtain and change KEDF system information; these entries are .</p>
+<p>KIKPPT TYPE=ENTRY,PROGRAM=KEDFON,PGMLANG=MACC KEDF ON <br>
+KIKPPT TYPE=ENTRY,PROGRAM=KEDFOFF,PGMLANG=MACC KEDF OFF <br>
+KIKPPT TYPE=ENTRY,PROGRAM=KEDFSTA,PGMLANG=MACC KEDF STATUS </p>
+<p>Other PCT entries may also point to KEDFPGM, especially CEDF, the transid 
+used in CICS systems.</p>
+<p>Source for KEDFPGM is in HERC01.KICKSSYS.V1R5M0.COB.Source for KEDMAP is in HERC01.KICKSSYS.V1R5M0.MAPSRC. Source for KEDFILTR is in HERC01.KICKSSYS.V1R5M0.INSTLIB. 
+Source for the subroutines is part of the <i><b>KICKS</b></i> source distribution, in 
+HERC01.KICKSTS.JCL member KEDFSUBS.</p>
+
+<h3><a name="supplied-kedfiltr"></a>KEDFILTR</h3>
+<p>The KEDFILTR table is assembled from source in 
+HERC01.KICKSSYS.V1R5M0.INSTLIB. It is referenced by the online debugger to 
+determine if a given api call should cause a break or not. It is loaded and 
+modified (in memory only) by KEDFPGM.</p>
+<p>Each line in the assembler source shows the api's eibfn and a flag value 
+indicating, if zero, that that api call should cause a break, or by a one that 
+the api call should not cause a break. Comments on the line indicate the name of 
+the api call. Note that 9999 is not an api eibfn, rather it is a flag for source 
+trace. Zero marks the end of the list.</p>
+<p>Do not rearrange the list; KEDFPGM depends on the existing order...</p>
+
+<h3><a name="supplied-ksdb"></a>KSDB</h3>
+<p>The KSDB transaction reads input generated by the language preprocessors and 
+updates the online source code database used by the debugger to display lines of 
+the source code for a running application. KSDB is intended for batch use only. 
+It is run in the final step of the KIKCB2CS, K2KCOBCS, and KIKGCCCS procs.</p>
+<p>The KSDB transaction runs the KSDBLOAD program.</p>
+<p>KSDB requires a PCT entry pointing to the COBOL program KSDBLOAD, which in 
+turn requires a PPT entry for KSDBLOAD.&nbsp; KSDBLOAD is another example of a
+<i><b>KICKS</b></i> program that uses non-CICS api's, in this case batch COBOL i/o 
+used to read the preprocessor input and annotation.</p>
+<p>Source for KSDBLOAD is in HERC01.KICKSSYS.V1R5M0.COB. </p>
+
+<h3><a name="supplied-crlp"></a>CRLP</h3>
+<p>The CRLP transaction is used to control the sequential terminal used when <i>
+<b>KICKS</b></i> is run in batch.</p>
+<p>An example of use of the CRLP transaction is shown in <a href="#batch">Using <i><b>KICKS</b></i> 
+in Batch</a>. </p>
+<p>CRLP requires a PCT entry pointing to the macro level GCC program CRLPPGM, which in 
+turn requires a PPT entry for CRLPPGM. </p>
+<p>Source for this program is part of the <i><b>KICKS</b></i> source 
+distribution, in HERC01.KICKSTS.ROOT.C member CRLPPGM.</p>
+
+<h3><a name="supplied-kebr"></a>KEBR<span style="font-weight: 400"> (aka CEBR)</span></h3>
+<p>KEBR is used to browse temporary storage
+queues and delete them. It is modeled on the CEBR transaction used for the same 
+purpose in CICS. You can also use the KEBR transaction to
+transfer the contents of a file or transient data queue to temporary storage in order
+to look at them, and to reestablish the transient data queue when you have
+finished. The KEBR commands that perform these transfers allow you to
+add records to a transient data queue and remove all records from a transient
+data queue. KEBR commands do not edit or delete files.</p>
+
+<p><b>How to use the KEBR transaction</b></p>
+
+<p>You start the KEBR transaction by entering the transaction identifier KEBR,
+followed by the name of the queue you want to browse. For example, to
+display the temporary storage queue named TSTST, you type: 
+</p><pre>KEBR TSTST
+</pre>
+<p>and press ENTER. <i><b>KICKS</b></i> responds with a display of the queue, 
+for example: 
+
+<table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> KEBR TS Queue</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> TSTST                               </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">   Line/Item</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">     1</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> of      7 
+ Command ===&gt;</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> </span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">                                         </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> Column</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">     1</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> of    389 
+</span><span style="color:red;background:black;font-weight:normal;font-style:normal"> Transaction Q                                                                  
+ Ok                                                                             
+</span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal">       ....|....1....|....2....|....3....|....4....|....5....|....6....|....7.. 
+</span><span style="color:white;background:black;font-weight:normal;font-style:normal"> *** TOP OF QUEUE ******                                                        
+</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> 00001 00358491-07-23400015PROM1     000000100000000050000010000000050000000000 
+ 00002 00358591-07-23400003PROM1               0000000000000000000000000        
+ 00003 00358691-07-23400007PROM1               0000000000000000000000000        
+ 00004 00358791-07-23400005PROM1               0000000000000000000000000        
+ 00005 00358891-07-23400004PROM1               0000000000000000000000000        
+ 00006 00358991-07-23400016PROM1               0000000000000000000000000        
+ 00007 00359091-07-23400003PROM1               0000000000000000000000000        
+</span><span style="color:white;background:black;font-weight:normal;font-style:normal"> *** BOTTOM OF QUEUE ******                                                     
+</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">                                                                                
+                                                                                
+</span><span style="color:Fuchsia;background:black;font-weight:normal;font-style:normal">       ....|....1....|....2....|....3....|....4....|....5....|....6....|....7.. 
+</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> PF1 : Help          PF2 : HEX/Char     PF3 : Quit          PF4 :               
+ PF5 : RFind         PF6 :              PF7 : Back          PF8 : Forward       
+ PF9 :               PF10: Left         PF11: Right         PF12: Quit          
+</span></pre></td></tr>
+  </table>
+
+
+<p>If instead you invoke the KEBR transaction and do not supply a queue name the 
+transaction responds by displaying the
+temporary storage queue whose name consists of the four letters KEBR followed by 
+the four letters of your terminal identifier.</p>  
+
+<table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> KEBR TS Queue</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> KEBRU0C0                            </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">   Line/Item</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">     0</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> of      0 
+ Command ===&gt;</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal"> </span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">                                         </span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> Column</span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">     0</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> of      0 
+</span><span style="color:red;background:black;font-weight:normal;font-style:normal"> Default Q                                                                      
+ Can not read that QUEUE                                                        
+</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">                                                                                
+                                                                                
+                                                                                
+                                                                                
+ PF1 : Help          PF2 : HEX/Char     PF3 : Quit          PF4 :               
+ PF5 : RFind         PF6 :              PF7 : Back          PF8 : Forward       
+ PF9 :               PF10: Left         PF11: Right         PF12: Quit          
+</span></pre></td></tr>
+</table>
+</span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">                                                                               
+</span></pre></td></tr>
+  </table>
+
+
+<p>The transaction display consists of a header, a command
+area, a body (the primary display area), and a menu of
+functions you can select at this point.
+</p><p></p><u>The header
+</u>
+<p>The header shows: 
+</p><ul>
+<li>The transaction being run, that is, KEBR.
+</li><li>The identifier of the temporary storage queue. You can overtype this field in the
+header if you want to switch the screen to another queue.
+</li><li>The number of the top record in the body. 
+</li><li>The number of records in the queue (seven in TSTST and none in
+KEBRU0C0).
+</li><li>The position in each record at which the screen starts (position 1 for 
+queue TSTST, zero for queue KEBRU0C0) and the length of the longest record (389 for queue 
+TSTST and zero
+for queue KEBRU0C0).
+</li></ul>
+<p></p><p><u>The command area</u></p>
+<p>The command area is where you enter commands that control what is to be 
+displayed and what function is to be performed.
+</p><p></p><p><u>The body</u></p>
+<p>The body is where the command response, queue records, and other indicators 
+are shown.
+</p>
+<p>When a command (other than positioning) is complete the top two lines of the 
+body display the text of the command and the response.</p>
+<p>Indicators include &quot<font face="Courier New">*** TOP OF QUEUE ******</font>&quot; 
+(white), &quot;<font face="Courier New">*** TOP OF QUEUE ******</font>&quot; (white), and 
+rulers (magenta). Rulers can be turned on or off using either the RULER command.</p>
+<p>Queue records are prefaced by their 5 digit item number and begin one space 
+thereafter at the item position indicated in the header. If a record is too long 
+for the line, it is truncated. You can change the portion of the record that is 
+displayed, however, so that you can see an entire record on successive screens. 
+If the queue contains more records than will fit on the screen, you can page 
+forward and backward through them, or specify at what record to start the 
+display, so that you can see all the records you want. </p>
+<p></p><p></p><p><u>The menu of functions</u></p>
+<p>The function keys that you can use are displayed at the bottom
+of every KEBR screen. The keys have the same meaning on all screens.</p>
+<p>PF1 (command HELP) - Displays a help screen that lists all the commands you can use when the KEBR transaction is running. You can return to the main screen by
+pressing ENTER. </p>
+<p>PF2 (command HEX) - Switches the screen from character to hexadecimal format, and back
+again. In hexadecimal format each item requires 3 lines: The first line is 
+exactly as the character format display. The following two lines are 'vertical' 
+hex of the characters in the first line.
+</p>
+<p>PF3 (command QUIT) - Terminates the KEBR transaction. Same as PF12. Shift-PF3 
+(PF15) and Shift-PF12 (PF24) also quit.</p>
+<p>PF5 (command RFIND) - Repeats the previous FIND command. Shift-PF5 (PF17) 
+changes direction then does the RFIND.</p>
+<p>PF7 - Moves the display backward by the number of records that 
+fit on the screen. Shift-PF7 (PF19) moves he display backward to the top.</p>
+<p>PF8 - Advances the display by the number of records that 
+fit on the screen, Shift-PF8 (PF20) moves he display forward to the bottom.</p>
+<p>PF10 (command LEFT) - Changes the screen to show the columns immediately 
+after (to the right of) the columns currently on display. You can also use the 
+COLUMN command to change the column at which the display begins.
+</p>
+<p>PF11 (command RIGHT) - Changes the screen to show the columns immediately 
+before (to the left of) the columns currently on display. You can also use the 
+COLUMN command to change the column at which the display begins.
+</p>
+<p>PF12 (command QUIT) - Terminates the KEBR transaction. Same as PF3. Shift-PF3 
+(PF15) and Shift-PF12 (PF24) also quit.</p><p><b>
+KEBR 'cursor' scrolling</b></p>
+<p>KEBR scrolls by full screens, but like ISPF it is possible to make any item 
+the top or bottom line on the screen by placing the cursor on that item 
+before pressing PF7 or PF8 (respectively). In a similar manner it is possible to 
+modify the LEFT and RIGHT scrolls by placing the cursor on the desired first or 
+last column of an item before pressing PF10 or PF11 (respectively).
+</p>
+<p><b>
+KEBR commands</b></p>
+<p>BOTTOM (Abbreviation: BOT) Shows the last records in the temporary storage queue (as many as fill up
+the body of the screen, with the last record on the last line).
+</p>
+<p>COLUMN nnnn&nbsp; (Abbreviation: COL nnnn) Displays the records starting at character position (column) nnnn of each
+record. The default starting position, assumed when you initiate the
+KEBR transaction, is the first character in the record. </p>
+<p>FIND [FWD/BWD] string (Abbreviation: F string) Finds the next (or previous) 
+occurrence of the specified string. FWD is optional, being assumed if 
+unspecified. The search starts one character after (or before) the top left 
+item/column displayed. If the string is found, the body is scrolled to that line 
+and column, thus making the sought string the new top left. If the string is not 
+found the body is not scrolled, and a &quot;NOT FOUND&quot; message is shown. The value 
+that you specify can be in character format (for example, find&nbsp; ABCD) or in 
+hexadecimal format (for example, find x'F0F1F2'). In a character search 
+delimiters of your choice may optionally be used; ie, if the first and last 
+characters of the string are the same they are assumed to be delimiters. A 
+hexadecimal search is conducted using an even number of hex digits, so if you 
+specify an odd number of digits a leading zero is assumed.</p>
+<p>HELP Displays a brief summary of the KEBR commands</p>
+<p>LEFT Changes the screen to show the columns immediately after (to the right 
+of) the columns currently on display. You can also use the COLUMN command to 
+change the column at which the display begins.</p>
+<p>LINE nnnn Starts the body of the screen at the queue record nnnn, and
+sets the current line to nnnn. </p>
+<p>PURGE Deletes the queue being browsed.
+</p>
+<p>PUT xxxx Copies the temporary storage queue that is being browsed to the named
+transient data queue. xxxx must be either the name of an intrapartition
+transient data queue, or the name of an extrapartition transient data queue that 
+has been opened for output. The special queue name SYSOUT is recognized making 
+PUT SYSOUT an alias for PRINT.</p>
+<p>PRINT [CLASS x LPP nn FIRST nnnn ITEMS nnnn] Prints a report of the current 
+queue, either as lines of printable characters, or as vertical hex depending on 
+the current screen display. Rulers or not, also as per the current display. 
+Output class, lines per page, starting item number and number of items can be 
+specified with optional arguments in any order. The defaults are CLASS A LPP 60 
+FIRST 1 ITEMS 50.</p>
+<p>QUEUE xxxxxxxx (Abbreviation: Q xxxxxxxx) Changes the name of the queue you are browsing. The value that you
+specify can be in character format (for example, QUEUE ABCD) or in hexadecimal
+format (for example, QUEUE X'C1C2C3C4'). The KEBR transaction
+responds by displaying the data that is in the named queue. You can also change the queue name by overtyping the current value in the
+header.
+</p>
+<p>=X<br>
+CANCEL<br>
+END<br>
+QUIT the command (and several aliases) used to quit the KEBR transaction. The 
+screen will clear and the message &quot;Browse ended normally. Ready for next 
+transaction:&quot; is shown.</p>
+<p>REFRESH (same as just pressing ENTER) The queue is re-read and displayed at 
+the current item and offset (if possible).</p>
+<p>RFIND {FWD/BWD] repeats the previous find, changing direction as necessary if 
+FWD or BWD is specified. If neither is specified the repeated find is in the 
+direction of the last FIND or RFIND.</p>
+<p>RIGHT Changes the screen to show the columns immediately after (to the left 
+of) the columns currently on display. You can also use the COLUMN command to 
+change the column at which the display begins. </p>
+<p>RULER Toggles on/off the display of rulers and the top and bottom of the body 
+to make it easier to determine data location.</p>
+<p>TERM [xxxx] Changes the name of the queue you are browsing, but is tailored to
+applications that use the convention of naming temporary storage queues that
+are associated with a terminal by a constant in the first four characters and
+the terminal name in the last four. The new queue name is formed from
+the first four characters of the current queue name, followed by xxxx. If xxxx 
+is not specified the current terminal id is used.</p>
+<p>TOP Causes the KEBR transaction to start the display at the first record in the
+queue. </p>
+<p>VGET xxxxxxxx [FIRST nnnn RECS nnnn] Transfers records of the named file to the end of the temporary
+storage queue currently on display. This enables you to browse the
+contents of the file. xxxxxxxx must be the name of a vsam file (ksds, esds, rrds, 
+or path) defined in the FCT. The optional arguments FIRST and RECS specify the 
+first record and the number of records to read. Either or both may be specified 
+in any order following the file name. The defaults are FIRST 1 RECS 100.</p>
+<p><b>Using the KEBR transaction with transient data</b></p>
+<p>The GET command reads each record in the transient data queue that you
+specify and writes it at the end of the temporary storage queue you are
+browsing, until the transient data queue is empty. You can then view
+the records that were in the transient data queue. When you have
+finished your inspection, you can copy the temporary storage queue back to the
+transient data queue (using the PUT command). This usually leaves the
+transient data queue as you found it, but not always. Here are some
+points you need to be aware of when using the GET and PUT commands: 
+</p><ul>
+<li>If you want to restore the transient data queue unchanged after you have
+browsed it, make sure that the temporary storage queue on display at the time
+of the GET command is empty. Otherwise, the existing temporary storage
+records will be copied to the transient data queue when the subsequent PUT
+command is issued.
+</li><li>After you get a transient data queue and before you put it back, other
+tasks may write to that transient data queue. When you issue your PUT
+command, the records in the temporary storage queue will be copied
+<b>after</b> the new records, so that the records in the queue are no
+longer in the order in which they were originally created. Some
+applications depend on sequential processing of the records in a queue.
+</li></ul>
+<p>The GET and PUT commands do not need to be used as a pair. You can add to a 
+transient data queue from a temporary storage queue with a PUT command at any 
+time. If you are debugging code that reads a transient data queue, you can 
+create a queue in temporary storage (with the KEBR GET command, or by program) and then refresh the
+transient data queue as many times as you like from temporary storage.
+Similarly, you can empty a transient data queue by using a GET command without
+a corresponding PUT command.
+</p>
+<p><b>More KEBR details</b></p>
+
+<p>KEBR requires a PCT entry pointing to the COBOL program KEBRPGM, which in 
+turn requires a PPT entry for KEBRPGM. PPT entries for KEBRM (the map) and 
+KEBRHELP (the loaded help file) are also required. </p>
+<p>Other PCT entries such as CEBR may also point to KEBRPGM.</p>
+<p>Source for KEBRPGM and KEBRHELP is in HERC01.KICKSSYS.V1R5M0.COB. Source for 
+KEBRM is in HERC01.KICKSSYS.V1R5M0.MAPSRC as member KEBRMAP.</p>
+
+<h3><a name="supplied-klogit"></a>KLOGIT</h3>
+<p>The KLOGIT program allows you to easily put a message onto the <i><b>KICKS</b></i> 
+log (destination 'LOG ') with your message automatically prefaced by the date, 
+time, user id, terminal id, and transaction id. </p>
+<p>See for example any of the TESTFILE suite programs that use this to report 
+unexpected returns.</p>
+<p>KLOGIT requires a PPT entry for KLOGIT. Source for KLOGIT is in 
+HERC01.KICKSSYS.V1R5M0.GCC.</p>
+
+<h3><a name="supplied-lastcc"></a>LASTCC</h3>
+<p>The LASTCC programs allow you to set and retrieve the last and highest return 
+codes in a current <i><b>KICKS</b></i> run. <i><b>KICKS</b></i> maintains the 
+MAXCC as the highest set value of LASTCC or MAXCC. When <i><b>KICKS</b></i> ends 
+it reports the then current value of MAXCC as the return code.</p>
+<p>KLASTCCG (get) returns the lastcc as a S9(8) comp item.</p>
+<p>KLASTCCP (put) sets the lastcc from a S9(8) comp item.</p>
+<p>KMAXCCG (get) returns the maxcc as a S9(8) comp item.</p>
+<p>KMAXCCP (put) sets the maxcc from a S9(8) comp item.</p>
+<p>Most <i><b>KICKS</b></i> applications do not use these routines, and neither 
+normal nor abend transaction ending sets&nbsp; LASTCC/MAXCC, so <i><b>KICKS</b></i> 
+normally shuts down with a return code of zero. If you want to change that you 
+can use these programs to set LAST or MAX CC. See for example the KSDBLOAD 
+program...</p>
+<p>The required PPT entries are part of the KSMT group. Source for these programs is part of the <i><b>KICKS</b></i> 
+source distribution, in HERC01.KICKSTS.JCL member LASTCC.</p>
+
+<h3><a name="supplied-syncxit"></a>SYNCXIT</h3>
+<p>The SYNCXIT program is a sample syncpoint exit, coded as a command level 
+COBOL program. The sample simply LINK's to KLOGIT to report each type of entry 
+(transaction start, transaction end, transaction abend, syncpoint commit, 
+syncpoint rollback) as it is made.</p>
+<p>SYNCXIT requires a PPT entry for SYNCXIT . Source for SYNCXIT is in 
+HERC01.KICKSSYS.V1R5M0.COB.</p>
+
+<h3><a name="supplied-dsnhdecp"></a>DSNHDECP</h3>
+<p>The DSNHDECP program is not included with <i><b>KICKS</b></i>, but a PPT for 
+it (as a assembler table) is. This PPT entry causes <i><b>KICKS</b></i> to try 
+to load DSNHDECP into memory on startup. <i><b>KICKS</b></i> never calls or uses 
+this module, but if any of your applications use DB2 then the in memory copy of DSNHDECP 
+will specify the DB2 subsystem to be used.</p>
+<p>Copy member DSNHDECP from an 'appropriate' (meaning the one for the DB2 
+subsystem you intend to use) SDSNEXIT library to your KIKRPL library. Your 
+application will use a CAF 'implicit' connection to DB2, and CAF will obtain the 
+id of the DB2 subsystem to connect to by looking in the DSNHDECP member. <br>
+</p>
+<hr>
+
+<font size="3">Copyright <font face="Times New Roman">© Mike Noel, 2008-2014;
+</font></font>last updated 11/5/2014
+</body></html>

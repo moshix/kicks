@@ -1,0 +1,245 @@
+<html>
+
+<head>
+<title>KICKS User's Guide - Notes on Distros</title>
+<base target="_self">
+
+<script language="javascript">
+if(self.location==top.location)self.location="index.html?Configuration.htm";
+</script>
+
+</head>
+
+<BODY>
+
+<!--This is a comment. Comments are not displayed in the browser-->
+
+<table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" height="72">
+	<tr>
+		<td width="141" valign="top"><i><b><font size="7">KICKS</font></b></i></td>
+		<td valign="bottom">
+		<p align="right">
+		<font size="6"><span style="font-weight: 400">A transaction processing
+		system for </span></font><font size="7" color="#FF0000">
+		<span style="font-weight: 700">CMS</span></font><font size="6"><span style="font-weight: 400"> &amp; </span></font><font color="#FF0000" size="7">
+		<span style="font-weight: 700">TSO</span></font></td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+<h2>Notes on operating system distributions
+</h2>
+<h3><a name="TK3"></a>TSO - older Tur(n)key MVS distributions</h3>
+<p>&quot;Tur(n)key MVS&quot; was originated by Volker Bandke in 2002. It is a ready to use
+OS/VS2 MVS 3.8j system built specifically to run under the Hercules System/370,
+ESA/390, and z/Architecture Emulator. Originally distributed on a CD, it
+included a number of MVS source and cbt volumes still replicated (at least by
+reference) in more recent distributions. As a <i><b>KICKS</b></i> platform it is
+somewhat lacking: no IND$FILE or XMIT370 to ease loading new programs; no GCC,
+no user proclibs, no userid.clist in TSO logon procedure, and most importantly
+it is missing the TSO/VTAM improvements that in later distributions allow <i><b>
+KICKS</b></i> to detect alternate screen dimensions. Some components of the CD
+(especially the source and cbt volumes) are available at
+<a target="_blank" href="http://tk3.limewebs.com/_TK3herc_links.html">
+http://tk3.limewebs.com/_TK3herc_links.html</a></p>
+<p>The immediate challenge to installing <i><b>KICKS</b></i> on this system is
+lack of XMIT370. Since <i><b>
+KICKS</b></i> is no longer distributed on Hercules '.HET' tape images the only
+options are (a) install KICKS on a more modern system, then make your own '.HET'
+tape image and use that to install; or (b) install XMIT370. An '.HET' tape image
+for XMIT370 is at
+<a target="_blank" href="http://cbttape.org/~jmorrison/mvs38j/xv0005-beta02.het">
+http://cbttape.org/~jmorrison/mvs38j/xv0005-beta02.het</a></p>
+<p>GCCMVS is available on
+<a target="_blank" href="http://gccMVS.sourceforge.net/">sourceforge</a> as an
+XMIT file, so you could easily install it to use (in addition to COBOL) to make
+<i><b>KICKS</b></i> apps.</p>
+<p><i><b>KICKS</b></i> will greatly benefit from some of Greg Price's vtam mods
+(already present on most of the more 'modern' Tur(n)key distributions). You can
+find them at
+<a target="_blank" href="http://www.prycroft6.com.au/vs2mods/index.html">
+http://www.prycroft6.com.au/vs2mods/index.html</a>. I especially recommend
+ZP60008 and ZP60009.</p>
+<p>Of course user proclibs, user clists, and other major enhancements in later
+distributions can also be added, but at some point you might ask yourself why
+you are reinventing the wheel. when you could just download and install one of
+the newer releases and save yourself a great deal of effort...</p>
+<h3><a name="MVS380"></a>TSO - Tur(n)key &quot;MVS380&quot; (2012 version) (also applies to
+&quot;TK3UPD&quot;) </h3>
+<p>The &quot;MVS380&quot; distribution (and the TK3UPD) are descendents of the &quot;Tur(n)key
+MVS&quot; originated by Volker Bandke in 2002. These distributions reflect 10 years
+of additional customization and selective additions, some of which (IND$FILE,
+XMIT370, user proclibs, user clist librarys, and improved TSO/VTAM functionality) are very useful for
+a <i><b>KICKS</b></i> platform. MVS380 also included GCCMVS at a very current
+level. It is available at
+<a target="_blank" href="http://tk3.limewebs.com/_TK3herc_links.html">
+http://tk3.limewebs.com/_TK3herc_links.html</a></p>
+<p>I developed and maintain <b><i>KICKS for TSO</i></b> on MVS380.</p>
+<p>The difference between the TK3UPD and the MVS380 distributions is primarily
+that TK3UPD does not come with GCCMVS installed, nor with the (limited) 31 bit
+support necessary to compile gigantic GCC programs, such as the compiler itself.&nbsp;
+Note that <i><b>KICKS</b></i> programs are not sufficiently gigantic to require
+31 bit support. </p>
+<p>Either works well with <i><b>KICKS</b></i>, but of course if you want to use
+GCC programs in <i><b>KICKS</b></i> it is easier to use MVS380 where GCCMVS is
+already installed.</p>
+<h3><a name="tk4-"></a>TSO -
+	Tur(n)key &quot;TK4-&quot; (update 5 - or newer) </h3>
+<p>The &quot;TK4-&quot; distribution is a another descendent of the &quot;Tur(n)key MVS&quot;
+originated by Volker Bandke in 2002. A few more years of refinement beyond
+TK3UPD, it also has hercules in the same zip file so it really is a &quot;plug and
+play&quot; install. <i>This is the recommended distribution for a <b>KICKS</b>
+Tur(n)key install, and as a TSO build platform for the <b>KICKS</b> source code</i>.
+It is available at <a target="_blank" href="http://wotho.ethz.ch/tk4-/">http://wotho.ethz.ch/tk4-/</a></p>
+<p>The major difference between TK4- and preceding distributions is the
+inclusion of a security system, RAKF. Since <i><b>KICKS</b></i> is in truth just
+another TSO application this is, as in Z/OS, only significant in terms of the
+security system defining what you think you want your TSO users to be able to
+do. If you don't like what it's doing, that's a RAKF issue, not a <i><b>KICKS</b></i>
+issue. </p>
+<p>TK4- is the &quot;supported&quot; build environment for using the <i><b>KICKS</b></i>
+source code. Even if you do not intend to install or use the source you may want
+to review the &quot;<a href="Installation.shtml#source">Installing &amp; Using <i>KICKS</i> source code</a>&quot;
+section since you may find some of the&nbsp; build system changes useful in your
+own TK4- configuration.</p>
+<h3><a name="zos"></a>TSO - Z/OS ADCD</h3>
+<p>IBM has a distribution called the ADCD, or Application Developers Controlled
+Distribution. However, as used in <i><b>KICKS</b></i> documentation the
+reference &quot;ADCD&quot; does not refer to the IBM ADCD distribution specifically, but
+rather to systems that &quot;look like&quot; it&nbsp; In such systems (which include other
+IBM starter distributions and some new or small customer production systems) the
+initial programs, procs, and clists are named as originally delivered and
+probably not greatly modified and users are not particularly restricted from
+accessing them. By comparison, a more mature or larger production system
+probably has many of these initial programs, procs and clists isolated (for
+maintenance purposes) and restricted from normal&nbsp; user access, instead
+having normal users access copies of them (perhaps strongly modified) from site
+specific libraries.</p>
+<p>Instructions refer to the &quot;ADCD&quot; distribution in this
+generic sense because in at least some cases the instructions can be applied
+exactly as given, but more generally because when the instruction can't be
+applied exactly it should at least be apparent how it should be modified based
+on what would be done on an &quot;ADCD&quot; system.</p>
+<p>Z/OS distributions and licenses, including the actual ADCD,&nbsp; are only
+available directly from IBM. Contact your IBM representative for more
+information.</p>
+<p><i><b>KICKS</b></i> can be installed and run in Z/OS without issue.</p>
+<p>GCCMVS is not usually installed on Z/OS, but it is available on
+<a target="_blank" href="http://gccMVS.sourceforge.net/">sourceforge</a> as an
+XMIT file, so you could easily install it to use (in addition to COBOL) to make
+<i><b>KICKS</b></i> apps. <i><b>KICKS</b></i> does not presently support 
+development using IBM C.</p>
+<h3><a name="6pk"></a>CMS - older VM/370 distributions </h3>
+<p>The 2011 distribution of the VM/370 &quot;sixpack&quot; is available at
+<a href="http://vm370.31bits.net/vm370sixpack-1_2.zip">&nbsp;http://vm370.31bits.net/vm370sixpack-1_2.zip</a>. </p>
+<p>Because the original VM/370 did not include it, before <i><b>KICKS</b></i> can
+be installed on the 2011 VM/370 &quot;sixpack&quot; distribution some kind of 3270 full
+screen support must be installed. There are several available. The first was
+GCIC, but it is an assembler oriented system not suitable for <i><b>KICKS</b></i>.
+The next was mecaff, which provides full screen support via an external java
+process. <i><b>KICKS</b></i> works great with mecaff. Finally there is now an
+enhancement to VM/370 that provides native x'58' full screen 3270 support (with a
+few limitations).&nbsp; <i><b>KICKS</b></i> also works fine with this x'58'
+modification.</p>
+<p>Since modern versions of mecaff support the x'58' modification as well has
+it's original external java process, <i><b>KICKS</b></i> by default requires
+this modern mecaff be installed regardless of whether you intend to use the
+mecaff java process or native x'58'. A modern version of mecaff can be
+downloaded from the files area of the 
+<a target="_blank" href="https://groups.yahoo.com/neo/groups/Hercules-VM370/info">yahoo VM/370
+group</a>. Be sure you install the 'static linked' version of the mecaff tools. 
+This is necessary because <i><b>KICKS</b></i> uses the DOS/VSAM components of VM/370, 
+whose use will cause the 'dynamically linked' versions of the mecaff tools to 
+abend (and require you to re-IPL CMS all the time, very irritating...</p>
+<p>A CMS port of GCCMVS is preinstalled on the 2011 VM/370 sixpack, but it's a
+fairly old version of GCCMVS and not suitable for use with <i><b>KICKS</b></i>.&nbsp; 
+You should obtain or build&nbsp; a more current version. I make GCCCMS VMARC 
+(compiler and library) available
+		in the files area of the yahoo kicksfortso forum, but you really should
+		build your own from file on the source forge repository.</p>
+<p>I developed and maintain <b><i>KICKS for CMS</i></b> on the VM/370 sixpack.</p>
+<p>A normal install of <i><b>KICKS </b></i>on CMS would put the non-VSAM files 
+on the user's A disk, and the vsam files on some unspecified mini disk as 
+recorded in the FCT. For an install on VM/370 sixpack system I suggest a few 
+minor changes, really only amounting to additional specificity to simplify 
+installation.</p>
+<ul>
+	<li>
+	<p style="margin-bottom: 5px">The CMSUSER account on the VM/370 6-pack has 
+	empty 192, 193, 194, and 195 mini-disks. You should modify CMSUSER's PROFILE 
+	EXEC to release/detach the 194 mini-disk, and to access the 195 mini-disk as 
+	'K'. </li>
+	<li>
+	<p style="margin-bottom: 5px">All <i><b>KICKS </b></i>permanent non-VSAM 
+	files should be installed onto the 195 mini-disk that will be accessed as 
+	'K'.</li>
+	<li>
+	<p style="margin-bottom: 5px">The 194 mini-disk should be DOS formatted. A 
+	VSAM master catalog and VSAM space will be allocated on it, and the <i><b>
+	KICKS</b></i> sample VSAM files will be defined and loaded into that VSAM 
+	space. The 194 mini-disk will otherwise remain unlinked so that not just 
+	CMSUSER, but <u>any</u> <i><b>KICKS</b></i> user can access the VSAM files.
+	<i><b>KICKS</b></i> or associated programs, run by any user, will access 
+	this 194 mini-disk as 'O'.</li>
+</ul>
+<p style="margin-bottom: 5px">The values in the FCT's that ship with <i><b>KICKS</b></i> are pre configured as needed for vsam on the 
+VM/370 194 disk as 
+	above.</p>
+<h3><a name="nicof"></a>CMS -
+	VM/370 &quot;sixpack&quot; (nicof-0.6.0-playground - or newer) </h3>
+<p>The &quot;nicof-0.6.0-playground&quot; distribution of VM/370 is the latest of
+the VM/370 sixpack distributions. <i>This is the recommended distribution for a
+<b>KICKS</b> VM/370 install, and as a CMS build platform for the <b>KICKS</b> 
+source code</i>. You can get it from the files area of the yahoo VM/370 group
+<a target="_blank" href="https://groups.yahoo.com/neo/groups/Hercules-VM370/info">
+https://groups.yahoo.com/neo/groups/Hercules-VM370/info</a>.</p>
+<p>Mecaff is preinstalled on the &quot;nicof-0.6.0-playground&quot;, but see the above 
+remarks for older VM/370 distributions regarding GCCMVS and suggested install 
+changes.</p>
+<p>The &quot;nicof-0.6.0-playground&quot; distribution of VM/370 is the &quot;supported&quot; build environment for using the <i><b>KICKS</b></i>
+source code. Even if you do not intend to install or use the source you may want
+to review the &quot;<a href="Installation.shtml#source">Installing &amp; Using <i>KICKS</i> source code</a>&quot;
+section since you may find some of the&nbsp; build system changes useful in your
+own &quot;nicof-0.6.0-playground&quot; configuration.</p>
+<h3><a name="zvm"></a>CMS - Z/VM ADCD </h3>
+<p>IBM has a distribution called the ADCD, or Application Developers Controlled
+Distribution. However, as used in <i><b>KICKS</b></i> documentation the
+reference &quot;ADCD&quot; does not refer to the IBM ADCD distribution specifically, but
+rather to systems that &quot;look like&quot; it&nbsp; In such systems (which include other
+IBM starter distributions and some new or small customer production systems) the
+initial programs and execs are named as originally delivered and probably not
+greatly modified and users are not particularly restricted from accessing them.
+By comparison, a more mature or larger production system probably has many of
+these initial programs and execs isolated (for maintenance purposes) and
+restricted from normal&nbsp; user access, instead having normal users access
+copies of them (perhaps strongly modified) from site specific minidisks.</p>
+<p>Instructions refer to the &quot;ADCD&quot; distribution in this
+generic sense because in at least some cases the instructions can be applied
+exactly as given, but more generally because when the instruction can't be
+applied exactly it should at least be apparent how it should be modified based
+on what would be done on an &quot;ADCD&quot; system.</p>
+<p>Z/VM distributions and licenses, including the actual ADCD,&nbsp; are only
+available directly from IBM. Contact your IBM representative for more
+information.</p>
+<p><i><b>KICKS</b></i> can be installed on Z/VM systems, but will be of limited
+utility if VSAM is not available. VSAM support was most commonly available by
+the addition of IBM's &quot;VSE/VSAM&quot; product (probably 5686-081), discontinued
+several years ago. VSAM support may still be available if a customer also
+licenses Z/VSE to run under Z/VM, but there isn't much information available as
+to how those VSE VSAM components could be made available in CMS.</p>
+<p>Assuming VSAM is available, <i><b>KICKS</b></i> can be installed and run in
+Z/VM without issue.</p>
+<p>GCCMVS is not installed on most Z/VM systems so you should obtain or build&nbsp; 
+a copy. I make GCCCMS VMARC (compiler and library) available
+		in the files area of the yahoo kicksfortso forum, but you really should
+		build your own from file on the source forge repository. <i><b>KICKS</b></i> 
+does not presently support development using IBM C.</p>
+
+<hr>
+
+<font size="3">Copyright <font face="Times New Roman">© Mike Noel, 2008-2014;
+</font></font>last updated 1011/2014
+
+</body>
+
+</html>

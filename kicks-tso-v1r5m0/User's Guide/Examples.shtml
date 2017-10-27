@@ -1,0 +1,772 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+
+<title>KICKS User's Guide - Examples</title>
+<base target="_self">
+
+<script language="javascript">
+if(self.location==top.location)self.location="index.html?Examples.shtml";
+</script>
+
+</head>
+
+<BODY>
+
+<!--This is a comment. Comments are not displayed in the browser-->
+
+<table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" height="72">
+	<tr>
+		<td width="141" valign="top"><i><b><font size="7">KICKS</font></b></i></td>
+		<td valign="bottom">
+		<p align="right"><font size="6"><span style="font-weight: 400">A
+		transaction processing system for </span></font>
+		<font size="7" color="#FF0000"><span style="font-weight: 700">CMS</span></font><font size="6"><span style="font-weight: 400"> &amp; </span></font><font color="#FF0000" size="7">
+		<span style="font-weight: 700">TSO</span></font></td>
+	</tr>
+</table>
+
+<h1>Examples</h1>
+<p><br>
+<b>Most of the example programs and maps are preinstalled. The files to use them are
+defined and loaded during KICKS install. All the materials necessary to
+reinstall them are also included.&nbsp; The DB2INQ1 program installation
+materials are also included, but it is not preinstalled as it must be linked and
+bound to your own DB2 system.</b></p>
+<h2><br>
+The Murach examples</h2>
+<p>Mike Murach &amp; Associates, Inc. (<a target="_blank" href="http://www.murach.com">www.murach.com</a>)
+publish a variety of computer programming books including
+<a target="_blank" href="http://www.murach.com/books/mccp/index.htm">CICS for the
+COBOL
+Programmer</a> and the
+<a target="_blank" href="http://www.murach.com/books/cdrf/index.htm">CICS
+Desk Reference</a>, both excellent references for CICS (and <i><b>KICKS</b></i>)
+programming by Doug Lowe. Murach makes the sample programs for these books
+available for free download at
+<a target="_blank" href="http://www.murach.com/books/mccp/download.htm">http://www.murach.com/books/mccp/download.htm</a>. The ‘Desk Reference’ set is
+actually a subset of the ‘for the COBOL Programmer’ set so there is no need to download
+both.</p>
+<p>These programs are COBOL II (aka COBOL 85) and compile without issue in
+modern LE compilers on Z/OS. </p>
+<p>But they required major modifications
+to compile using the ANSI COBOL compiler included with MVS38J. COBOL II’s structured
+programming constructs (EVALUATE, WHEN, END-IF, etc) were particularly
+problematic. What I did was un-nest all the structures where the ending END-XXXX
+(END-EVALUATE, END-IF, etc) was not immediately followed by a period. I put
+these un-nested structures in separate paragraphs at the end of the program, and
+put a PERFORM for the new paragraph where the nested structure had been. That
+allowed removal of the END-XXX statement. Generally I left the original
+statements in the program as comments. </p>
+<p>Of course there were numerous smaller changes necessary; you can review the code
+to see them.</p>
+<p>Plainly my goal was not to generate highly maintainable, nicely structured
+programs! I just wanted to convert them so they could be compiled with the
+ANSI COBOL compiler, thus allowing use of Murach's high quality CICS programming books
+with <i><b>KICKS</b></i>.</p>
+<p>While testing I installed these programs (the originals, unmodified) on a
+modern Z/OS CICS system to confirm that the behavior of the modified versions in
+<i><b>KICKS</b></i> is just like the behavior of the originals in CICS. I
+discovered a few bugs in the originals, for example the programs consistently
+called ENDBR (and expected it to succeed) when the preceding STARTBR had failed.
+I made simple corrections to these minor errors when I found them.</p>
+<p>In addition to the changes I made to get the programs to compile and run I
+also made a few changes to make them easier to present.</p>
+<p>First, the copybooks for some of the files described much of the data as comp-3,
+but the test data Murach provides is not valid mainframe comp-3 data. Since I
+needed to fix (in some cases generate new) the test data anyway I decided it
+would be easier to change the copybooks to define the data as display, which of
+course makes the data much easier to handle in an upload/download environment.</p>
+<p>Second, some of programs use programmer generated symbolic maps (aka dsects),
+but Murach named the copy members for these symbolic maps the same as the binary
+map. This is problematic since the standard map generation procedure (<i><b>KICKS</b></i>
+or CICS) will overlay the programmer generated members! To prevent this problem
+I renamed their programmer generated maps (usually adding a ‘X’ to the end of
+the name) and changed the COPY statements in the programs to match. </p>
+<p>The following table summarizes the book location, program name, transaction
+id, and current <i><b>KICKS</b></i> status of these examples.</p>
+<div align="center">
+	<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="85%" bordercolorlight="#808080" bordercolordark="#000000">
+		<tr>
+			<td width="69">
+			<p align="left"><b>Chapter </b></td>
+			<td width="105">
+			<p align="left"><b>Program </b></td>
+			<td width="167">
+			<p align="left"><b>Transaction </b></td>
+			<td>
+			<p align="left"><b><i>KICKS</i> Status</b></td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">2</td>
+			<td width="105">
+			<p align="left">CUSTINQ1</td>
+			<td width="167">
+			<p align="left">INQ1</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">5</td>
+			<td width="105">
+			<p align="left">CUSTMNT1</td>
+			<td width="167">
+			<p align="left">MNT1</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">7</td>
+			<td width="105">
+			<p align="left">CUSTMNT3</td>
+			<td width="167">
+			<p align="left">MNT3</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">8</td>
+			<td width="105">
+			<p align="left">INTEDIT</td>
+			<td width="167">
+			<p align="left">(Called Subroutine)</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">8</td>
+			<td width="105">
+			<p align="left">NUMEDIT</td>
+			<td width="167">
+			<p align="left">(Called Subroutine)</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">8</td>
+			<td width="105">
+			<p align="left">SYSERR</td>
+			<td width="167">
+			<p align="left">(Linked Routine)</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">9</td>
+			<td width="105">
+			<p align="left">DFXXP00A</td>
+			<td width="167">
+			<p align="left">DFXX</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">11</td>
+			<td width="105">
+			<p align="left">INVMENU</td>
+			<td width="167">
+			<p align="left">MENU</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">12</td>
+			<td width="105">
+			<p align="left">CUSTMNT2</td>
+			<td width="167">
+			<p align="left">MNT2</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">13</td>
+			<td width="105">
+			<p align="left">ORDRENT</td>
+			<td width="167">
+			<p align="left">ORD1</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">13</td>
+			<td width="105">
+			<p align="left">GETINV</td>
+			<td width="167">
+			<p align="left">(Linked Routine)</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">14</td>
+			<td width="105">
+			<p align="left">INVSUM1</td>
+			<td width="167">
+			<p align="left">SUM1</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">14</td>
+			<td width="105">
+			<p align="left">CUSTINQ2</td>
+			<td width="167">
+			<p align="left">INQ2</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">15</td>
+			<td width="105">
+			<p align="left">CUSTINQ3</td>
+			<td width="167">
+			<p align="left">INQ3</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">17</td>
+			<td width="105">
+			<p align="left">DB2INQ1</td>
+			<td width="167">
+			<p align="left">DIN1</td>
+			<td>
+			<p align="left">Works (only in Z/OS with DB2 of course), No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">20</td>
+			<td width="105">
+			<p align="left">CSTMNTP</td>
+			<td width="167">
+			<p align="left">CMNT</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+		<tr>
+			<td width="69">
+			<p align="left">20</td>
+			<td width="105">
+			<p align="left">CSTMNTB</td>
+			<td width="167">
+			<p align="left">CMNT</td>
+			<td>
+			<p align="left">Works, No Issues.</td>
+		</tr>
+	</table>
+</div>
+<p>BTW, “No Issues” doesn’t mean the app works the way you or I think it should:
+It just means the app looks and works the same in <i><b>KICKS</b></i> as it does
+in CICS.</p>
+<div align="right">
+	<table border="0" cellpadding="0" style="border-collapse: collapse" width="50%">
+		<tr>
+			<td><font size="1">Works the same at least the in the version of
+			CICS I used for testing! ‘CICS’ is a fuzzy target. There are dozens
+			of releases spread over several hardware platforms and released over
+			several decades, plus 3rd party products and local mods.</font></td>
+		</tr>
+	</table>
+</div>
+<h3>INQ1, INQ2, INQ3, DIN1</h3>
+<p>INQ1 (and DIN1, the DB2 version of INQ1), INQ2, and INQ3 are increasingly capable versions of a customer lookup
+screen. In INQ1 you must enter a customer number, which is retrieved and
+displayed. In INQ2 that earlier behavior continues, but you can also press PF5
+to obtain the first customer number on file, or PF6 to obtain the last, and you
+can use PF7/PF8 to scroll forward and back through the customer file. In INQ3
+those earlier behaviors continue, and in addition to the customer file
+information you are also shown up to 10 invoices for the customer.</p>
+
+[an error occurred while processing this directive]
+
+<h3>MNT1, MNT2, MNT3</h3>
+<p>MNT1, MNT2 and MNT3 are increasingly capable versions of a customer file
+maintenance program, providing typical Add, Change, and Delete functionality.
+The difference between them is in the edits for the Add and Change screens and
+the use of screen highlighting to accent fields in error. In these transactions
+you enter a customer number and an action code (1 for Add, 2 for Change, 3 for
+Delete).</p>
+
+[an error occurred while processing this directive]
+
+<p>When you press enter you are taken to a second screen showing the record to
+be added, changed or deleted (in this case changed).</p>
+
+[an error occurred while processing this directive]
+
+<p>Make your changes and press Enter, or Press PF3 or PF12 to return to the
+first screen without updating the record. Press PF3 or PF12 on the first screen
+to exit (to the menu program). Press PF3 or PF12 again to get back to <i><b>
+KICKS</b></i>.</p>
+<h3>MENU</h3>
+<p>MENU is the transaction id for the screen you’ve already seen after pressing
+PF3 or PF12 on one of the previous screens (INQ1, INQ2, INQ3, MNT1 or MNT2). It
+provides a convenient way to access MNT2 and INQ1 (if you think it really should
+bring up INQ2 or INQ3 go change the code for INVMENU &amp; recompile!). It also
+accesses the Order Entry program we will look at next.</p>
+
+[an error occurred while processing this directive]
+
+<h3>ORD1</h3>
+<p>ORD1 is the transaction id that brings up the order entry system</p>
+
+[an error occurred while processing this directive]
+
+<p>This isn’t an especially easy system to use. You have to know the customer
+numbers (hint: 400001, 400002, … ) and the product numbers (hint: 0000000001,
+0000000005, … ) to be able to generate an order. For example:</p>
+
+[an error occurred while processing this directive]
+
+<p>Of course you can get a quick list of the customer numbers using the INQ2 or
+INQ3 transactions to browse that file. Unfortunately there isn’t a browse
+transactions for the product file, so the easiest way to get a list of all the
+product numbers is to examine the product file load in
+<font face="Courier New">userid.kicks.v1r5m0.instlib(loadmur)</font>. </p>
+<p>When you press ENTER on the above screen you are returned to a blank entry
+screen to enter another order. When you press PF12 or PF3 on that screen you
+will see</p>
+
+[an error occurred while processing this directive]
+
+<p>And pressing ENTER again takes you back to the MENU screen. </p>
+<p>If you press PF4 (to make corrections) instead of ENTER you’ll see</p>
+
+[an error occurred while processing this directive]
+
+<p>Where you can change the info you entered and/or add new items. When done
+press ENTER to return to the ENTER/PF4 screen, then ENTER again to post the
+order.</p>
+<h3>SUM1</h3>
+<p>SUM1 is a transaction id to generate a simple single screen summary of all
+the invoices on file.</p>
+
+[an error occurred while processing this directive]
+
+<p>Press CLEAR to enter the next transaction.</p>
+<h3>DFXX</h3>
+<p>DFXX is a transaction you can use to generate a variety of abends (Just to
+see what happens I suppose). </p>
+
+[an error occurred while processing this directive]
+
+<p>For example, press PF6 here and you get a AEIL abend announcing itself on the
+line just below the “Or press Enter to …” (ie, the abend message shows up where
+the cursor was). Press CLEAR to type the next transactions. </p>
+<p>It’s also worth noting how CICS and <i><b>KICKS</b></i> differ in their
+response to ASRA (and ASRB, and AICA) abends. </p>
+<p>CICS is a multi user application. Even though continued operation after one
+of these abends may make it far more difficult to determine why the abend
+occurred, it would be even worse to shut down CICS for all its users just
+because one application failed for one user. So CICS ‘recovers’ in this
+situation and (usually) continues to operate ‘normally’. Unfortunately this
+recovery is not always 100% successful and sometimes CICS has to be ‘rolled’
+later anyway, but at least it tried… </p>
+<p><i><b>KICKS</b></i> is a single user application. There is no reason to even
+try to continue after one of these abends, so <i><b>KICKS</b></i> just prints
+its own formatted dump, then (if you provided a SYSUDUMP or SYSABEND allocation)
+a system dump, then ends. </p>
+<p>There is another significant difference between CICS and <i><b>KICKS</b></i>
+in abend processing - CICS is usually configured to backout file and database
+changes following a transaction abend – but <i><b>KICKS</b></i> does not do
+this for VSAM files. So if your transaction updated a record, then abended – CICS would undo
+the update – But <i><b>KICKS</b></i> would leave the file alone (the update
+would remain). </p>
+<div align="right">
+	<table border="0" cellpadding="0" style="border-collapse: collapse" width="50%">
+		<tr>
+			<td><font size="1">How CICS 'backout' is done depends on file type
+			and ESDS's are a very special case (since delete isn't supported).</font></td>
+		</tr>
+	</table>
+</div>
+<p>If you enter PF1 on the above screen you will next see</p>
+
+[an error occurred while processing this directive]
+
+<p>At which point you can restart <i><b>KICKS</b></i> or initiate whatever other debugging (TSO
+test?) you want.</p>
+<h3>CMNT</h3>
+<p>If you try the CMNT transaction you’ll see it looks and works pretty much
+that same as MENU, MNT2, INQ2. The differences are internal. The CMNT
+transaction is written as an example of a structured approach, with the
+‘business’ parts of the transaction in one program and the ‘presentation’ parts
+in another. </p>
+<h3>(Re)installing the Murach examples:</h3>
+<p>Installing the Murach examples from the converted source consists of (a)
+reassembling the maps; (b) recompiling the programs; (c) defining and loading
+the files; (d) adding the required <i><b>KICKS</b></i> table entries; (e)
+updating the <i><b>KICKS</b></i> clist.</p>
+<ol type="a">
+	<li>
+	<p style="margin-bottom: 2px">Reassembling the maps. The BMS maps are in
+	<font face="Courier New">userid.kicks.v1r5m0.mapsrc</font>, named as in the book. Submit the job
+	<font face="Courier New">$MURMAPS</font> in
+	that library to reassemble the maps</p></li>
+	<li>
+	<p style="margin-bottom: 2px">Recompiling the programs. The COBOL copybooks
+	(as well as the map dsects) are in <font face="Courier New">userid.kicks.v1r5m0.cobcopy</font> and the
+	COBOL
+	source programs are in <font face="Courier New">userid.kicks.v1r5m0.cob</font><font face="Times New Roman">
+	(for ansi COBOL) and</font> <font face="Courier New">userid.kicks.v1r5m0.cb2</font><font face="Times New Roman">
+	(for le COBOL)</font>, in both cases named as in
+	the book. Submit the job <font face="Courier New">$MURPGMS</font> in
+	<font face="Courier New">the 'cob' </font><font face="Times New Roman">or</font><font face="Courier New">
+	'cb2' library</font> to recompile
+	the programs. These jobs compile without source trace. If you want to use
+	source trace with the compiled programs change the the last character of the
+	compile proc names from 'L' to 'S'.</p></li>
+	<li>
+	<p style="margin-bottom: 2px">Defining and loading the VSAM files. JCL to
+	delete/define the VSAM files (including the alternate indexes) is in
+	<font face="Courier New">userid.kicks.v1r5m0.instlib</font>. It uses a special program (STKCARDS) to take
+	several card images and turn them into longer records to load them into the
+	VSAM files with repro. STKCARDS is already compiled and ready to use, but if
+	you want to examine or recompile it the source is in
+	<font face="Courier New">userid.kickssys.v1r5m0.instlib</font>.
+	Submit the job <font face="Courier New">LOADMUR</font> in
+	<font face="Courier New">userid.kicks.v1r5m0.instlib</font> to delete/define/load
+	all the VSAM files.</p></li>
+	<li>
+	<p style="margin-bottom: 2px">Adding the required <i><b>KICKS</b></i> table entries. The
+	required table entries are included in the default file control table (fct),
+	task control table (pct), and program properties table (ppt). In the event
+	those default tables are altered the specific required entries are:</p>
+<p>
+<pre>
+*        FCT ENTRIES FOR MURACH/LOWE CICS FOR THE COBOL PROGRAMMER
+
+         KIKFCT TYPE=DATASET,DATASET=CUSTMAS
+         KIKFCT TYPE=DATASET,DATASET=INVCTL
+         KIKFCT TYPE=DATASET,DATASET=PRODUCT
+         KIKFCT TYPE=DATASET,DATASET=INVOICE
+         KIKFCT TYPE=DATASET,DATASET=INVPATH,BASE=INVOICE
+
+*        PCT ENTRIES FOR MURACH/LOWE CICS FOR THE COBOL PROGRAMMER
+
+         KIKPCT TYPE=ENTRY,TRANSID=INQ1,PROGRAM=CUSTINQ1
+         KIKPCT TYPE=ENTRY,TRANSID=MNT1,PROGRAM=CUSTMNT1
+*        KIKPCT TYPE=ENTRY,TRANSID=MNT3,PROGRAM=CUSTMNT3
+         KIKPCT TYPE=ENTRY,TRANSID=DFXX,PROGRAM=DFXXP00A
+         KIKPCT TYPE=ENTRY,TRANSID=MENU,PROGRAM=INVMENU
+         KIKPCT TYPE=ENTRY,TRANSID=MNT2,PROGRAM=CUSTMNT2
+         KIKPCT TYPE=ENTRY,TRANSID=ORD1,PROGRAM=ORDRENT
+         KIKPCT TYPE=ENTRY,TRANSID=SUM1,PROGRAM=INVSUM1
+         KIKPCT TYPE=ENTRY,TRANSID=INQ2,PROGRAM=CUSTINQ2
+         KIKPCT TYPE=ENTRY,TRANSID=INQ3,PROGRAM=CUSTINQ3
+         KIKPCT TYPE=ENTRY,TRANSID=DIN1,PROGRAM=DB2INQ1
+         KIKPCT TYPE=ENTRY,TRANSID=CMNT,PROGRAM=CMNTP
+
+*        PPT ENTRIES FOR MURACH/LOWE CICS FOR THE COBOL PROGRAMMER
+
+         KIKPPT TYPE=ENTRY,PROGRAM=INQSET1,USAGE=MAP
+         KIKPPT TYPE=ENTRY,PROGRAM=MNTSET1,USAGE=MAP
+         KIKPPT TYPE=ENTRY,PROGRAM=MENSET1,USAGE=MAP
+         KIKPPT TYPE=ENTRY,PROGRAM=MNTSET2,USAGE=MAP
+         KIKPPT TYPE=ENTRY,PROGRAM=ORDSET1,USAGE=MAP
+         KIKPPT TYPE=ENTRY,PROGRAM=INQSET2,USAGE=MAP
+         KIKPPT TYPE=ENTRY,PROGRAM=SUMSET1,USAGE=MAP
+         KIKPPT TYPE=ENTRY,PROGRAM=INQSET3,USAGE=MAP
+         KIKPPT TYPE=ENTRY,PROGRAM=DB2SET1,USAGE=MAP
+         KIKPPT TYPE=ENTRY,PROGRAM=CMNTSET,USAGE=MAP
+*
+         KIKPPT TYPE=ENTRY,PROGRAM=CUSTINQ1,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=CUSTMNT1,PGMLANG=CMDLVL
+*        KIKPPT TYPE=ENTRY,PROGRAM=CUSTMNT3,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=SYSERR,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=DFXXP00A,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=INVMENU,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=CUSTMNT2,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=ORDRENT,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=GETINV,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=INVSUM1,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=CUSTINQ2,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=CUSTINQ3,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=DB2INQ1,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=CMNTP,PGMLANG=CMDLVL
+         KIKPPT TYPE=ENTRY,PROGRAM=CMNTB,PGMLANG=CMDLVL
+</pre>
+</li>
+	<li>
+	<p style="margin-bottom: 2px">Updating the <i><b>KICKS</b></i> clist </p>
+
+	<p>The <i><b>KICKS</b></i> clist needs to allocate the files needed for the
+	application – ie – for each fct entry there should be an alloc in the clist.
+	The specific statements are:
+<pre>
+		ALLOC FI(CUSTMAS) DA('userid.KICKS.MURACH.CUSTMAS') SHR
+		ALLOC FI(INVCTL) DA('userid.KICKS.MURACH.INVCTL') SHR
+		ALLOC FI(INVOICE) DA('userid.KICKS.MURACH.INVOICE') SHR
+		ALLOC FI(INVPATH) DA('userid.KICKS.MURACH.INVOICE.PATH') SHR
+		ALLOC FI(PRODUCT) DA('userid.KICKS.MURACH.PRODUCT') SHR
+</pre>
+	<p>It’s usually good practice for a CLIST to free anything it allocates and
+	if you examine the <i><b>KICKS</b></i> clist you will see the files freed
+	when the CLIST starts (in case they got left allocated somehow) and when the
+	CLIST is cleaning up. Note the SHR disposition. Obviously this is necessary
+	if multiple <i><b>KICKS</b></i> users will be accessing these files. It’s
+	also what <i><b>KICKS</b></i> uses to determine that it should enqueue
+	access to files. When <i><b>KICKS</b></i> sees a DISP=OLD file, which
+	obviously can’t be shared, it does not bother with enqueuing access.</p></li>
+	<li>
+	<p style="margin-top: 5px">Installation of the DIN1 transaction is detailed in KooKbooK recipe #13.
+	</li>
+	</ol>
+<h2>&nbsp;</h2>
+<h2><a name="TacExample"></a>The TAC example</h2>
+
+<p>The TAC example is a real world system used for some years in a State
+Department of Labor . It was used as a data entry tool for a variety of records
+which were input to a nightly batch process, the ultimate goal being to
+reconcile an unemployment tax clearing account. It implements add and browse
+function on a VSAM esds. At the time it was written, IT management did not trust
+online update (!) so change and delete functionality, though anticipated, was
+not implemented. </p>
+<div align="right">
+	<table border="0" cellpadding="0" style="border-collapse: collapse" width="50%">
+		<tr>
+			<td><font size="1">Despite the screen titles this did not originate
+			in Nevada. I’ve changed the name to protect the ….</font></td>
+		</tr>
+	</table>
+</div>
+<p>The various record types that can be entered are represented in the TACREC
+copybook, each redefining the previous. The ADD transactions each enter their
+own type of record, at the end (the file is a VSAM ESDS, so of course all added
+records are at the end of the file). The BROWSE transactions simply start at the
+beginning of the file and read the entire file displaying records matching the
+subtype in question. Absence of the CHANGE and DELETE functions meant mistakes
+could not be fixed, but fixing was not really necessary because a new record
+could be entered and the batch process would only apply the last (last record
+for a given employee for example) in any day’s run. A typical crude keypunch
+replacement system from the dawn of online processing. </p>
+<p>This is a cookie cutter application. Lots of programs and maps, but all very
+similar. When you’ve seen one of the ‘add’ programs you’ve seen them all. Same
+with the browse programs. And of course the change and delete programs are all
+just stubs. The one thing that’s worth seeing is the use of Handle Aid and
+Handle Condition API’s, unused in the Murach examples. </p>
+<p>While this was once a real production system, I’m not certain where in the
+system’s life cycle this code came from. There are indications it may have been
+a development snapshot rather than a production backup. In any event, it was
+coded in “VS COBOL”, a IBM COBOL dialect preceding COBOL II, and was relatively
+easy to convert to MVT ANSI COBOL. It was also fairly simple to convert it to
+run in a modern LE COBOL (One program using examine instead of inspect; and use
+of the preprocessor -wc option to eliminate its dependence on the VS COBOL
+when-compiled reserved word). For use as an example it’s nice that it
+displays the map name and program name at the top of each screen, with the
+compile/mapgen date on the line below.</p>
+<h3>Using the TAC example</h3>
+<p>Get a clear screen, type BTC0 , and press ENTER</p>
+<div align="right">
+	<table border="0" cellpadding="0" style="border-collapse: collapse" width="50%">
+		<tr>
+			<td><font size="1">If you look at the PCT you will observe a large
+			number of ‘BTC?’ transactions. Only BTC0 is intended for operator
+			use. The rest are used internally by the TAC system in RETURN
+			TRANSID statements. If you type them yourself you’ll be rewarded
+			with a ‘BRAF’ abend when the launched program discovers it didn’t
+			get a COMM-AREA..</font></td>
+		</tr>
+	</table>
+</div>
+
+[an error occurred while processing this directive]
+
+<p>That gives you a menu of different kinds of records to enter. Select one of
+those with a PF key and you get to a sub menu with add/review/change/delete. You
+can also type ‘PF1’ or ‘PF01’ (of similar) at the ‘====&gt; ’. This functionality
+is leftover from the days when PF keys were not standard on 3270 terminals! </p>
+<p>To continue the example, press PF1 or PF13 for Automatic Refunds</p>
+
+[an error occurred while processing this directive]
+
+<p>Then (for example) press PF2/PF14 for the review screen</p>
+
+[an error occurred while processing this directive]
+
+<p>If you press Enter you will review existing records until you reach the end
+of the file, after which you will be returned to the menu. Or enter an SSN to
+start the browse with the first of those found. </p>
+<p>You can leave the Reconciliation system by repeatedly pressing PF12 or CLEAR.</p>
+<h3>(Re)installing the TAC examples: </h3>
+<p>As with the Murach examples, the maps are in <font face="Courier New">userid.kicks.v1r5m0.mapsrc</font>. Same
+story for the programs and COBOL copybooks. They’re in <font face="Courier New">
+userid.kicks.v1r5m0.cob</font>
+and <font face="Courier New">userid.kicks.v1r5m0.cobcopy</font> respectively. Use
+<font face="Courier New">userid.kicks.v1r5m0.mapsrc($tacmaps)</font> to generate all the maps, then
+<font face="Courier New">userid.kicks.v1r5m0.cob($tacpgms)</font> to compile all
+the programs - or <font face="Courier New">userid.kicks.v1r5m0.cb2($tacpgms)</font><font face="Times New Roman">in
+a Z/OS environment.</font></p>
+<p>Similarly the file delete/define/load is in
+<font face="Courier New">userid.kicks.v1r5m0.instlib(loadtac)</font>, just view and submit. </p>
+<p>The table entries are in the default fct, pct, and ppt in
+<font face="Courier New">userid.kickssys.v1r5m0.instlib</font> – here repeated for the sake of consistency:</p>
+<pre>
+	*        ACCOUNTS AND CONTRIBUTIONS FCT ENTRY (ONLY ONE)
+	*
+	         KIKFCT TYPE=DATASET,DATASET=TACDATA
+	*        ACCOUNTS AND CONTRIBUTIONS PCT ENTRIES
+	*
+	*        MASTER MENU
+	*
+	         KIKPCT TYPE=ENTRY,TRANSID=BTC0,PROGRAM=TACMENU
+	*  ****  WILL NEVER EXIST  TRANSID=BTC1
+	*
+	*        AUTO REFUND
+	*
+	         KIKPCT TYPE=ENTRY,TRANSID=BTC2,PROGRAM=TACARA
+	         KIKPCT TYPE=ENTRY,TRANSID=BTC3,PROGRAM=TACARR
+	         KIKPCT TYPE=ENTRY,TRANSID=BTC4,PROGRAM=TACARC
+	         KIKPCT TYPE=ENTRY,TRANSID=BTC5,PROGRAM=TACARD
+	*
+	*        MANUAL REFUND
+	*
+	         KIKPCT TYPE=ENTRY,TRANSID=BTC6,PROGRAM=TACMRA
+	         KIKPCT TYPE=ENTRY,TRANSID=BTC7,PROGRAM=TACMRR
+	         KIKPCT TYPE=ENTRY,TRANSID=BTC8,PROGRAM=TACMRC
+	         KIKPCT TYPE=ENTRY,TRANSID=BTC9,PROGRAM=TACMRD
+	*
+	*        CANCELLATIONS
+	*
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCA,PROGRAM=TACCCA
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCB,PROGRAM=TACCCR
+	*  ****  WILL NEVER EXIST  TRANSID=BTCC
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCD,PROGRAM=TACCCD
+	*
+	*        DISHONORED ITEMS
+	*
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCE,PROGRAM=TACDHA
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCF,PROGRAM=TACDHR
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCG,PROGRAM=TACDHC
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCH,PROGRAM=TACDHD
+	*
+	*        DEPOSITS
+	*
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCI,PROGRAM=TACDPA
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCJ,PROGRAM=TACDPR
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCK,PROGRAM=TACDPC
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCK,PROGRAM=TACDPD
+	*
+	*        REDEEMPTIONS
+	*
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCM,PROGRAM=TACRDA
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCN,PROGRAM=TACRDR
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCO,PROGRAM=TACRDC
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCP,PROGRAM=TACRDD
+	*
+	*        OTHER MANUAL PROCESSES
+	*
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCQ,PROGRAM=TACOTA
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCR,PROGRAM=TACOTR
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCS,PROGRAM=TACOTC
+	         KIKPCT TYPE=ENTRY,TRANSID=BTCT,PROGRAM=TACOTD
+	*
+	*        ACCOUNTS AND CONTRIBUTIONS PPT ENTRIES
+	*
+	*        MASTER MENU
+	*
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMENU,PGMLANG=CMDLVL
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS01,USAGE=MAP
+	*
+	*        AUTO REFUND
+	*
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACARA,PGMLANG=CMDLVL  ADD
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS02,USAGE=MAP
+	*
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACARR,PGMLANG=CMDLVL  REVIEW
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS03,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACARC,PGMLANG=CMDLVL  CHANGE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS04,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACARD,PGMLANG=CMDLVL  DELETE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS05,USAGE=MAP
+	*
+	*        MANUAL REFUND
+	*
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMRA,PGMLANG=CMDLVL  ADD
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS06,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMRR,PGMLANG=CMDLVL  REVIEW
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS07,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMRC,PGMLANG=CMDLVL  CHANGE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS08,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMRD,PGMLANG=CMDLVL  DELETE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS09,USAGE=MAP
+	*
+	*        CANCELLATIONS
+	*
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACCCA,PGMLANG=CMDLVL  ADD
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS10,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACCCR,PGMLANG=CMDLVL  REVIEW
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS11,USAGE=MAP
+	*  ****  WILL NEVER EXIST  PROGRAM=TACCCC,PGMLANG=CMDLVL  CHANGE
+	*  ****  WILL NEVER EXIST  PROGRAM=TACMS12,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACCCD,PGMLANG=CMDLVL  DELETE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS13,USAGE=MAP
+	*
+	*        DISHONORED ITEMS
+	*
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACDHA,PGMLANG=CMDLVL  ADD
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS14,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACDHR,PGMLANG=CMDLVL  REVIEW
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS15,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACDHC,PGMLANG=CMDLVL  CHANGE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS16,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACDHD,PGMLANG=CMDLVL  DELETE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS17,USAGE=MAP
+	*
+	*        DEPOSITS
+	*
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACDPA,PGMLANG=CMDLVL  ADD
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS18,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACDPR,PGMLANG=CMDLVL  REVIEW
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS19,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACDPC,PGMLANG=CMDLVL  CHANGE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS20,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACDPD,PGMLANG=CMDLVL  DELETE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS21,USAGE=MAP
+	*
+	*        REDEEMPTIONS
+	*
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACRDA,PGMLANG=CMDLVL  ADD
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS22,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACRDR,PGMLANG=CMDLVL  REVIEW
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS23,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACRDC,PGMLANG=CMDLVL  CHANGE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS24,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACRDD,PGMLANG=CMDLVL  DELETE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS25,USAGE=MAP
+	*
+	*        OTHER MANUAL PROCESSES
+	*
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACOTA,PGMLANG=CMDLVL  ADD
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS26,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACOTR,PGMLANG=CMDLVL  REVIEW
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS27,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACOTC,PGMLANG=CMDLVL  CHANGE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS28,USAGE=MAP
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACOTD,PGMLANG=CMDLVL  DELETE
+	         KIKPPT TYPE=ENTRY,PROGRAM=TACMS29,USAGE=MAP
+</pre>
+
+
+Finally the <i><b>KICKS</b></i> clist allocates the file needed for the application – ie – for the one fct entry there should be an alloc in the clist. The specific statement is:</pre><pre>
+		ALLOC FI(TACDATA) DA('USERID.KICKS.TACDATA') SHR
+</pre><p align="left">
+<hr>
+
+<font size="3">Copyright <font face="Times New Roman">© Mike Noel, 2008-2014;
+</font></font>last updated 8/5/2014
+</body></html>

@@ -1,0 +1,26 @@
+  <table border=1 align=center width="650"><tr bgcolor=black><td><pre><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> Transaction: INQ3 Task: 002D Program: CUSTINQ3 Offset X'001B94'   KICKS 1.5.0
+ Status:</span><span style="color:yellow;background:black;font-weight:normal;font-style:normal"> ABOUT TO EXECUTE COMMAND</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal">                              10:21:28 14.211</span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal"> </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+
+Trace Table storage address 0BC950, length 1600
+
+000460 000BCDB0:  Terminal Control, exit              TX000       002C
+000470 000BCDC0:  BMS, exit                           BX000       002C
+000480 000BCDD0:  Program Control, return             P05    INQ3 002C
+000490 000BCDE0:  Task Control, exit                  KX001       0000
+0004A0 000BCDF0:  Terminal Control, receive           T03         0000
+0004B0 000BCE00:  Terminal Control, exit              TX024       0000
+0004C0 000BCE10:  Task Control, attach                K02INQ3     002D
+0004D0 000BCE20:  Program Control, load               P02CUSTINQ3 002D
+0004E0 000BCE30:  Program Control, exit               PX000       002D
+0004F0 000BCE40:  BMS, receive map                    B03INQMAP3  002D
+000500 000BCE50:  Terminal Control, receive           T03         002D
+000510 000BCE60:  Terminal Control, exit              TX000       002D
+000520 000BCE70:  Program Control, load               P02INQSET3  002D
+000530 000BCE80:  Program Control, exit               PX000       002D
+000540 000BCE90:  BMS, exit                           BX125       002D
+000550 000BCEA0:  File Control, read                  F06CUSTMAS  002D
+000560 000BCEB0:  Program Control, abend (might be tr P07    AEIM 002D &lt;&lt;&lt;&lt;
+                </span><span style="color:black;background:red;font-weight:normal;font-style:normal"> </span><span style="color:Lime;background:black;font-weight:normal;font-style:normal">
+</span><span style="color:turquoise;background:black;font-weight:normal;font-style:normal"> PF1 - help       PF3 - goto bkpt    ENTER - step     CLEAR - Show user screen</span><span style="color:#7890F0;background:black;font-weight:normal;font-style:normal">
+</span></pre></td></tr>
+  </table>

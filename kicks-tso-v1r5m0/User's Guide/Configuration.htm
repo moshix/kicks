@@ -1,0 +1,789 @@
+<html>
+
+<head>
+<title>KICKS User's Guide - Configuration</title>
+<base target="_self">
+
+<script language="javascript">
+if(self.location==top.location)self.location="index.html?Configuration.htm";
+</script>
+
+</head>
+
+<BODY>
+
+<!--This is a comment. Comments are not displayed in the browser-->
+
+<table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" height="72">
+	<tr>
+		<td width="141" valign="top"><i><b><font size="7">KICKS</font></b></i></td>
+		<td valign="bottom">
+		<p align="right">
+		<font size="6"><span style="font-weight: 400">A transaction processing
+		system for </span></font><font size="7" color="#FF0000">
+		<span style="font-weight: 700">CMS</span></font><font size="6"><span style="font-weight: 400"> &amp; </span></font><font color="#FF0000" size="7">
+		<span style="font-weight: 700">TSO</span></font></td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+<h2>Configuration
+</h2>
+<h3>The tables
+</h3>
+<p>Most of <i><b>KICKS</b></i> configuration is done by assembling option
+tables. In this version there are five tables – the System Initialization Table
+(SIT), the File Control Table (FCT), the Task Control Table (PCT), the
+Destination Control Table (DCT), and the Program Properties Table (PPT).</p>
+<p>In TSO the tables are assembled into load modules in userid.KICKS.V1R5M0.SKIKLOAD&nbsp;
+(searched first) or userid.KICKSSYS.V1R5M0.SKIKLOAD. In CMS the tables are assembled into object decks in KIKULOD TXTLIB (searched first) or
+KIKSLOD TXTLIB. The table
+objects themselves are named KIKSIT?? (SIT), KIKFCT?? (FCT), KIKPCT??
+(PCT), KIKDCT?? (DCT), and KIKPPT?? (PPT) where ?? represents the 2 character
+load module suffix. Since the table names have these suffixes many version of
+each table can be present in the library, selected by suffix when <i><b>KICKS</b></i>
+starts up. Suffixes 0? and ?$ (where ? is any character) are reserved, meaning I
+might use them so you should not. All other combinations (that result in valid
+PDS member names) are available. You should establish your own convention of
+suffix use – for example you might use @1, @2, - or A1, A2, – or 1A, 1B, –
+whatever you like.
+</p>
+<p>With many different suffixed version of tables how does <i><b>KICKS</b></i>
+know which ones to use? By default it will use a suffix of 00 for all tables. If
+you want it to use something else you have to tell it. How do you tell it? In
+one or more ways:
+</p>
+<ul>
+	<li>
+	<p style="margin-bottom: 0">When you start <i><b>KICKS</b></i> you can pass
+	it a list of parameters (PARMS) which <i><b>KICKS</b></i> expects to be
+	things like SIT table arguments (see following SIT discussion). Among these
+	are suffix specifiers like ‘SIT=3$’. If you look at the KICKS clist in TSO you will
+	see something like this going on: </p></li>
+</ul>
+<blockquote>
+	<blockquote>
+		<table border="0" style="border-collapse: collapse" width="700">
+			<tr>
+				<td nowrap bgcolor="#CCFFCC">
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">
+		PROC 0 SIP(1$) SIT(1$) + …&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</font></p>
+		<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">
+		CALL 'KICKS.&amp;VER..SKIKLOAD(KIKSIP&amp;SIP)'
+		'SIT=&amp;SIT + </font></p>
+				</td>
+			</tr>
+		</table>
+	</blockquote>
+</blockquote>
+<blockquote>
+	<p>or, looking at the KICKS exec in CMS</p>
+<blockquote>
+	<table border="0" style="border-collapse: collapse" width="700">
+		<tr>
+			<td nowrap bgcolor="#CCFFCC">
+			<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">…</font></p>
+			<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">&amp;SIP
+		= 1$</font></p>
+			<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">…&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</font></p>
+			<p style="margin-top: 0; margin-bottom: 0"><font face="Courier New">&amp;KICKS = &amp;CONCAT KIKSIP &amp;SIP
+			<br>&amp;KICKS SIT=1$</font></p></td>
+		</tr>
+	</table>
+</blockquote>
+	<p>which results in <i><b>KICKS</b></i> using KIKSIT1$ instead of the
+	default KIKSIT00. You might notice this also runs a suffixed version of KIKSIP (the <i><b>KICKS</b></i> system initialization program). In this case
+	it’s not <i><b>KICKS</b></i> itself doing the suffixing, it’s the CLIST/EXEC… </p>
+</blockquote>
+<ul>
+	<li>In TSO <i><b>KICKS</b></i> will also read SYSIN looking for these SIT table
+	arguments (one argument per line). <i><b>KICKS</b></i> could do this in CMS
+	as well, but the exec has SYSIN dummied...</li>
+	<li>Finally <i><b>KICKS</b></i> will use the loaded SIT to obtain the
+	suffixes for all the other tables and management modules (except for KIKSIP
+	which can only be suffixed as above).</li>
+</ul>
+<p>The order of all this suffix behavior is: (a) KIKSIP suffixing is handled by
+clist/exec executing whichever KIKSIPxx is desired; (b) KIKSIP presets all other
+suffixes to 00; (c) KIKSIP reads all the command line arguments looking for
+SIT=xx; (d) KIKSIP load SIT=xx (or 00 if there was no SIT=xx); (e) KIKSIP sets
+all the suffixes and other startup variables to values specified in loaded SIT;
+(f) KIKSIP makes a 2nd pass of the command line arguments looking for other
+suffix specifiers and startup variables and merges them in; (g) KIKSIP reads
+SYSIN looking for other suffix specifiers and startup variables and merges them
+in. With all this finished <i><b>KICKS</b></i> begins loading the requested
+tables and management programs. </p>
+<h4>SYSTEM INITIALIZATION TABLE (SIT) </h4>
+<p>The SIT is a list of table and program suffixes and of other startup
+parameters. It is generated with the KIKSIT macro, as below, with the values
+shown being the defaults.</p>
+<blockquote>
+	<blockquote>
+		<pre><span style="background-color: #CCFFCC"><font size="3">KIKSIT SUFFIX=00,       suffix for system initialization table*
+      DCT=00,           suffix for destination control table  *
+      FCT=00,           suffix for file control table         *
+      PCT=00,           suffix for task control table         *
+      PPT=00,           suffix for program control table      *
+      BMS=00,           suffix for basic mapping support PGM  *
+      DCP=00,           suffix for destination control PGM    *
+      FCP=00,           suffix for file control PGM           *
+      KCP=00,           suffix for task control PGM           *
+      PCP=00,           suffix for program control PGM        *
+      TCP=00,           suffix for terminal control PGM       *
+      TSP=00,           suffix for temp storage control PGM   *
+      OPID=999,         3 char (numeric?) 'operator id'       *
+      NATLANG=E,        1 char language code                  *
+      TRCNUM=100,       # entries in the internal trace tbl   *
+      TRCFLAG=1,        trace control startup configuration   *
+      DMPCLAS=A,        sysout class for 'spin off' dumps     *
+      ICVR=5000,        time (milliseconds) to AICA           *
+      MAXDELY=180,      max time (seconds) for a 'DELAY'      *
+      PLTPI=KSGM,       first transaction                     *
+      PLTSD=K999,       last transaction                      *
+      CWAL=100,         size (characters) of CWA              *
+      TCTUAL=100,       size (characters) of TCTTEUA          *
+      FFREEKB=NO,       whether to force terminal freekb      *
+      ENQSCOP=SYSTEMS   must be SYSTEM or SYSTEMS             *
+      SYNCPGM=          name of syncpoint exit, or null
+</font></span></pre>
+	</blockquote>
+</blockquote>
+<b>SUFFIX</b> is the suffix for the SIT itself. It should match the suffix used
+to name the table in the load lib. The KIKSIT macro default is ‘00’ but the
+supplied SIT assembly job specifies 1$.
+</p>
+<p><b>DCT</b> is the suffix to be used (subject to PARM and SYSIN overrides) for
+the destination control table. The KIKSIT macro default is ‘00’ but the supplied
+SIT assembly job, and the supplied DCT assembly job, specify 1$. </p>
+<p><b>FCT</b> is the suffix to be used (subject to PARM and SYSIN overrides) for
+the file control table. The KIKSIT macro default is ‘00’ but the supplied SIT
+assembly job, and the supplied FCT assembly job, specify 1$. </p>
+<p><b>PCT</b> is the suffix to be used (subject to PARM and SYSIN overrides) for
+the task control table. The KIKSIT macro default is ‘00’ but the supplied SIT
+assembly job and the supplied PCT assembly job, specify 1$. </p>
+<p><b>PPT</b> is the suffix to be used (subject to PARM and SYSIN overrides) for
+the program control table. The KIKSIT macro default is ‘00’ but the supplied SIT
+assembly job, and the supplied PPT assembly job, specify 1$. </p>
+<p><b>BMS</b>, <b>DCP</b>, <b>FCP</b>, <b>KCP</b>, <b>PCP</b>, <b>TCP</b> and <b>TSP</b>
+are suffixes for <i><b>KICKS</b></i> internal service programs. Although the
+macro default for them is 00 the supplied SIT overrides this to 1$, which
+matches the suffixes of the load modules supplied in the KIKSLOD library. Being
+able to change the <i><b>KICKS</b></i> management modules (programs) by suffix
+is of limited use to you – I usually only supply a few of each (suffixed 0$, 1$,
+2$) and those are what you use (or what the KICKS clist selects). 0$ reflect null
+functionality, 1$ is used for most cases, 2$ if for unusual situations (such as
+KIKTCP2$ being used for legacy &quot;no lock&quot; terminal support). </p>
+<p><b>OPID</b> is the 3 character operator id that your programs can recover
+using EXEC KICKS ASSIGN OPID(myvar). Little used now, OPID is a leftover from
+pre-RACF days when applications all managed their own users. CICS had a table
+called the SNT (signon) of userids and passwords, with associated OPID’s for
+each. When you signed on CICS kept a copy of your OPID which it could check
+against transactions to see if you should be allowed to run them. <i><b>KICKS</b></i>
+implements none of this since a RACF style userid (your TSO id) is already
+available. But some applications still ask for it (as above). So for
+compatibility's sake some value must be returned and here is where you can set
+it to whatever you want it to be! The default is ‘999’, as good as any… </p>
+<p><b>NATLANG</b> is the 1 character operator id that your programs can recover
+using EXEC KICKS ASSIGN NATLANGINUSE(myvar), and of course also thereby
+implicitly defines the 3 character result you will obtain using EXEC KICKS
+ASSIGN LANGINUSE(myvar) as well. The default is 'E', (ENU, American English). A
+table relating IBM's definition of these codes to each other can be found in SC33-1688 ( CICS
+Application Programming Reference, available online as DFHP400.PDF ).</p>
+<p><b>TRCNUM</b> is the number of entries in the internal trace table. Each
+entry is 16 bytes. TRCNUM’s value can be 0 (no internal trace) or any value from
+100 to 1000. The default is 100. </p>
+<p><b>TRCFLAG</b> is the initial state of 3 trace controls: whether the
+internal trace is active (1); whether the auxiliary (external, to file DD AUXTRAC) trace is active (2); and whether events marked as ’intense’ should be
+traced (8). The default value (1) means the internal trace is active. To combine
+flags add them, so to enable both the internal and the auxiliary trace set TRXFLAG=3. </p>
+<p>These trace controls can be manipulated online using the KSMT transaction,
+so, for example, you can turn auxiliary trace on and off while KICKS is running.
+Changing the value using KSMT is only effective until <i><b>KICKS</b></i> is
+shutdown. </p>
+<p><b>DMPCLAS</b> is the sysout class that will be used when you want
+transaction dumps to print as soon as they are available (instead of waiting
+until you exit <i><b>KICKS</b></i>). The default is class A. </p>
+<p>Additional information regarding transaction dumps and the trace table can be
+found in the Debugging Section of this User’s Guide. </p>
+<p><b>ICVR</b> is the number of milliseconds of elapsed time (not cpu time) to
+allow a user task to run before killing it with an AICA abend. ICVR’s value can
+be 0 (no time limit) or any value from 1000 (1 second) to 600000 (10 minutes).
+The default is 5000 (5 seconds). </p>
+<p>This value can also be set up or down online using the KSMT transaction.
+Changing the value using KSMT is only effective until <i><b>KICKS</b></i> is
+shutdown. </p>
+<p>Additional information regarding AICA abends and the ICVR parameter can be
+found in KooKbooK recipe #4. </p>
+<p><b>MAXDELY</b> is the maximum number of seconds of elapsed time (not cpu time) to
+allow a user task to delay using the EXEC KICKS DELAY api.
+The default is 180. </p>
+<p><b>PLTPI</b> is the 4 character transaction id for the first transaction <i>
+<b>KICKS</b></i> is to run (before the first user input). The default is ‘KSGM’
+(The transaction that put the big color letters ‘KICKS’ on the screen). </p>
+<p><b>PLTSD</b> is the 4 character transaction id for the last transaction <i>
+<b>KICKS</b></i> is to run (after the last user input). The default is ‘K999’
+(which just does a brief delay to let you see anything left on the screen). </p>
+<p>Additional information regarding the PLTPI and PLTSD arguments, and the KSGM/KSSF/K999
+transactions can be found in KooKbooK recipes #2 and #3. Source code for the
+KSGM/KSSF/K999 transactions can be found in KICKS.V1R5M0.COB. </p>
+<p><b>CWAL</b> is the length of the ‘Common Work Area’, or CWA. CWAL’s value can
+be 0 (no CWA) or any value from 1 to 1024. The default is 100. </p>
+<p><b>TCTUAL</b> is the length of the ‘TCTTE Work Area’, or TCTTEUA. TCTUAL’s
+value can be 0 (no TCTTEUA) or any value from 1 to 1024. The default is 100. </p>
+<p>Additional information regarding the CWA and the TCTTEUA can be found in
+KooKbooK recipe #5. </p>
+<p><b>FFREEKB</b> is used to tell <i><b>KICKS</b></i> whether to force on the
+FREEKB option for all terminal writes, thus ensuring the keyboard is never
+locked. Recommend to leave default NO, meaning control over keyboard locked
+state is up to the application (as is always the case in CICS).</p>
+<p><b>ENQSCOP</b> is the scope value KICKS will use with the VSAM file control ENQ and DEQ macros it issues. ENQSCOP’s value can be SYSTEM or SYSTEMS. The
+default is SYSTEMS. </p>
+<p><b>SYNCPGM</b>, if specified, is the name of a program (which must also be
+defined in the PPT) that is to receive control when certain events occur. These
+events include SYNCPOINT COMMIT, SYNCPOINT ROLLBACK, task initiation, normal
+task end, and abnormal task end (abend). <font face="Times New Roman">See
+HERC01.KICKSSYS.V1R5M0.COB(SYNCXIT) for a sample exit program.</font></p>
+<p>KICKS.V1R5M0.INSTLIB(KIKSIT1$) is the source for the SIT used by default with
+the KICKS clist. I suggest that instead of modifying it you create a new member
+– such as KIKSITZZ, perhaps in your own dataset – copy KIKSIT1$ into it, edit it
+(especially change SUFFIX to ZZ and the name in the SYSLMOD override – 3rd card
+from the bottom), and submit. To run with your new SIT just start <i><b>KICKS</b></i>
+by typing</p>
+<blockquote>
+	<p><font face="Courier New">KICKS SIT(ZZ) </font></p>
+</blockquote>
+<p>Instead of just </p>
+<blockquote>
+	<p><font face="Courier New">KICKS </font></p>
+</blockquote>
+<p>When you add a new application to <i><b>KICKS</b></i> you will generally have
+some programs (these are defined in the PPT), some maps (screen layouts) (also
+defined in the PPT), some transactions used to initiate the programs (defined in
+the PCT) some VSAM files (defined in the FCT) and perhaps a new destination
+(defined in the DCT).</p>
+<h4>PROGRAM CONTROL TABLE (PPT)</h4>
+<p>The PPT is a list of programs residing in the KIKRPL concatenation. It is
+generated with the KIKPPT macro, as below, with the values shown being the
+defaults. For historical reasons PPT is &quot;Processing Program Table&quot; in CICS, but
+that full title is seldom used, it's almost always simply called &quot;the PPT&quot;.</p>
+<blockquote>
+	<blockquote>
+		<pre><span style="background-color: #CCFFCC">
+<font size="3">KIKPPT SUFFIX=00,       suffix for program control table      *
+      TYPE=ENTRY,       INITIAL, ENTRY, or FINAL              *
+      PROGRAM=,                                               *
+      MAPSET=,                                                *
+      USAGE=,                                                 *
+      PGMLANG=CMDLVL,                                         *
+      LOAD=DEFERRED,    INITIAL or DEFERRED                   *
+      PGMSTAT=ENABLED   ENABLED or DISABLED
+</font></span></pre>
+	</blockquote>
+</blockquote>
+<p><b>SUFFIX</b> is the suffix for the PPT itself. It should match the suffix
+used to name the table in the load lib. The KIKPPT macro default is ‘00’ but the
+supplied PPT assembly job specifies 1$. </p>
+<p><b>TYPE</b> is either INITIAL, ENTRY, or FINAL. Your PPT assembly job should
+have one leading TYPE= INITIAL, as may TYPE=ENTRY’s as you have programs (or
+maps) to define, and one trailing TYPE=FINAL. </p>
+<p>Your TYPE=INITIAL has only one other argument, SUFFIX. </p>
+<p>Your TYPE=FINAL has no arguments. </p>
+<p>Your TYPE=ENTRY’s (which may omit TYPE=ENTRY as it is the default) should
+specify PROGRAM or MAPSET (but not both), PGMLANG or USAGE (but not both), and
+optionally LOAD and/or PGMSTAT. </p>
+<p><b>PROGRAM</b> is the name of the load module in KIKRPL. </p>
+<p><b>MAPSET</b> is an alias for PROGRAM. </p>
+<p><b>USAGE</b> is a ‘one valid value’ – USAGE=MAP. It means the same as PGMLANG=MAP. </p>
+<p><b>PGMLANG </b>is the programming language used to code the program. It may
+be CMDLVL, ASSEMBLER, MACC, or MAP. <b> <font color="#FF0000"><u>CMDLVL</u>
+should be used for any program that comes out of one of the preprocessor procs </font>
+(KIKCOBCL, K2KCOBCL, KIKCB2CL, or KIKGCCCL) - meaning all of your COBOL or GCC
+programs</b><font color="#FF0000"><b>.</b></font>
+ASSEMBLER should be used for non-executable tables (such as KEDFILTR). MACC is
+used for programs coded with the 'macro level' interface (an undocumented
+internal interface for some system level transactions). MAP means the same as
+USAGE=MAP. If you look at the macro you will see some other values (COBOL, COB,
+MVTCOB, LECOB, GCC, etc) but these are in most cases just aliases for CMDLVL.</p>
+<p>Older versions of KICKS had some entries coded with PGMLANG=C. This was the
+same as what is now MACC. PGMLANG=C has been removed to avoid confusion in how
+to code PPT entrees for GCCMVS programs, which, as above, should be coded
+PGMLANG=CMDLVL.</p>
+<p><b>LOAD</b> is used to tell <i><b>KICKS</b></i> when to load the program, and
+may have the value INITIAL or DEFERRED. Recommend to leave in default DEFERRED
+state. </p>
+<p><b>PGMSTAT</b> is used to tell <i><b>KICKS</b></i> whether it is allowed to
+use the program, and may have the value ENABLED or DISABLED. Recommend to leave
+in default ENABLED state. </p>
+<p>The PPT source is in KICKS.V1R5M0.INSTLIB(KIKPPT1$). I suggest that instead
+of modifying it you create a new member – such as KIKPPTZZ, perhaps in your own
+dataset – copy KIKPPT1$ into it, edit it (especially change SUFFIX to ZZ and the
+name in the SYSLMOD override – 3rd card from the bottom), and submit. To run
+with your new PPT just start <i><b>KICKS</b></i> by typing </p>
+<blockquote>
+	<p><font face="Courier New">KICKS PPT(ZZ) </font></p>
+</blockquote>
+<p>Instead of just </p>
+<blockquote>
+	<p><font face="Courier New">KICKS </font></p>
+</blockquote>
+<p>When you look at the PPT source you will see it is just a series of KIKPPT
+macros. The first is a TYPE=INITIAL and just gives the suffix. The last is a
+TYPE=FINAL and just provides for final wrap up. In between are TYPE=ENTRY macros
+that define your maps and programs. The order of the TYPE=ENTRY macros is not
+significant except that you should use some convention to make it easy for you
+to find entries you want. Note that the first several TYPE=ENTRY macros are for
+KSGMPRG, KSGMMAP, and KSSFPRG. These are required entries for the KSGM (good
+morning message) and KSSF (signoff) programs. In general you should not name
+programs, transactions, or files with a first character of ‘K’ as these are used
+by <i><b>KICKS</b></i>. Also you should avoid naming these entities with a first
+character of ‘C’ as that is the equivalent CICS reservation. </p>
+<p>Code the TYPE=ENTRY macros for your programs and maps like those in KIKPPT1$:
+for a COBOL program use </p>
+<blockquote>
+	<p><font face="Courier New">KIKPPT TYPE=ENTRY,PROGRAM=XXXXX,PGMLANG=CMDLVL
+	</font></p>
+</blockquote>
+<p>and for a map use </p>
+<blockquote>
+	<p><font face="Courier New">KIKPPT TYPE=ENTRY, PROGRAM=YYYYY,USAGE=MAP
+	</font></p>
+</blockquote>
+<p>The PGMLANG keyword provides a couple of other choices (such as ‘C’) but you
+shouldn’t waste your time trying to get those to work with this <i><b>KICKS</b></i>
+release!</p>
+<h4>TASK CONTROL TABLE (PCT)</h4>
+<p>The PCT is a list of transactions and associated programs to be run when the
+transactions are started. It is generated with the KIKPCT macro, as below, with
+the values shown being the defaults. For historical reasons PCT is &quot;Processing
+Control Table&quot; in CICS, but that full title is seldom used, it's almost always
+simply called &quot;the PCT&quot;.<blockquote>
+	<blockquote>
+		<pre><span style="background-color: #CCFFCC">
+<font size="3">KIKPCT SUFFIX=00,        suffix for task control table        *
+       TYPE=ENTRY,       INITIAL, ENTRY, or FINAL             *
+       TPURGE=,SPURGE=,TRANSEC=,                              *
+       TRANSID=,                                              *
+       PROGRAM=,                                              *
+       TWASIZE=0,        0-1024                               *
+       KPOPEN=DISABLED,  ENABLED or DISABLED                  *
+       ISTAT=ENABLED     ENABLED or DISABLED
+</font></span></pre>
+	</blockquote>
+</blockquote>
+<p><b>SUFFIX</b> is the suffix for the PCT itself. It should match the suffix
+used to name the table in the load lib. The KIKPCT macro default is ‘00’ but the
+supplied PCT assembly job specifies 1$. </p>
+<p><b>TYPE</b> is either INITIAL, ENTRY, or FINAL. Your PCT assembly job should
+have one leading TYPE= INITIAL, as may TYPE=ENTRY’s as you have transactions to
+define, and one trailing TYPE=FINAL. </p>
+<p>Your TYPE=INITIAL has only one other argument, SUFFIX. </p>
+<p>Your TYPE=FINAL has no arguments. </p>
+<p>Your TYPE=ENTRY’s (which may omit TYPE=ENTRY as it is the default) should
+specify TRANSID, PROGRAM, and optionally TWASIZE and/or KPOPEN and/or ISTAT. </p>
+<p><b>TPURGE</b>, <b>SPURGE</b>, and <b>TRANSEC</b> are CICS PCT keywords that
+are tolerated but not acted upon in a <i><b>KICKS</b></i> PCT definition. </p>
+<p><b>TRANSID</b> is the 4 character transaction id that will be used for this
+transaction. </p>
+<p><b>PROGRAM</b> is the name of a program, named in the PPT, that will be used
+with this transaction. </p>
+<p><b>TWASIZE</b> is a number that represent the size in bytes of the
+Transaction Work Area (TWA). TWASIZE’s value can be 0 (no TWA) or any value from
+1 to 1024. The default is 0. Additional information regarding the TWA can be
+found in KooKbooK recipe #5. </p>
+<p><b>KPOPEN</b> is used to tell <i><b>KICKS</b></i> whether to release a
+conversational task's open files for use by other <i><b>KICKS</b></i> users when
+the task does a blocking terminal control read (ie, RECEIVE or RECEIVE MAP).
+Recommend to leave in default DISABLED state, meaning files will be released.
+</p>
+<p><b>ISTAT</b> is used to tell <i><b>KICKS</b></i> whether it is allowed to use
+the transaction, and may have the value ENABLED or DISABLED. Recommend to leave
+in default ENABLED state. </p>
+<p>The PCT source is in KICKS.V1R5M0.INSTLIB(KIKPCT1$). I suggest that instead
+of modifying it you create a new member – such as KIKPCTZZ, perhaps in your own
+dataset – copy KIKPCT1$ into it, edit it (especially change SUFFIX to ZZ and the
+name in the SYSLMOD override – 3rd card from the bottom), and submit. To run
+with your new PCT just start <i><b>KICKS</b></i> by typing </p>
+<blockquote>
+	<p><font face="Courier New">KICKS PCT(ZZ) </font></p>
+</blockquote>
+<p>Instead of just </p>
+<blockquote>
+	<p><font face="Courier New">KICKS </font></p>
+</blockquote>
+<p>When you look at the PCT source you will see it is just a series of KIKPCT
+macros. The first is a TYPE=INITIAL and just gives the suffix. The last is a
+TYPE=FINAL and just provides for final wrap-up. In between are TYPE=ENTRY macros
+that define your transaction id’s. The order of the TYPE=ENTRY macros is not
+significant except that you should use some convention to make it easy for you
+to find entries you want. Note that the first several TYPE=ENTRY macros are for
+KSGM, CSGM, KSSF, and CSSF. The id’s starting with ‘K’ are for the Good Morning
+Message program and for the Signoff transaction. The id’s starting with ‘C’ are
+the equivalent CICS transactions (thus allowing you to type either CSSF or KSSF
+to logoff). </p>
+<p>Code the TYPE=ENTRY macros for your transaction id’s like those in KIKPCT1$:
+use KIKPCT</p>
+<blockquote>
+	<p><font face="Courier New">TYPE=ENTRY,TRANSID=XXXX,PROGRAM=YYYYYYYY </font>
+	</p>
+</blockquote>
+<p>Every program specified with a PROGRAM keyword in a KIKPCT TYPE=ENTRY must
+also have a corresponding KIKPPT TYPE=ENTRY,PROGRAM= entry in the active PPT!</p>
+<h4>FILE CONTROL TABLE (FCT)</h4>
+<p>The FCT is a list of VSAM files. It is generated with the KIKFCT macro, as
+below, with the values shown being the defaults.</p>
+<blockquote>
+	<blockquote>
+		<pre><span style="background-color: #CCFFCC">
+<font size="3">
+KIKFCT SUFFIX=00,       suffix for file control table         *
+      TYPE=DATASET,     INITIAL, DATASET, or FINAL            *
+      FILSTAT=ENABLED,  ENABLED or DISABLED                   *
+      NUMREQ=,                                                *
+      DATASET=,                                               *
+      BASE=,                                                  *
+      CATUSER=CMSUSER,                                        *
+      CATLNK1=194,                                            *
+      CATLNK2=222,                                            *
+      CATPASS=WRITE,                                          *
+      CATFM=O,                                                *
+      CATVOL=VSAMIN
+</font></span></pre>
+	</blockquote>
+</blockquote>
+<p><b>SUFFIX</b> is the suffix for the FCT itself. It should match the suffix
+used to name the table in the load lib. The KIKFCT macro default is ‘00’ but the
+supplied FCT assembly job specifies 1$. </p>
+<p><b>TYPE</b> is either INITIAL, DATASET, or FINAL. </p>
+<p>Your FCT assembly job should have one leading TYPE= INITIAL, as may TYPE=DATASET’s
+as you have files to define, and one trailing TYPE=FINAL. </p>
+<p>Your TYPE=INITIAL has one required argument, SUFFIX, and seven optional
+arguments.. </p>
+<p><b>CATUSER</b>, <b>CATLNK1</b>, <b>CATLNK2</b>, <b>CATPASS</b>, <b>CATFM</b>,
+and <b>CATVOL</b>, used only in CMS and on your&nbsp; TYPE=INITIAL macro, define the VSAM
+environment for all the files in this FCT. CATUSER, CATLNK1, CATLNK2, and
+CATPASS are used to link <span style="font-variant: small-caps">[ ie,&nbsp;&nbsp;
+<u><font face="Courier New">CP LINK CATUSER CATLNK1 CATLNK1 WRITE CATPASS</font></u>
+]</span> to a DOS formated mini-disk holding the VSAM catalog and space (which
+in turn holds all the files). CATLNK2 and CATFM are used to associate that
+linked mini-disk with a drive letter<span style="font-variant: small-caps"> [
+IE,&nbsp;&nbsp; <u><font face="Courier New">ACC CATLNK2 CATFM</font> </u>]</span>.
+CATVOL is used by various utilities (such as AMSERV) that need to know the
+volser of the mini-disk. So CATUSER is the 'owner' logon id of the VSAM
+minidisk, CATLNK1 is the virtual device address in his virtual machine, CATLNK2
+is the virtual device address in your virtual machine, CATPASS is the write
+password for the minidisk, CATFM is the drive letter in your virtual machine,
+and CATVOL is the volser of the mini-disk.</p>
+<p><b>NUMREQ</b> is the maximum number of concurrent but independent browses
+that will be active. It is specified on the TYPE=INITIAL macro to set the
+default for the files that follow. The default is 10. The minimum value is 1. The maximum value is 15. </p>
+<p>Your TYPE=FINAL has no arguments. </p>
+<p>Your TYPE= DATASET’s (which may omit TYPE=DATASET as it is the default)
+should specify DATASET and optionally FILESTAT and/or NUMREQ and/or BASE. </p>
+<p><b>DATASET</b> is the DDNAME you will use for the file </p>
+<p><b>NUMREQ</b> is the maximum number of concurrent but independent browses
+that will be active. The default is whatever was specified (or defaulted) in the
+TYPE=INITIAL macro. The minimum value is 1. The maximum value is 15. </p>
+<p><b>BASE</b> is used when this entry is for a path (access via alternate
+index), and it names the DATASET= for some other entry in the FCT that is for
+the base cluster of the path. </p>
+<p><b>FILESTAT</b> is used to tell <i><b>KICKS</b></i> whether it is allowed to
+use the file, and may have the value ENABLED or DISABLED. Recommend to leave in
+default ENABLED state. </p>
+<p>The FCT source is in KICKS.V1R5M0.INSTLIB(KIKFCT1$). I suggest that instead
+of modifying it you create a new member – such as KIKFCTZZ, perhaps in your own
+dataset – copy KIKFCT1$ into it, edit it (especially change SUFFIX to ZZ and the
+name in the SYSLMOD override – 3rd card from the bottom), and submit. To run
+with your new FCT just start <i><b>KICKS</b></i> by typing </p>
+<blockquote>
+	<p><font face="Courier New">KICKS FCT(ZZ) </font></p>
+</blockquote>
+<p>Instead of just </p>
+<blockquote>
+	<p><font face="Courier New">KICKS </font></p>
+</blockquote>
+<p>When you look at the FCT source you will see it is just a series of KIKFCT
+macros. The first is a TYPE=INITIAL and just gives the suffix. The last is a
+TYPE=FINAL and just provides for final wrap up. In between are TYPE= DATASET
+macros that define your VSAM files. The order of the TYPE=DATASET macros is not
+significant except that you should use some convention to make it easy for you
+to find datasets you want. <i><b>KICKS</b></i> has no required entries in the FCT. Code the
+TYPE= DATASET macros for your transaction id’s like those in KIKFCT1$: use
+KIKPCT TYPE= DATASET, DATASET =XXXXXXXX </p>
+<p>If the dataset is a path, BASE must name another KIKFCT TYPE=DATASET that is
+the base cluster for the path. So for example in KIKFCT1$ you see </p>
+<p><font face="Courier New">&nbsp;&nbsp;&nbsp; KIKFCT TYPE=DATASET,DATASET=INVOICE<br>
+&nbsp;&nbsp;&nbsp; KIKFCT TYPE=DATASET,DATASET=INVPATH,BASE=INVOICE </font> </p>
+<p>which will allow <i><b>KICKS</b></i> to enqueue against the INVOICE base cluster when it
+needs to access INVPATH. </p>
+<h4>DESTINATION CONTROL TABLE (DCT)</h4>
+<p>The DCT is a list of destination queues your program can access with the
+READQ and WRITEQ api’s. This version of <i><b>KICKS</b></i> supports
+extrapartition&nbsp; and indirect destination queues. </p>
+<p>Extrapartition destinations are sequential files, often SYSIN or SYSOUT
+datasets. Application logs for example are often extrapartition destinations
+written using the WRITEQ TD api. </p>
+<p>Indirect destinations are aliases for other destinations and can be used to
+consolidate output. Suppose you have 5 different applications that want to write
+various log messages. One refers to destination MLOG. Another to LOG1. The other
+3 to SLOG. You could define 3 separate logs, each an extrapartition destination,
+or you could define one extrapartition destination and two indirect destinations
+pointing to the single extrapartition destination. The applications won't know or
+care this is going on. It's pretty common on CICS systems to define a single
+logging destination and then use indirect destinations to route all application
+logging to the common log.</p>
+<p>The DCT is generated with the KIKDCT macro, as
+below, with the values shown being the defaults.</p>
+<blockquote>
+	<pre><span style="background-color: #CCFFCC"><font size="3">
+KIKDCT SUFFIX=00,     suffix for destination control table    *
+      TYPE=EXTRA,     INITIAL, EXTRA, INTRA, INDIR or FINAL   *
+      DESTID=,                                                *
+      PHYDEST=,                                               *
+      FILE=,                                                  *
+      TYPEFIL=INPUT,                                          *
+      ISTAT=ENABLED,  ENABLED or DISABLED                     *
+      OPEN=INITIAL
+</font></span></pre>
+</blockquote>
+<p><b>SUFFIX</b> is the suffix for the DCT itself. It should match the suffix
+used to name the table in the load lib. The KIKDCT macro default is ‘00’ but the
+supplied DCT assembly job specifies 1$. </p>
+<p><b>TYPE</b> is either INITIAL, EXTRA, INTRA, INDIR, or FINAL. </p>
+<p>Your DCT assembly job should have one leading TYPE= INITIAL, as many TYPE=EXTRA’s,
+INTRA's, and INDIR's
+as you have destinations (or aliases) to define, and one trailing TYPE=FINAL. </p>
+<p>Your TYPE=INITIAL has one required argument, SUFFIX.. </p>
+<p>Your TYPE=FINAL has no arguments. </p>
+<p>Your TYPE= EXTRA’s
+should specify DESTID, FILE, TYPEFIL and optionally ISTAT and/or OPEN.</p>
+<p>Your TYPE= INTRA’s
+should specify DESTID and optionally ISTAT</p>
+<p>Your TYPE= INDIR’s
+should specify DESTID and PHYDEST.</p>
+<p><b>DESTID</b> is the 4 character name you will use in your API calls
+referring to this destination.</p>
+<p><b>PHYDEST</b> is used only in TYPE=INDIR's and is the 4 character name of a
+TYPE=EXTRA entry this destination aliases.</p>
+<p><b>FILE</b> is the 8 character DDNAME you will use for the destination </p>
+<p><b>TYPEFIL</b> is either 'INPUT' or 'OUTPUT' and specifies that you will be
+using READQ or WRITEQ (respectively) API calls to this destination.</p>
+<p><b>ISTAT</b> is used to tell <i><b>KICKS</b></i> whether it is allowed to use
+the destination, and may have the value 'ENABLED' or 'DISABLED'. Recommend to
+leave in default ENABLED state </p>
+<p><b>OPEN</b> is either 'INITIAL' (meaning the destination is opened when KICKS
+starts) or 'DEFERRED' (meaning KICKS does not open the destination until it is
+first referenced).</p>
+<p>The DCT source is in KICKS.V1R5M0.INSTLIB(KIKDCT1$). I suggest that instead
+of modifying it you create a new member – such as KIKDCTZZ, perhaps in your own
+dataset – copy KIKDCT1$ into it, edit it (especially change SUFFIX to ZZ and the
+name in the SYSLMOD override – 3rd card from the bottom), and submit. To run
+with your new DCT just start <i><b>KICKS</b></i> by typing </p>
+<blockquote>
+	<p><font face="Courier New">KICKS DCT(ZZ) </font></p>
+</blockquote>
+<p>Instead of just </p>
+<blockquote>
+	<p><font face="Courier New">KICKS </font></p>
+</blockquote>
+<p>When you look at the DCT source you will see it is just a series of KIKDCT
+macros. The first is a TYPE=INITIAL and just gives the suffix. The last is a
+TYPE=FINAL and just provides for final wrap up. In between are TYPE= EXTRA and
+TYPE=INDIR
+macros that define your destinations. The order of the TYPE= EXTRA and TYPE=INDIR
+macros is not
+significant except that you should use some convention to make it easy for you
+to find destinations you want. <i><b>KICKS</b></i> has no required entries in the
+DCT. </p>
+<h3><a name="clist"></a>The Clist </h3>
+<p>The purpose of the KICKS clist&nbsp; (exec in CMS) is to let the user start KICK by simply typing
+KICKS (enter). To this end, in TSO it</p>
+<ul>
+	<li>Ensures KICKS startup is ‘allowed’ </li>
+	<li>FREE’s any files allocated by a previous (possibly failed) startup </li>
+	<li>ALLOC’s necessary files </li>
+	<li>Starts KICKS with the desired SIT (and possibly overrides) </li>
+	<li>FREE’s allocated files following KICKS shutdown And of course you can
+	customize it to do anything else you desire. </li>
+</ul>
+<p>In CMS it</p>
+<ul>
+	<li>Detects environment (for example, VM/370 or Z/VM) and adapts startup
+	defaults as necessary </li>
+	<li>Sets up FILEDEF's for non-VSAM files&nbsp; </li>
+	<li>Uses the KICKSD exec to set up DLBL's for VSAM files </li>
+	<li>Starts KICKS with the desired SIT (and possibly overrides) </li>
+	<li>And of course you can customize it to do anything else you desire.</li>
+</ul>
+<p>The reality is you will customize it, if only to add your own files.</p>
+<h4>Checking to see if KICKS should be allowed to run </h4>
+<p>In TSO you may want to prevent users from starting <i><b>KICKS</b></i> – for example
+if you are running batch jobs that need the same files the <i><b>KICKS</b></i>
+users would be updating. The clist allows you to control this by doing a trial
+allocation of its loadlib. If that succeeds the loadlib is freed
+and the clist continues normally (ultimately reallocating the loadlib as part of
+the SKIKLOAD concatenation). If not a message tells the user <i><b>KICKS</b></i>
+is not available and the clist ends. This facility is intended for 'system
+installs' of <i><b>KICKS</b></i>. In a normal user install this file is userid
+qualified, hence not particularly useful.</p>
+<p>In use, the operator would run a job/started task that uncataloged the
+loadlib, This would prevent new <i><b>KICKS</b></i> starts. When it was OK for
+users to run KICKS again the operator would run another job/started task the
+recataloged the loadlib.</p>
+<p>The <i><b>KICKS</b></i> installation does not provide a similar facility for
+CMS.</p>
+<h4>Detecting the environment and adapting startup defaults</h4>
+<p>In CMS the KTESTS EXEC is called to set exec globals defining the
+environment: VM/370 (or not), VSAM available (or not), MECAFF available (or
+not), and running in CMSBATCH (or not). If VSAM is available KFDEFLT is called&nbsp;
+to return the VSAM definition variables (CATUSER, CATLNK1, CATLNK2, CATPASS,
+CATFM, and CATVOL) from the current FCT. </p>
+<p>In TSO this environment detection/adaptation is part of the installation
+procedure so does not need to be done at <i><b>KICKS</b></i> startup.</p>
+<h4>Freeing previously allocated files </h4>
+<p>The TSO allocate command will fail if the file is already allocated. To
+simplify the clist’s error recovery it frees all the files it allocates – both
+before it begins the allocate process, and after a normal <i><b>KICKS</b></i>
+shutdown. Of course in the former case the FREE command might fail if the file
+wasn’t allocated, but the clist uses NOMSG NOFLUSH to hide these uninteresting
+errors. </p>
+<p>This is not an issue in CMS since it isn't an error to allocate a file you've
+already allocated.</p>
+<p>This step also deletes the old auxiliary trace file (if it exists). </p>
+<h4>Allocating necessary files (or, in CMS, Sets up FILEDEF's for non-VSAM
+files)</h4>
+<ul>
+	<li>KICKS files
+	<p>SKIKLOAD The KICKS system load library concatenation<ul>
+		<li>TSO: userid.KICKS.V1R5M0.SKIKLOAD </li>
+		<li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		userid.KICKSSYS.V1R5M0.SKIKLOAD</li>
+		<li>CMS: KIKULOD, KIKSLOD txtlibs</li>
+	</ul>
+	<p>KIKRPL
+	The KICKS transaction program and map load library concatenation<ul>
+		<li>
+		<p style="margin-top: 0; margin-bottom: 0">TSO userid.KICKS.V1R5M0.KIKRPL
+		</p>
+		<p style="margin-top: 0; margin-bottom: 0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; userid.KICKSSYS.V1R5M0.KIKRPL </li>
+		<li>
+		<p style="margin-top: 0; margin-bottom: 0">CMS KIKURPL, KIKSRPL txtlibs</li>
+	</ul>
+	<p>SYSIN Used for SIT overrides<ul>
+		<li>TSO userid.KICKS.V1R5M0.OPIDS(userid) or, if that does not exist,
+		DUMMY</li>
+		<li>CMS always DUMMY </li>
+	</ul>
+	<p>SYSTERM Used for TSO command output (from ALLOC, FREE, etc)<ul>
+		<li>TERMINAL</li>
+	</ul>
+	<p>SYSPRINT Used for line mode output from KICKS (startup messages)<ul>
+		<li>TERMINAL or SYSOUT if QUIET specified (see below) </li>
+	</ul>
+	<p>SYSOUT Used for COBOL debugging output
+	<ul>
+		<li>SYSOUT(A) </li>
+	</ul>
+	<p>TRANDUMP Used for transaction dumps
+	<ul>
+		<li>Unallocated, which caused the dump program to allocate it
+		dynamically and spin it off for printing as soon as the dump is
+		completed, or</li>
+		<li>Allocate to SYSOUT(A) if you want the dumps printed all at once
+		when you logoff, or </li>
+		<li>(not recommended) allocate to SYSOUT(Z) if you don’t want them to
+		print at all. </li>
+	</ul>
+	<p>SYSUDUMP Used for system dumps, especially for ASRA, ASRB, and AICA <i>
+	<b>KICKS</b></i> abends<ul>
+		<li>SYSOUT(A) </li>
+	</ul>
+	<p>AUXTRC Used for the external trace
+	<ul>
+		<li>userid.KICKS.AUXTRC </li>
+	</ul>
+	</li>
+	<li>
+	<p style="margin-top: 20px">USER files </p>
+	<p>One for each ‘TYPE=DATASET’ VSAM cluster (or path) in the FCT and for
+	each 'TYPE=EXTRA' destination in the DCT. As
+	distributed these will be the files for the example programs. In TSO ou will
+	modify the clist to add your files here. Don’t forget to ‘free’ them in the
+	appropriate parts of the clist. VSAM files are usually allocated DISP(SHR)
+	allowing multiple KICKS users to access the file. DISP(OLD) is ok is the
+	file is not to be shared (userid qualified?) </li>
+</ul>
+<blockquote>
+	<p>In CMS, if VSAM is available the KICKSD EXEC is called (using the VSAM definition
+variables obtained from KFDEFLT) to setup the required DLBL's for the VSAM
+files. <u>It is expected the user will modify KICKSD EXEC to include DLBL's for
+his own files as necessary to match changes to his FCT</u>.</p>
+	<p>However, if you choose you can leave KICKSD alone and use your own exec
+instead. Just copy KICKSD EXEC to your own (for example YOURNAME EXEC), make
+changes as you like, and start <i><b>KICKS</b></i> using it with <u>KICKS DLBLS
+YOURNAME</u>.</p>
+	<p>Whether you use KICKSD or your own exec to setup DLBLs, be sure you use
+SYSCAT for the logical unit, and that you use &amp;CATFM for the file mode. As
+discussed above (under FCT), in this version of <i><b>KICKS</b></i> all VSAM
+files must be on one mini-disk (ie, &amp;CATFM) that also contains the VSAM master
+catalog.</p>
+</blockquote>
+<h4>Starts KICKS with the desired SIT (and possibly overrides)</h4>
+<p>Based on the environment the appropriate default suffixes are selected. For
+example in CMS if MECAFF is present TCP=2$ is defaulted instead of TCP=1$ as would
+normally be used for Z/VM. Or if VSAM is not present FCP=0$ is defaulted instead
+of FCP=1$ as normal. Then EXEC arguments are analyzed, defaults updated, and <i>
+<b>KICKS</b></i> is started with resulting program and table suffixes..</p>
+<p>In TSO there is a bit less of this automatic selection of suffixes, but
+unlike the CMS exec the TSO clist supports SYSIN overrides to the SIT and
+command line arguments.</p>
+<h4>FREE’s allocated files following KICKS shutdown </h4>
+<p>The same file list freed during startup is freed again after a normal
+shutdown. </p>
+<h4>More Customization </h4>
+<p>The SIT overrides in the clist/exec are the ones I thought most likely necessary.
+You can easily add more if you want. Just make sure the name of the override is
+the same as the SIT assembly argument. </p>
+<p>The TSO clist frees, reallocates, and finally frees a number of DD’s that may be
+important for other TSO applications you run. You should review its final
+disposition of SYSIN, SYSTERM, SYSPRINT, SYSOUT, and SYSUDUMP to ensure free’ing
+those DD’s does not interfere with your other applications. </p>
+<p>The TSO clist is written using standard TSO features available in the base TK3.
+This version of TSO is missing many features in more modern TSO/E
+implementations, especially the &amp;SYSDSN clist function. That’s why you see tests
+for allocation failure (etc) instead of SYSDSN tests to ensure the file exists
+before allocating it. In most cases this is just a stylistic concern, but in the
+case of the SYSIN allocation &amp; member test it results in a 013-18 message on the
+system console when the member does not exist. A couple of possible solutions to
+eliminate the message are (1) just allocate SYSIN to dummy and don’t use it for
+SIT overrides; (2) add members to the OPID dataset for all KICKS users; (3)
+install ZP60014 (see
+<a target="_blank" href="http://www.prycroft6.com.au/vs2mods/download/zp60014.zip">http://www.prycroft6.com.au/vs2mods/download/zp60014.zip</a>) to provide &amp;SYSDSN
+support. Of course this is not an issue under Z/OS.</p>
+<p>Nothing says you have to use my clist/exec to run <i><b>KICKS</b></i>. Make your
+own to do whatever you think it should do! </p>
+<p>For example the CMS api tests use a customized exec - TKICKS EXEC - to run <i><b>
+KICKS</b></i> in a CRLP environment. It forces CRLP input (and output) even if
+run in an interactive environment and used TKICKSD to define it's files instead
+of KICKSD. It also allows you to specify an additional user TXTLIB for programs
+and tables. Almost all the sample execs (in TESTCOB VMARC and TESTGCC VMARC) use
+TKICKS this way.</p>
+<p>For another example you might want to use <i>
+<b>KICKS</b></i> as a ‘hidden’ wrapper for some application of your own. If you
+suppress the startup messages, make your application the PLTPI startup
+application, and have your application issue EXEC KICKS SIGNOFF before its final
+EXEC KICKS RETURN you can easily achieve this. You would use a renamed custom
+version of the KICKS clist/exec to run your app. <br> </p>
+
+<p align="left">
+<p align="left">
+<p align="left">
+<p align="left">
+<p align="left">
+<p align="left">
+<hr>
+
+<font size="3">Copyright <font face="Times New Roman">© Mike Noel, 2008-2014;
+</font></font>last updated 10/5/2014
+</body></html>
