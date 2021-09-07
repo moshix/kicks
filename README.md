@@ -15,6 +15,11 @@ Jay Moseley has written up a great documentation how to install KICKS on TSO and
 
 Original documentaiton here: www.kicksfortso.com
 
+Legal
+=====
+
+According to the included license description, I am allowed to host this repo with the KICKS software as long as I include all of the distribution and refer to the original author: Mike Noel. More about Mr. 
+<br><br>
 
 Moshix
 <br>
