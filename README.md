@@ -8,4 +8,14 @@ KICKS is high level source code compatible with CICS. You can migrate your apps 
 
 Great for testing, for prototyping or for small groups of users, KICKS is an amazing platform. 
 
-go read more at: www.kicksfortso.com
+Documentation
+=============
+
+Jay Moseley has written up a great documentation how to install KICKS on TSO and run some demo programs. It's a must read. Find it here: http://www.jaymoseley.com/hercules/kicks/index.htm
+
+Original documentaiton here: www.kicksfortso.com
+
+
+Moshix
+<br>
+September 2021
