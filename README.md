@@ -12,9 +12,11 @@ Great for testing, for prototyping or for small groups of users, KICKS is an ama
 Documentation
 =============
 
-Jay Moseley has written up a great documentation how to install KICKS on TSO and run some demo programs. It's a must read. Find it here: http://www.jaymoseley.com/hercules/kicks/index.htm
+In this video I show how to install KICKS unto your MVS 3.8 TK4-. 
 
-Original documentaiton here: www.kicksfortso.com
+For those running a non TK4- MVS 3.8 (self-SYSGENNED etc) , Jay Moseley has written up a great documentation how to install KICKS on TSO and run some demo programs. 
+
+The original KICS documentaiton by the authoer is Mike Noel is here: www.kicksfortso.com
 
 Legal
 =====
