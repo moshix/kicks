@@ -12,7 +12,7 @@ Great for testing, for prototyping or for small groups of users, KICKS is an ama
 Documentation
 =============
 
-In this video I show how to install KICKS unto your MVS 3.8 TK4-. 
+In this video I show how to install KICKS unto your MVS 3.8 TK4- : https://www.youtube.com/watch?v=u_ZSH9OagTM
 
 For those running a non TK4- MVS 3.8 (self-SYSGENNED etc) , Jay Moseley has written up a great documentation how to install KICKS on TSO and run some demo programs. 
 
