@@ -24,7 +24,9 @@ Legal
 =====
 
 According to the included license description, I am allowed to host this repo with the KICKS software as long as I include all of the distribution and refer to the original author: Mike Noel.
+
 <br>
+
 License
 =======
 
