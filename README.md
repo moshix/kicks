@@ -9,7 +9,7 @@ KICKS is high level source code compatible with CICS. You can migrate your apps 
 
 Great for testing, for prototyping or for small groups of users, KICKS is an amazing platform. 
 
-However, the biggest difference between KICKS and the real CICS lies in the fact that KICKS is a library that executes in the address space of your program or user (for CMS), whereas CICS runs in its own address space and therefore has user management, terminal managemnt etc. etc. 
+However, the biggest difference between KICKS and the real CICS lies in the fact that KICKS is a library that executes in the address space of your program or user (for CMS), whereas CICS runs in its own address space and therefore has user management, terminal management etc. etc. 
 
 Documentation
 =============
