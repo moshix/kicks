@@ -9,12 +9,14 @@ KICKS is high level source code compatible with CICS. You can migrate your apps 
 
 Great for testing, for prototyping or for small groups of users, KICKS is an amazing platform. 
 
+However, the biggest difference between KICKS and the real CICS lies in the fact that KICKS is a library that executes in the address space of your program or user (for CMS), whereas CICS runs in its own address space and therefore has user management, terminal managemnt etc. etc. 
+
 Documentation
 =============
 
-In this video I show how to install KICKS unto your MVS 3.8 TK4- : https://www.youtube.com/watch?v=u_ZSH9OagTM
+In this video I show how to install KICKS unto your MVS 3.8 TK4-: https://www.youtube.com/watch?v=u_ZSH9OagTM
 
-For those running a non TK4- MVS 3.8 (self-SYSGENNED etc) , Jay Moseley has written up a great documentation how to install KICKS on TSO and run some demo programs. 
+For those running a non TK4- MVS 3.8 (self-SYSGENNED etc), Jay Moseley has written up a great documentation how to install KICKS on TSO and run some demo programs. 
 
 The original KICS documentaiton by the authoer is Mike Noel is here: www.kicksfortso.com
 
