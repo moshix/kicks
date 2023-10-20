@@ -1,4 +1,6 @@
 [![Discord](https://img.shields.io/discord/423767742546575361.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/vpEv3HJ)
+[![View SBOM](https://img.shields.io/badge/sbom.sh-viewSBOM-blue?link=https%3A%2F%2Fsbom.sh%2F99e9b0cd-14d8-4a37-8b73-deea15d3325e)](https://sbom.sh/99e9b0cd-14d8-4a37-8b73-deea15d3325e)
+<br>
 # KICKS
 
 KICKS works much like CICS. It has a very similar EXEC API, and works inside TSO on MVS 3.8
