@@ -1,9 +1,10 @@
 [![Discord](https://img.shields.io/discord/423767742546575361.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/vpEv3HJ)
 [![View SBOM](https://img.shields.io/badge/sbom.sh-viewSBOM-blue?link=https%3A%2F%2Fsbom.sh%2F99e9b0cd-14d8-4a37-8b73-deea15d3325e)](https://sbom.sh/99e9b0cd-14d8-4a37-8b73-deea15d3325e)
 <br>
-# KICKS
+KICKS
+=====
 
-KICKS works much like CICS. It has a very similar EXEC API, and works inside TSO on MVS 3.8
+KICKS works much like CICS. It has a very similar EXEC API, and works inside TSO on MVS 3.8, and on VM/370. It also works nicely on MVS/SP, MVS/XA and on VM/SP. 
 
 KICKS is an enhacement for CMS and TSO on IBM mainframes and emulators that lets you run your CICS applications directly instead of having ot install those apps in CICS. You don't even need CICS itself instald on your mainframe. 
 
@@ -138,4 +139,4 @@ the terms of this license.
 
 Moshix
 <br>
-October 2023
+January 2025
